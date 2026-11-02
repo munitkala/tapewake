@@ -2,11 +2,16 @@
 
 **Local video restoration.** Free and open source (MIT licence).
 
-tapewake restores old home videos on your own computer: it deinterlaces the tape, upscales it with AI, restores
-faces carefully, cleans up the sound, and gives you the restored film plus a before-and-after comparison. Nothing is
-uploaded anywhere.
+![MIT licence](https://img.shields.io/badge/licence-MIT-2c7a3f)
+![Windows 10/11](https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-0f7f8c)
+![NVIDIA GPU, 8 GB](https://img.shields.io/badge/GPU-NVIDIA%208%20GB%2B-5b4b9a)
+![Version 0.1](https://img.shields.io/badge/version-0.1-c9a36b)
 
-![Before and after](screenshots/before-after.gif)
+tapewake restores old VHS and home videos on your own computer: it deinterlaces the tape, upscales it with AI,
+restores faces carefully, cleans up the sound, and gives you the restored film plus a before-and-after comparison.
+Nothing is uploaded anywhere.
+
+![Before and after: a 1938 street scene, soft and interlaced on the left, sharper on the right](screenshots/before-after.gif)
 
 ## What it does
 
@@ -19,9 +24,9 @@ uploaded anywhere.
 
 | | |
 |---|---|
-| ![Before and after, side by side](screenshots/before-after-side-by-side.png) | ![Wipe comparison](screenshots/before-after-wipe.png) |
-| ![Progress](screenshots/progress.png) | ![Finished](screenshots/finished.png) |
-| ![Guided tour](screenshots/guided-tour.png) | ![Engine commands](screenshots/lab-commands.png) |
+| ![The app's player showing the original and the restored video side by side](screenshots/before-after-side-by-side.png) | ![Wipe view: a slider splits one frame between original and restored](screenshots/before-after-wipe.png) |
+| ![Progress window with each step's bar and the time left](screenshots/progress.png) | ![A finished restoration with all steps complete and a button to open the video](screenshots/finished.png) |
+| ![The guided tour highlighting one part of the app with a short explanation](screenshots/guided-tour.png) | ![Lab tab listing the engine commands the app runs for a job](screenshots/lab-commands.png) |
 
 ## Status
 
@@ -133,6 +138,11 @@ Please read this before restoring anything you care about.
 - **No affiliation.** Names of other projects and products belong to their owners. Their authors don't endorse
   tapewake.
 - This section isn't legal advice. If you're unsure whether your use is allowed, ask someone qualified.
+
+## Contributing
+
+Bug reports and pull requests are welcome, see [CONTRIBUTING.md](CONTRIBUTING.md). Security problems:
+[SECURITY.md](SECURITY.md).
 
 ## Licence
 

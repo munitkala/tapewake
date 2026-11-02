@@ -1,0 +1,39 @@
+name: Bug report
+description: Something went wrong during a restoration or in the app
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! Please remove anything private (names in folder paths, file names) from logs before pasting them.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: input
+    id: step
+    attributes:
+      label: Which step?
+      description: For example "Finding faces, piece 12". The progress window shows it.
+  - type: input
+    id: system
+    attributes:
+      label: Windows version and graphics card
+      placeholder: Windows 11 24H2, RTX 3060 Ti 8 GB
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Source video
+      description: Format and length, if you know them.
+      placeholder: VHS capture, 720x480 interlaced MPEG-2, 2 hours
+  - type: textarea
+    id: log
+    attributes:
+      label: Last lines of run.log
+      description: From the job's work folder (Troubleshoot > Open this job's log).
+      render: text

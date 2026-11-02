@@ -1,0 +1,16 @@
+name: Idea or request
+description: Suggest something tapewake should do
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like?
+      description: What you're trying to do, and how tapewake could help.
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: What kind of footage?
+      placeholder: Hi8 tapes, PAL, a DVD rip ...
