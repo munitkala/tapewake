@@ -1,0 +1,157 @@
+{
+  "name": "Home-video tape · Tested",
+  "about": "Every setting of the engine pipeline, proven on a full restoration of a two-hour VHS tape (720x480 29.97i MPEG-2) on an 8 GB NVIDIA graphics card, October-November 2026. The script and argument for each value are noted next to it; engine/tapewake_engine/settings.py TESTED holds the values a job can override.",
+  "source": {
+    "timeline": "fps=30000/1001:start_time=0 (constant frame rate, fills one-frame timestamp holes in old captures)",
+    "field_order": "tff (setfield=tff, -field_order tt)",
+    "colour_in": "BT.601 limited range (smpte170m), as in the original MPEG-2",
+    "cut": "lossless FFV1 level 3 pieces of 1000 source frames (prepare.py, setting piece_frames)",
+    "audio_channel": "both by default; 'left' or 'right' (setting audio_channel) when one channel of a tape is dead"
+  },
+  "deinterlace": {
+    "method": "QTGMC (vsjetpack 2.2.6 QTempGaussMC.bob, portable VapourSynth)",
+    "rate": "double, 59.94p (60000/1001)",
+    "denoise_mode": "DENOISE",
+    "denoise_tr": 2,
+    "denoise_func": "DFTTest(sigma=6)  # ~ classic QTGMC Sigma 1.5, gentle",
+    "source_match_mode": "BASIC  # keeps source detail, turns off QTGMC sharpening",
+    "resize": "Spline36 to 640x480 square pixels, YUV444P8",
+    "piece_margin_source_frames": 30,
+    "output": "FFV1 level 3 yuv444p",
+    "script": "deinterlace.py / prepare.py",
+    "mvtools_fix": "vsjetpack 2.2.6 passes fields=<bool> that mvutensils 10 rejects: patch MVTools.__init__ to store None (see deinterlace.py)"
+  },
+  "upscale": {
+    "model": "Real-ESRGAN realesr-general-x4v3 (compact model, 64 features, 32 convs, x4) blended with realesr-general-wdn-x4v3",
+    "dn": 0.3,
+    "precision": "fp16",
+    "runtime": "TensorRT 10.9 FP16 engine, 1 GB workspace, built for 640x480 (about 2x PyTorch; 57.7 dB PSNR vs PyTorch). Falls back to PyTorch.",
+    "output_size": "1280x960 (x4 then bicubic antialiased down)",
+    "colour_lock_anchor_sigma_px": 3.0,
+    "flicker_smoothing": {
+      "flow": "RAFT large (torchvision), computed on the source",
+      "stab_alpha": 0.4,
+      "stab_k": 10.0,
+      "scene_cut_mean_error": 20
+    },
+    "output": "FFV1 level 3 bgr0 1280x960 @ 59.94",
+    "script": "upscale.py + trt_upscaler.py"
+  },
+  "faces": {
+    "work_clip_edge_frames": 60,
+    "detect": {
+      "detector": "RetinaFace ResNet50 (CodeFormer facelib) on a 2x enlarged frame, conf 0.6",
+      "detect_step": 2,
+      "min_len_frames": 15,
+      "max_gap": 8,
+      "min_score": 0.85,
+      "min_vis": 0.5,
+      "min_ed_px_640": 12,
+      "clear_ed": 20,
+      "clear_score": 0.95,
+      "clear_vis": 0.6,
+      "clear_yaw": 0.25,
+      "min_detail": 0.14,
+      "smooth_savgol_window": 11,
+      "parser_batch": 4,
+      "script": "faces_find.py"
+    },
+    "restore": {
+      "model": "DicFace (ICCV 2025) bfr_100k.pth, 5-frame window per frame, w=1.0",
+      "precision": "full (fp16 turns KEEP black; FP16 CodeFormer scored 34.8 dB worst face - rejected)",
+      "half_rate": true,
+      "batch": 2,
+      "chunk_frames": 240,
+      "chunk_pad": 8,
+      "script": "faces_restore.py",
+      "alternatives_tested": [
+        "codeformer (w=1.0)",
+        "keep (run 20, overlap 6)",
+        "PMRF"
+      ]
+    },
+    "composite": {
+      "min_ed": 12,
+      "full_ed": 22,
+      "tone": 0.8,
+      "detail_lo": 0.15,
+      "detail_hi": 0.23,
+      "yaw_fade": [
+        0.25,
+        0.5
+      ],
+      "vis_fade": [
+        0.35,
+        0.6
+      ],
+      "fade_frames": 8,
+      "alpha_smooth_frames": 9,
+      "script": "assemble.py"
+    }
+  },
+  "finish": {
+    "sharpen": 1.8,
+    "sharpen_note": "luma-only unsharp mask, 5x5 Gaussian; level 3 (1.8) looked best on the test tape",
+    "grain_8bit_levels": 2.0,
+    "grain_blur_sigma": 0.7,
+    "grain_seed": 1995,
+    "delivery": "libx264 -crf 14 -preset slow, yuv420p, converted to BT.709 (out_color_matrix=bt709), tagged colorspace bt709 / primaries smpte170m / trc bt709 / range tv",
+    "script": "assemble.py + common.delivery_args"
+  },
+  "audio": {
+    "track_1": "Restored audio (FLAC 48 kHz stereo, default)",
+    "track_2": "Original audio (stream copy)",
+    "front_end": "pan=mono|c0=c1,highpass=f=40,adeclick",
+    "dehum": {
+      "harmonics": 8,
+      "band_hz_per_harmonic": [
+        44,
+        57
+      ],
+      "thresh_db": 12.0,
+      "persist": 5,
+      "step_s": 0.5
+    },
+    "separation": "Demucs htdemucs, shifts=1, split, overlap 0.25 (vocals vs background)",
+    "voices": {
+      "talking": "AI_LIGHT = Resemble Enhance lambd=0.5, nfe=64, midpoint, tau=0.5, loudness matched to DeepFilterNet3 version",
+      "songs": "NEW = DeepFilterNet3, atten_lim_db=18",
+      "blend": "talking share = (voice/mix power over 2 s - 0.35) / 0.4, clipped 0..1",
+      "voice_gain_db": 1.0
+    },
+    "background": {
+      "max_reduction_db": 10,
+      "over_subtraction": 1.5,
+      "noise_percentile": 10
+    },
+    "blocks": {
+      "block_s": 60,
+      "context_s": 3,
+      "crossfade_s": 1
+    },
+    "eq": "equalizer=f=250:t=q:w=1.0:g=-2,equalizer=f=2800:t=q:w=1.0:g=2.5,highshelf=f=6000:g=1.5,acompressor=threshold=-24dB:ratio=2:attack=20:release=250:makeup=1.5",
+    "loudness": "two-pass loudnorm I=-16 TP=-1.5 LRA=11 linear=true",
+    "checks": "length within 10 ms, sync within 10 ms at 10 points, loudness within 0.7 LU, peak <= 0.95",
+    "study_result": "DNSMOS overall, talking: tape 1.38, NEW 1.26, AI 1.63, AI_LIGHT 1.65; songs all ~1.09 so the least-changing (NEW) won",
+    "script": "audio.py (+ audio_tools.py)"
+  },
+  "outputs": {
+    "restored": "<name> - Restored.mkv: H.264 1280x960 59.94p + restored FLAC (track 1) + original audio (track 2); published only after frame-count, track and duration checks",
+    "compare": "Before and after.mp4: original (bwdif send_field, bicubic to 1280x960) | restored, labelled, hevc_nvenc p7 hq cq 18, 256k AAC",
+    "preview_phone": "H.264 crf 20 + AAC 192k, faststart"
+  },
+  "run": {
+    "unit": "pieces of 1000 source frames, resumable, each verified by frame count",
+    "overlap": "composite (CPU) of piece k runs while piece k+1 is on the GPU",
+    "pause": "PAUSED flag file + kill all job processes (frees GPU memory for games)",
+    "awake": "SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED)",
+    "temperature_guard": {
+      "cpu_c": 95,
+      "gpu_c": 88,
+      "gpu_hotspot_c": 100,
+      "readings_in_a_row": 3,
+      "every_s": 15
+    },
+    "measured": "piece step shares: finding faces 0.32, restoring faces 0.48, upscaling 0.15 (TensorRT), assembling 0.05; ~30-75 min per 2000-frame piece"
+  }
+}
