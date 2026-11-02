@@ -1,0 +1,2249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px/1.4 system-ui,-apple-system,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>tapewake</title>
+<link rel="icon" type="image/png" href="data:image/png;base64,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">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* layout: top bar, then pipeline | viewer | progress rail */
+:root{
+  --bg:#0E1014; --panel:#161920; --raised:#1D2129; --line:#272C36; --line-strong:#3A4252;
+  --fg:#E8EAEE; --muted:#9CA3B0; --faint:#6B7281;
+  --accent:#5CCAD6; --accent-ink:#04252A; --accent-soft:rgba(92,202,214,.14);
+  --warn:#E5B54A; --good:#62C58F; --crit:#E86A60;
+  --well:#07080A; --well-fg:#E8EAEE; --well-chip:rgba(0,0,0,.6); --scrim:rgba(4,5,7,.72);
+  --shadow:0 24px 64px rgba(0,0,0,.5);
+  --f-display:"Big Shoulders Display","Avenir Next Condensed","Arial Narrow",sans-serif;
+  --f-body:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --scale:1;
+  --t-11:calc(11px*var(--scale)); --t-12:calc(12px*var(--scale)); --t-13:calc(13px*var(--scale));
+  --t-15:calc(15px*var(--scale)); --t-18:calc(18px*var(--scale)); --t-24:calc(24px*var(--scale));
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#E8EBEF; --panel:#FFFFFF; --raised:#F2F4F7; --line:#D7DCE3; --line-strong:#B9C1CC;
+    --fg:#151820; --muted:#566070; --faint:#858D9A;
+    --accent:#0A7C89; --accent-ink:#FFFFFF; --accent-soft:rgba(10,124,137,.11);
+    --warn:#9A6500; --good:#1B7F47; --crit:#BF372D;
+    --well:#15171B; --well-fg:#E8EAEE; --well-chip:rgba(0,0,0,.6); --scrim:rgba(18,22,30,.42);
+    --shadow:0 24px 64px rgba(20,30,50,.2); color-scheme:light;
+  }
+}
+:root[data-theme="light"]{
+  --bg:#E8EBEF; --panel:#FFFFFF; --raised:#F2F4F7; --line:#D7DCE3; --line-strong:#B9C1CC;
+  --fg:#151820; --muted:#566070; --faint:#858D9A;
+  --accent:#0A7C89; --accent-ink:#FFFFFF; --accent-soft:rgba(10,124,137,.11);
+  --warn:#9A6500; --good:#1B7F47; --crit:#BF372D;
+  --well:#15171B; --well-fg:#E8EAEE; --well-chip:rgba(0,0,0,.6); --scrim:rgba(18,22,30,.42);
+  --shadow:0 24px 64px rgba(20,30,50,.2); color-scheme:light;
+}
+:root[data-theme="dark"]{
+  --bg:#0E1014; --panel:#161920; --raised:#1D2129; --line:#272C36; --line-strong:#3A4252;
+  --fg:#E8EAEE; --muted:#9CA3B0; --faint:#6B7281;
+  --accent:#5CCAD6; --accent-ink:#04252A; --accent-soft:rgba(92,202,214,.14);
+  --warn:#E5B54A; --good:#62C58F; --crit:#E86A60;
+  --well:#07080A; --well-fg:#E8EAEE; --well-chip:rgba(0,0,0,.6); --scrim:rgba(4,5,7,.72);
+  --shadow:0 24px 64px rgba(0,0,0,.5); color-scheme:dark;
+}
+:root.hc{--line:var(--line-strong);--muted:var(--fg);--faint:var(--fg)}
+:root.rm *,:root.rm *::before,:root.rm *::after{transition:none!important;animation:none!important}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:var(--t-13);line-height:1.45;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3,h4{margin:0;font-weight:600;text-wrap:balance}
+p{margin:0}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.faint{color:var(--faint)}
+.eyebrow{font-family:var(--f-mono);font-size:var(--t-11);text-transform:uppercase;letter-spacing:.09em;color:var(--faint)}
+svg.i{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+svg.i.sm{width:15px;height:15px}
+
+/* App frame */
+.app{height:100%;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr);gap:12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 16px}
+.topbar{display:flex;align-items:center;gap:14px;min-height:58px;padding-block:10px 0;user-select:none;-webkit-user-select:none}
+.tauri-mac .topbar{padding-left:70px}
+.brand{display:flex;align-items:center;gap:9px;flex:none}
+.brand svg{width:28px;height:28px}
+.wordmark{font-family:var(--f-display);font-weight:800;font-size:calc(23px*var(--scale));letter-spacing:.07em;text-transform:uppercase;line-height:1}
+.filechip{display:none;align-items:center;gap:8px;min-width:0;max-width:260px;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--muted);font-family:var(--f-mono);font-size:var(--t-12)}
+.filechip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* one tab per restoration, the views below follow whichever is selected */
+.jobtabs{display:flex;align-items:stretch;gap:6px;min-width:0;overflow-x:auto;scrollbar-width:thin;margin-top:-4px}
+.jobtab{display:flex;align-items:center;gap:8px;flex:none;max-width:340px;padding:6px 8px 6px 12px;border:1px solid var(--line);border-radius:9px;background:transparent;color:var(--muted);text-align:left}
+.jobtab:hover{color:var(--fg);border-color:var(--line-strong)}
+.jobtab[aria-selected="true"]{background:var(--panel);color:var(--fg);border-color:var(--line-strong);box-shadow:inset 0 -2px 0 var(--accent)}
+.jobtab .nm{font-family:var(--f-mono);font-size:var(--t-12);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.jobtab .st{font-size:var(--t-11);color:var(--muted);white-space:nowrap}
+.jobtab .x{width:22px;height:22px;display:grid;place-items:center;border-radius:6px;color:var(--faint);font-size:15px;line-height:1}
+.jobtab .x:hover{background:var(--raised);color:var(--fg)}
+.jobtab.add{padding:6px 12px;gap:6px;border-style:dashed}
+.locked-note{font-size:var(--t-12);color:var(--muted);border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--raised)}
+.pipeline.locked .stages{pointer-events:none;opacity:.8}
+.modes{margin-inline:auto;display:flex;gap:2px;padding:3px;border:1px solid var(--line);border-radius:10px;background:var(--panel);overflow-x:auto;max-width:100%;scrollbar-width:none}
+.modes button{display:flex;align-items:center;gap:7px;padding:6px 13px;border:0;border-radius:7px;background:transparent;color:var(--muted);white-space:nowrap;font-weight:500}
+.modes button:hover{color:var(--fg)}
+.modes button[aria-pressed="true"]{background:var(--raised);color:var(--fg);box-shadow:inset 0 0 0 1px var(--line-strong)}
+.modes button[aria-pressed="true"] svg{color:var(--accent)}
+.tools{display:flex;align-items:center;gap:4px;flex:none}
+.shellpill{font-family:var(--f-mono);font-size:var(--t-11);text-transform:uppercase;letter-spacing:.08em;padding:4px 9px;border:1px dashed var(--line-strong);border-radius:99px;color:var(--muted);white-space:nowrap;background:transparent}
+.iconbtn{width:34px;height:34px;display:grid;place-items:center;border:1px solid transparent;border-radius:8px;background:transparent;color:var(--muted)}
+.iconbtn:hover{background:var(--panel);border-color:var(--line);color:var(--fg)}
+.iconbtn.onwell{color:var(--well-fg);background:var(--well-chip)}
+.iconbtn.onwell:hover{border-color:rgba(255,255,255,.25);background:var(--well-chip)}
+
+.workspace{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;min-height:0}
+.view{min-height:0;min-width:0;height:100%}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px}
+
+/* Generic controls */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:8px 14px;border-radius:8px;border:1px solid var(--line-strong);background:var(--raised);color:var(--fg);font-weight:500;white-space:nowrap}
+.btn:hover{border-color:var(--faint)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--muted)}
+.btn.ghost:hover{color:var(--fg);border-color:var(--line)}
+.btn.small{padding:5px 10px;font-size:var(--t-12)}
+.btn.block{width:100%}
+.seg{display:inline-flex;gap:2px;padding:2px;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+.seg button{padding:5px 10px;border:0;border-radius:6px;background:transparent;color:var(--muted);font-size:var(--t-12);font-weight:500;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.seg button:hover{color:var(--fg)}
+.seg button[aria-pressed="true"]{background:var(--raised);color:var(--fg);box-shadow:inset 0 0 0 1px var(--line-strong)}
+.switch{position:relative;width:34px;height:20px;flex:none;border:0;border-radius:99px;background:var(--line-strong);transition:background .15s;padding:0}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:var(--fg);transition:transform .15s}
+.switch[aria-checked="true"]{background:var(--accent)}
+.switch[aria-checked="true"]::after{transform:translateX(14px);background:var(--accent-ink)}
+.switch:disabled{opacity:.4;cursor:not-allowed}
+select,input[type="text"],input[type="number"]{width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:7px;background:var(--raised);color:var(--fg);min-width:0}
+input[type="range"]{width:100%;accent-color:var(--accent)}
+input[type="checkbox"]{accent-color:var(--accent);width:16px;height:16px}
+.field{display:grid;gap:5px}
+.field>span,.fieldtop label,.fieldtop span{font-size:var(--t-12);color:var(--muted)}
+.fieldtop{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.fieldtop output{font-family:var(--f-mono);font-size:var(--t-12);color:var(--fg)}
+.scale-hint{display:flex;justify-content:space-between;font-size:var(--t-11);color:var(--faint)}
+.row{display:flex;align-items:center;gap:10px}
+.row.between{justify-content:space-between}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:99px;font-size:var(--t-11);font-weight:500;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.chip.good{color:var(--good);border-color:color-mix(in srgb,var(--good) 40%,transparent)}
+.chip.warn{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 45%,transparent)}
+.chip.crit{color:var(--crit);border-color:color-mix(in srgb,var(--crit) 45%,transparent)}
+.chip.accent{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,transparent)}
+.chip.example{border-style:dashed}
+.bar{height:6px;border-radius:99px;background:var(--raised);overflow:hidden;box-shadow:inset 0 0 0 1px var(--line)}
+.bar>i{display:block;height:100%;width:var(--p,0%);background:var(--accent);border-radius:inherit;transition:width .25s}
+
+/* Studio */
+.studio{display:grid;grid-template-columns:clamp(272px,24vw,330px) minmax(0,1fr);gap:12px;height:100%;min-height:0}
+.pipeline{display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.pipe-scroll{flex:1;min-height:0;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:14px}
+.pipe-foot{border-top:1px solid var(--line);padding:12px 14px;display:grid;gap:10px}
+.source{display:grid;grid-template-columns:84px minmax(0,1fr);gap:12px;align-items:start}
+.source img{width:84px;aspect-ratio:4/3;object-fit:cover;border-radius:6px;display:block;background:var(--well)}
+.source h3{font-family:var(--f-mono);font-size:var(--t-12);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.specs{display:grid;grid-template-columns:auto minmax(0,1fr);gap:3px 10px;margin-top:6px;font-size:var(--t-11)}
+.specs dt{color:var(--faint)} .specs dd{margin:0;font-family:var(--f-mono);color:var(--muted)}
+.ai{padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--raised);display:grid;gap:6px}
+.ai.on{border-color:color-mix(in srgb,var(--accent) 50%,transparent);background:var(--accent-soft)}
+.ai .row strong{display:flex;gap:7px;align-items:center;font-weight:600}
+.ai .row strong svg{color:var(--accent)}
+.ai p{font-size:var(--t-12);color:var(--muted)}
+.stages{display:grid;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.stagerow+.stagerow{border-top:1px solid var(--line)}
+.stagehead{display:flex;align-items:center;gap:10px;padding:9px 10px}
+.stagebtn{flex:1;min-width:0;display:flex;align-items:center;gap:8px;border:0;background:transparent;padding:2px 0;text-align:left}
+.stagebtn .nm{font-weight:500}
+.stagebtn .sum{margin-left:auto;font-family:var(--f-mono);font-size:var(--t-11);color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.stagebtn .chev{color:var(--faint);transition:transform .15s}
+.stagebtn[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.stagebody{padding:4px 12px 14px 54px;display:grid;gap:12px}
+.stagerow.off .nm,.stagerow.off .sum{color:var(--faint)}
+.stagerow.locked .sum::before{content:"Needs AI · ";color:var(--warn)}
+.note{font-size:var(--t-11);color:var(--faint)}
+.note.warn{color:var(--warn)}
+.outline{display:flex;align-items:center;gap:8px;font-family:var(--f-mono);font-size:var(--t-11);color:var(--muted);flex-wrap:wrap}
+.outline b{color:var(--fg);font-weight:500}
+
+.stage-area{display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:10px;min-height:0;min-width:0}
+.viewer-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
+.tabs{display:flex;gap:4px}
+.tabs button{border:0;background:transparent;color:var(--muted);padding:7px 10px;border-radius:7px;font-weight:500;display:flex;gap:7px;align-items:center}
+.tabs button[aria-selected="true"]{color:var(--fg);background:var(--panel);box-shadow:inset 0 0 0 1px var(--line)}
+.tabs .count{font-family:var(--f-mono);font-size:var(--t-11);color:var(--faint)}
+.viewer-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.well{position:relative;min-height:0;border-radius:12px;overflow:hidden;background:var(--well);color:var(--well-fg)}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:2px;height:100%;background:#000}
+.compare.single{grid-template-columns:1fr}
+.pane{position:relative;container-type:size;display:grid;place-items:center;overflow:hidden;min-height:0;background:var(--well)}
+.frame{position:relative;width:min(100cqw,calc(100cqh * 4 / 3));height:min(100cqh,calc(100cqw * 3 / 4));overflow:hidden}
+.frame img,.frame video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transform-origin:var(--ox,50%) var(--oy,50%);transform:scale(var(--z,1));transition:transform .2s;user-select:none;-webkit-user-drag:none}
+.tag{position:absolute;top:10px;left:10px;z-index:3;display:flex;gap:8px;align-items:center;font-family:var(--f-mono);font-size:var(--t-11);padding:4px 8px;border-radius:6px;background:var(--well-chip);color:var(--well-fg);letter-spacing:.03em;pointer-events:none}
+.tag .dot{width:7px;height:7px;border-radius:50%;background:#b9a27a}
+.tag.rest .dot{background:var(--accent)}
+.pane .iconbtn{position:absolute;top:8px;right:8px;z-index:3}
+.face{position:absolute;z-index:2;border:1.5px dashed var(--accent);border-radius:7px;pointer-events:none}
+.face span{position:absolute;bottom:100%;left:-1px;margin-bottom:3px;font-family:var(--f-mono);font-size:10.5px;padding:1px 5px;border-radius:4px;background:var(--accent);color:var(--accent-ink);white-space:nowrap}
+.wipe-top{clip-path:inset(0 0 0 var(--cut,50%))}
+.frame video.off{visibility:hidden}
+.wipe-handle{position:absolute;top:0;bottom:0;left:var(--cut,50%);width:2px;margin-left:-1px;background:var(--well-fg);z-index:4;cursor:ew-resize}
+.wipe-handle::after{content:"";position:absolute;top:50%;left:50%;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;background:var(--well-fg);box-shadow:0 2px 10px rgba(0,0,0,.4)}
+.wipe-hit{position:absolute;inset:0;z-index:5;cursor:ew-resize;touch-action:none}
+.hold{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);z-index:5;background:var(--well-chip);color:var(--well-fg);border:1px solid rgba(255,255,255,.2);border-radius:99px;padding:8px 14px;font-size:var(--t-12)}
+.busy{position:absolute;inset:0;z-index:6;display:grid;place-items:center;background:rgba(0,0,0,.45);font-family:var(--f-mono);font-size:var(--t-12);color:var(--well-fg)}
+.spinner{width:26px;height:26px;border-radius:50%;border:2.5px solid rgba(255,255,255,.25);border-top-color:var(--well-fg);animation:spin .8s linear infinite;margin:0 auto 10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty-view{display:grid;gap:10px;justify-items:center;text-align:center;max-width:42ch;padding:24px;color:var(--well-fg)}
+.empty-view span{opacity:.7;font-size:var(--t-13)}
+.empty-view svg{width:34px;height:34px;opacity:.7}
+.illus{position:absolute;bottom:8px;right:10px;z-index:3;font-size:10.5px;font-family:var(--f-mono);color:rgba(255,255,255,.55);pointer-events:none}
+
+.scrub{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:center;padding:10px 12px}
+.tcbox{display:flex;align-items:center;gap:6px}
+.tc{font-family:var(--f-mono);font-size:var(--t-18);font-variant-numeric:tabular-nums;letter-spacing:.01em;min-width:9.6ch}
+.tcsub{font-family:var(--f-mono);font-size:var(--t-11);color:var(--faint)}
+.stripwrap{position:relative;min-width:0;padding-top:10px}
+.cuts{position:absolute;top:0;left:0;right:0;height:8px}
+.cuts i{position:absolute;top:0;width:2px;height:8px;background:var(--warn);border-radius:1px}
+.strip{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:2px;height:48px;border-radius:6px;overflow:hidden}
+.strip button{padding:0;border:0;background:#000 center/cover no-repeat;opacity:.62;min-width:0}
+.strip button:hover{opacity:.85}
+.strip button[aria-current="true"]{opacity:1;box-shadow:inset 0 0 0 2px var(--accent)}
+.strip.player{position:relative;display:flex;overflow-x:auto;scrollbar-width:none}
+.strip.player button{flex:0 0 64px;background-repeat:no-repeat}
+.wedseek{display:block;width:100%;margin:0 0 6px}
+.scrub-actions{display:grid;gap:4px;justify-items:end}
+
+.clipview,.samplesview{height:100%;overflow:auto}
+.clipview{display:grid;grid-template-rows:minmax(0,1fr) auto;gap:10px}
+.clipcontrols{display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding:12px 14px}
+.clipcontrols .grow{flex:1;min-width:200px;display:grid;gap:6px}
+.playbtn{position:absolute;z-index:4;width:56px;height:56px;border-radius:50%;border:0;display:grid;place-items:center;background:var(--well-chip);color:var(--well-fg);left:50%;top:50%;transform:translate(-50%,-50%)}
+.playbtn svg{width:22px;height:22px}
+.samples{padding:14px;display:grid;gap:18px}
+.samplehead{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.cap{display:flex;align-items:center;gap:8px;font-family:var(--f-mono);font-size:var(--t-11);color:var(--muted)}
+.cap .bar{width:90px}
+.grid-samples{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.sample{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--raised);display:grid}
+.sthumb{position:relative;aspect-ratio:4/3;max-width:100%;background:var(--well)}
+.sthumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.sthumb img+img{clip-path:inset(0 0 0 50%)}
+.sthumb::after{content:"";position:absolute;top:0;bottom:0;left:50%;width:1px;background:rgba(255,255,255,.7)}
+.sthumb .badge{position:absolute;top:6px;left:6px;z-index:2;font-family:var(--f-mono);font-size:10.5px;padding:2px 6px;border-radius:4px;background:var(--well-chip);color:var(--well-fg)}
+.smeta{padding:8px 10px;display:grid;gap:2px}
+.smeta b{font-family:var(--f-mono);font-size:var(--t-12);font-weight:500}
+.smeta span{font-size:var(--t-11);color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sactions{display:flex;gap:2px;padding:0 6px 6px}
+.sactions .iconbtn{width:30px;height:30px}
+.emptyslot{border:1px dashed var(--line-strong);border-radius:10px;display:grid;place-items:center;min-height:120px;color:var(--faint);font-size:var(--t-12);text-align:center;padding:10px}
+
+/* Progress rail */
+.rail{width:60px;display:flex;flex-direction:column;align-items:center;gap:10px;padding:10px 0;min-height:0;transition:width .2s}
+.rail .mini{display:flex;flex-direction:column;align-items:center;gap:10px;flex:1;min-height:0;width:100%}
+.vtrack{position:relative;flex:1;width:10px;min-height:80px;border-radius:99px;background:var(--raised);box-shadow:inset 0 0 0 1px var(--line);overflow:hidden;border:0;padding:0}
+.vfill{position:absolute;left:0;right:0;bottom:0;height:var(--p,0%);background:var(--accent);border-radius:inherit;transition:height .3s}
+.vpct{font-family:var(--f-mono);font-size:var(--t-11);color:var(--muted);font-variant-numeric:tabular-nums}
+.statusdot{width:8px;height:8px;border-radius:50%;background:var(--faint)}
+.statusdot.run{background:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+.statusdot.pause{background:var(--warn)}
+.statusdot.done{background:var(--good)}
+.rail.open{width:340px;align-items:stretch;padding:14px}
+.rail .full{display:grid;gap:14px;align-content:start;overflow:auto;min-height:0}
+#railBody{display:grid;gap:14px}
+.railhead{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.railhead h2{font-size:var(--t-15)}
+.jobfile{font-family:var(--f-mono);font-size:var(--t-12);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bigpct{font-family:var(--f-display);font-weight:800;font-size:calc(46px*var(--scale));line-height:1;letter-spacing:.02em;font-variant-numeric:tabular-nums}
+.stagelist{display:grid;gap:7px;margin:0;padding:0;list-style:none}
+.stagelist li{display:grid;grid-template-columns:16px minmax(0,1fr) auto;gap:8px;align-items:center;font-size:var(--t-12);color:var(--muted)}
+.stagelist li .ic{width:14px;height:14px;border-radius:50%;border:1.5px solid var(--line-strong)}
+.stagelist li.done{color:var(--fg)} .stagelist li.done .ic{background:var(--good);border-color:var(--good)}
+.stagelist li.active{color:var(--fg);font-weight:500} .stagelist li.active .ic{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.stagelist li .pc{font-family:var(--f-mono);font-size:var(--t-11);color:var(--faint)}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{padding:9px 10px;border:1px solid var(--line);border-radius:8px}
+.stat .eyebrow{font-size:10.5px}
+.stat b{display:block;font-family:var(--f-mono);font-weight:500;font-size:var(--t-13);margin-top:2px;font-variant-numeric:tabular-nums}
+.latest{position:relative;aspect-ratio:4/3;max-width:100%;border-radius:8px;overflow:hidden;background:var(--well)}
+.latest img{width:100%;height:100%;object-fit:cover;display:block}
+.idle{display:grid;gap:10px;padding:16px;border:1px dashed var(--line-strong);border-radius:10px;text-align:center;justify-items:center;color:var(--muted)}
+
+/* Quick */
+.scrollview{height:100%;overflow:auto}
+.quick{max-width:1000px;margin-inline:auto;display:grid;gap:12px;padding-bottom:24px}
+.qhero{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:12px;padding:6px 2px 4px}
+.qhero h1{font-family:var(--f-display);font-weight:800;font-size:calc(40px*var(--scale));letter-spacing:.02em;line-height:1;text-transform:uppercase}
+.qhero p{color:var(--muted);max-width:56ch}
+.step{display:grid;grid-template-columns:44px minmax(0,1fr);gap:14px;padding:18px}
+.stepnum{font-family:var(--f-display);font-weight:800;font-size:34px;line-height:.9;color:var(--accent)}
+.step h2{font-size:var(--t-15);margin-bottom:4px}
+.step .lead{color:var(--muted);margin-bottom:12px;font-size:var(--t-12)}
+.drop{border:1.5px dashed var(--line-strong);border-radius:12px;padding:18px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:16px;align-items:center;background:var(--raised)}
+.drop.over{border-color:var(--accent);background:var(--accent-soft)}
+.drop img{width:120px;aspect-ratio:4/3;object-fit:cover;border-radius:8px;display:block}
+.drop .fname{font-family:var(--f-mono);font-size:var(--t-13);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.choice{text-align:left;padding:14px;border:1px solid var(--line);border-radius:10px;background:var(--raised);display:grid;gap:5px;align-content:start}
+.choice:hover{border-color:var(--line-strong)}
+.choice:disabled{opacity:.5;cursor:not-allowed}
+.choice[aria-checked="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:var(--accent-soft)}
+.choice .ct{display:flex;align-items:center;gap:8px;font-weight:600}
+.choice .ct svg{color:var(--accent)}
+.choice small{color:var(--muted);font-size:var(--t-12);line-height:1.4}
+.choice .meta{font-family:var(--f-mono);font-size:var(--t-11);color:var(--faint)}
+.detect{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px;font-size:var(--t-12);color:var(--muted)}
+.toggles{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:12px}
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px}
+.toggle div{display:grid}
+.toggle small{color:var(--faint);font-size:var(--t-11)}
+.mini-compare{display:grid;grid-template-columns:1fr 1fr;gap:2px;border-radius:10px;overflow:hidden;background:#000}
+.mini-compare .pane{aspect-ratio:4/3;max-width:100%}
+.mini-compare img{width:100%;height:100%;object-fit:cover;display:block}
+.final{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px;align-items:start}
+.summary{display:grid;gap:8px;font-size:var(--t-12)}
+.summary div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line);padding-bottom:7px}
+.summary span{color:var(--muted)} .summary b{font-weight:500;font-family:var(--f-mono);text-align:right}
+
+/* Batch & Lab */
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:760px;font-size:var(--t-12)}
+th{text-align:left;font-weight:500;color:var(--faint);font-family:var(--f-mono);font-size:var(--t-11);text-transform:uppercase;letter-spacing:.06em;padding:10px 12px;border-bottom:1px solid var(--line)}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+td.mono{font-size:var(--t-12)}
+tr:last-child td{border-bottom:0}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line)}
+.toolbar .spacer{flex:1}
+.watch{display:flex;align-items:center;gap:8px}
+.watch input{width:200px}
+.batchgrid{display:grid;gap:12px;padding-bottom:24px}
+.batchfoot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;padding:12px 14px;border-top:1px solid var(--line);font-size:var(--t-12);color:var(--muted)}
+.labgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:12px;padding-bottom:24px;align-items:start}
+.labhead{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.nodes{list-style:none;margin:0;padding:10px;display:grid;gap:6px}
+.node{display:grid;grid-template-columns:20px 26px minmax(0,1fr) minmax(0,140px) auto;gap:10px;align-items:center;padding:9px 10px;border:1px solid var(--line);border-radius:9px;background:var(--raised)}
+.node.dragging{opacity:.5}
+.node .grip{color:var(--faint);cursor:grab}
+.node .idx{font-family:var(--f-mono);font-size:var(--t-11);color:var(--faint)}
+.node .nm{font-weight:500}
+.node .nm small{display:block;font-weight:400;color:var(--faint);font-size:var(--t-11)}
+.node select{padding:5px 7px;font-size:var(--t-12)}
+pre.code{margin:0;padding:14px;overflow:auto;font-family:var(--f-mono);font-size:var(--t-12);line-height:1.6;color:var(--muted);background:var(--raised);border-radius:0 0 12px 12px;white-space:pre}
+pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
+
+/* Compact */
+.compactwrap{height:100%;display:grid;place-items:center;align-content:center;gap:14px;padding-block:16px}
+.miniwin{width:min(380px,100%);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
+.miniwin .mhead{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--line)}
+.miniwin .mbody{padding:12px;display:grid;gap:10px}
+.miniwin .latest{border-radius:8px}
+
+/* Overlays */
+.tour-block{position:fixed;inset:0;z-index:88}
+.tour-spot{position:fixed;z-index:89;border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,.58),0 0 0 2px var(--accent);pointer-events:none;transition:left .25s,top .25s,width .25s,height .25s}
+.tour-card{position:fixed;z-index:90;width:min(340px,calc(100vw - 32px));display:grid;gap:8px;padding:14px 16px;border-radius:12px;background:var(--raised);color:var(--fg);border:1px solid var(--line-strong);box-shadow:var(--shadow)}
+.tour-card h4{font-size:var(--t-15);margin:0}
+.tour-card p{font-size:var(--t-13);color:var(--muted);margin:0;line-height:1.45}
+.tour-card .row{justify-content:space-between;align-items:center}
+.tour-card .tour-count{font-family:var(--f-mono);font-size:var(--t-11);color:var(--faint)}
+.overlay{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:var(--scrim);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);padding:max(20px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(20px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.modal{width:min(980px,100%);max-height:100%;display:grid;grid-template-rows:auto minmax(0,1fr) auto;background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+.modal.narrow{width:min(640px,100%)}
+.mhd{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 18px;border-bottom:1px solid var(--line)}
+.mhd h2{font-size:var(--t-15)}
+.mbd{overflow:auto;padding:18px;min-height:0}
+.mft{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;padding:12px 18px;border-top:1px solid var(--line)}
+.mft .left{margin-right:auto}
+
+.welcome{width:min(1040px,100%);max-height:100%;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.6fr)}
+.wside{padding:28px;border-right:1px solid var(--line);display:grid;align-content:space-between;gap:24px;background:linear-gradient(180deg,var(--accent-soft),transparent 70%)}
+.wside .wordmark{font-size:calc(44px*var(--scale))}
+.wside p{color:var(--muted);max-width:32ch}
+.wmain{padding:24px;display:grid;gap:18px;align-content:start}
+.wmain h2{font-size:var(--t-18)}
+.modecards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.wopts{display:flex;flex-wrap:wrap;gap:18px;align-items:center}
+.wopts .field{gap:6px}
+.wfoot{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding-top:16px}
+.wfoot label{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:var(--t-12)}
+
+.settings{display:grid;grid-template-columns:200px minmax(0,1fr);min-height:0;height:100%}
+.snav{border-right:1px solid var(--line);padding:10px;display:grid;gap:2px;align-content:start;overflow:auto}
+.snav button{text-align:left;border:0;background:transparent;color:var(--muted);padding:8px 10px;border-radius:7px;font-weight:500}
+.snav button[aria-selected="true"]{background:var(--raised);color:var(--fg)}
+.spane{padding:18px 20px;overflow:auto;display:grid;gap:16px;align-content:start}
+.srow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.srow:last-child{border-bottom:0}
+.srow .lbl{display:grid;gap:2px}
+.srow .lbl small{color:var(--faint);font-size:var(--t-12)}
+.srow.stack{grid-template-columns:1fr}
+.models{display:grid;gap:8px}
+.model{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:9px}
+.model b{font-weight:500} .model small{display:block;color:var(--faint);font-size:var(--t-11)}
+
+.checks{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.checks li{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:9px}
+.checks .st{font-family:var(--f-mono);font-size:var(--t-11);color:var(--faint)}
+.checks li.ok .st{color:var(--good)} .checks li.run .st{color:var(--accent)}
+.checks .ci{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--line-strong);display:grid;place-items:center}
+.checks li.ok .ci{background:var(--good);border-color:var(--good);color:var(--accent-ink)}
+.checks li.run .ci{border-color:var(--accent);border-top-color:transparent;animation:spin .8s linear infinite}
+.steps-list{margin:0;padding-left:20px;display:grid;gap:8px;color:var(--muted)}
+.steps-list b{color:var(--fg);font-weight:500}
+.logbox{margin:0;padding:12px;border-radius:9px;background:var(--well);color:#B8C0CC;font-family:var(--f-mono);font-size:var(--t-11);line-height:1.6;overflow:auto;white-space:pre}
+
+.lightbox{position:fixed;inset:0;z-index:70;background:var(--well);color:var(--well-fg);display:grid;grid-template-rows:auto minmax(0,1fr);padding:max(12px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.lbhead{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-bottom:10px}
+.lbhead .tag{position:static}
+.lbbody{container-type:size;display:grid;place-items:center;min-height:0}
+.lbbody .frame img{transform:none}
+
+.pfull{position:fixed;inset:0;z-index:60;background:var(--bg);display:grid;grid-template-rows:auto 1fr auto;gap:20px;padding:max(24px,env(safe-area-inset-top,0px)) max(24px,env(safe-area-inset-right,0px)) max(24px,env(safe-area-inset-bottom,0px)) max(24px,env(safe-area-inset-left,0px));overflow:auto}
+.pfgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:28px;align-items:center;max-width:1300px;width:100%;margin-inline:auto}
+.pfpct{font-family:var(--f-display);font-weight:800;font-size:clamp(90px,15vw,200px);line-height:.85;letter-spacing:.01em;font-variant-numeric:tabular-nums}
+.pfstage{font-size:var(--t-18);margin-top:12px}
+.segbar{display:flex;gap:3px;height:12px;margin-top:22px}
+.segbar i{position:relative;height:100%;border-radius:3px;background:var(--raised);box-shadow:inset 0 0 0 1px var(--line);overflow:hidden;flex:var(--w)}
+.segbar i::after{content:"";position:absolute;inset:0;width:var(--p,0%);background:var(--accent)}
+.seglabels{display:flex;gap:3px;margin-top:6px}
+.seglabels span{flex:var(--w);font-family:var(--f-mono);font-size:10.5px;color:var(--faint);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.pfstats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:22px}
+
+.toasts{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:90;display:grid;gap:8px;width:min(460px,calc(100% - 32px));pointer-events:none}
+.toast{pointer-events:auto;display:flex;gap:10px;align-items:flex-start;padding:11px 14px;border-radius:10px;background:var(--raised);border:1px solid var(--line-strong);box-shadow:var(--shadow);font-size:var(--t-12);animation:tin .2s ease-out}
+.toast svg{color:var(--accent);margin-top:1px}
+@keyframes tin{from{opacity:0;transform:translateY(6px)}}
+
+/* Narrow screens */
+@media (max-width: 1100px){
+  .filechip{display:none}
+}
+@media (max-width: 900px){
+  html,body{height:auto}
+  .app{height:auto;min-height:100%}
+  .topbar{flex-wrap:wrap;gap:10px}
+  .modes{order:3;width:100%;margin:0}
+  .tools{margin-left:auto}
+  .shellpill{display:none}
+  .workspace{grid-template-columns:minmax(0,1fr)}
+  .rail{order:-1;width:auto;flex-direction:row;padding:8px 12px}
+  .rail .mini{flex-direction:row}
+  .vtrack{height:10px;min-height:0;width:auto;flex:1}
+  .vfill{top:0;right:auto;height:auto;width:var(--p,0%)}
+  .rail.open{width:auto}
+  .view{height:auto}
+  .studio{grid-template-columns:minmax(0,1fr);height:auto}
+  .stage-area{order:1}
+  .pipeline{order:2}
+  .pipe-scroll{overflow:visible}
+  .well{height:min(64vw,62vh)}
+  .clipview .well{height:min(64vw,62vh)}
+  .scrub{grid-template-columns:minmax(0,1fr)}
+  .scrub-actions{justify-items:start;grid-auto-flow:column;align-items:center}
+  .scrollview,.clipview,.samplesview{height:auto;overflow:visible}
+  .final,.labgrid{grid-template-columns:minmax(0,1fr)}
+  .drop{grid-template-columns:minmax(0,1fr)}
+  .welcome{grid-template-columns:minmax(0,1fr)}
+  .wside{border-right:0;border-bottom:1px solid var(--line)}
+  .settings{grid-template-columns:minmax(0,1fr)}
+  .snav{grid-auto-flow:column;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line)}
+  .snav button{white-space:nowrap}
+  .pfgrid{grid-template-columns:minmax(0,1fr)}
+  .pfstats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .node{grid-template-columns:20px minmax(0,1fr) auto}
+  .node .idx,.node select{display:none}
+  .step{grid-template-columns:minmax(0,1fr);gap:6px}
+}
+</style>
+</head>
+<body>
+
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 3 5 14h6l-1 7 8-11h-6l1-7z"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></symbol>
+    <symbol id="i-stack" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="5" rx="1.5"/><rect x="4" y="11" width="16" height="5" rx="1.5"/><path d="M6 20h12"/></symbol>
+    <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/></symbol>
+    <symbol id="i-pip" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><rect x="12" y="11" width="7" height="6" rx="1"/></symbol>
+    <symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.2L4 16.8V20h3.2l5.3-5.3a4 4 0 0 0 5.2-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></symbol>
+    <symbol id="i-contrast" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></symbol>
+    <symbol id="i-expand" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor" stroke="none"/><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></symbol>
+    <symbol id="i-chev-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-chev-left" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></symbol>
+    <symbol id="i-chev-right" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></symbol>
+    <symbol id="i-film" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 4v16M17 4v16M3 8h4M3 12h4M3 16h4M17 8h4M17 12h4M17 16h4"/></symbol>
+    <symbol id="i-tape" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="8" cy="12" r="2.2"/><circle cx="16" cy="12" r="2.2"/><path d="M10.2 12h3.6M6 18l1.5-2.5h9L18 18"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18.5h2"/></symbol>
+    <symbol id="i-brush" viewBox="0 0 24 24"><path d="M19 3 9.5 12.5M14 4l6 6M4 20c3 0 5-1.5 5-4a2.5 2.5 0 0 0-5 0c0 1.5-.5 3-2 4z"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+    <symbol id="i-export" viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></symbol>
+    <symbol id="i-face" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9 10h.01M15 10h.01M8.8 14.5c1.7 1.6 4.7 1.6 6.4 0"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
+    <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M11 3l1.8 5.2L18 10l-5.2 1.8L11 17l-1.8-5.2L4 10l5.2-1.8z"/><path d="M19 14.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/></symbol>
+    <symbol id="i-grip" viewBox="0 0 24 24"><path d="M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01" stroke-width="3"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M6 6v12M18 6l-9 6 9 6z"/></symbol>
+    <symbol id="i-fwd" viewBox="0 0 24 24"><path d="M18 6v12M6 6l9 6-9 6z"/></symbol>
+    <symbol id="i-terminal" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9 3 3-3 3M12 15h5"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a1 1 0 0 1 1-1h9"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-split" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M12 5v14"/></symbol>
+    <symbol id="i-wipe" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M14 3v18"/><path d="M3 5h11v14H3z" fill="currentColor" opacity=".25" stroke="none"/></symbol>
+    <symbol id="i-swap" viewBox="0 0 24 24"><path d="M7 7h12l-3-3M17 17H5l3 3"/></symbol>
+  </defs>
+</svg>
+
+<div class="app" id="app">
+  <header class="topbar" data-tauri-drag-region>
+    <div class="brand" data-tauri-drag-region>
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <defs><clipPath id="lhL"><rect x="0" y="0" width="32" height="64"/></clipPath><clipPath id="lhR"><rect x="32" y="0" width="32" height="64"/></clipPath></defs>
+        <rect x="2" y="2" width="60" height="60" rx="15" fill="var(--raised)" stroke="var(--line-strong)"/>
+        <g clip-path="url(#lhL)" fill="var(--faint)"><path fill-rule="evenodd" d="M32 12a20 20 0 1 1 0 40 20 20 0 0 1 0-40zm0 15a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0-11a5 5 0 1 0 0 10 5 5 0 0 0 0-10zM18.6 25.6a5 5 0 1 0 9.5 3.1 5 5 0 0 0-9.5-3.1zm5.1 15.8a5 5 0 1 0 8.1 5.9 5 5 0 0 0-8.1-5.9z"/></g>
+        <g clip-path="url(#lhR)" fill="var(--accent)"><path fill-rule="evenodd" d="M32 12a20 20 0 1 1 0 40 20 20 0 0 1 0-40zm0 15a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0-11a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm13.4 9.6a5 5 0 1 0-9.5 3.1 5 5 0 0 0 9.5-3.1zm-5.1 15.8a5 5 0 1 0-8.1 5.9 5 5 0 0 0 8.1-5.9z"/></g>
+        <path d="M32 6v52" stroke="var(--fg)" stroke-width="2"/>
+      </svg>
+      <span class="wordmark">tapewake</span>
+    </div>
+    <div class="filechip" title="Current video"><svg class="i sm"><use href="#i-film"/></svg><span id="topFile">New restoration</span></div>
+    <nav class="modes" aria-label="Mode">
+      <button data-mode="quick" aria-pressed="false"><svg class="i sm"><use href="#i-bolt"/></svg>Quick Restore</button>
+      <button data-mode="studio" aria-pressed="true"><svg class="i sm"><use href="#i-sliders"/></svg>Studio</button>
+      <button data-mode="batch" aria-pressed="false"><svg class="i sm"><use href="#i-stack"/></svg>Batch</button>
+      <button data-mode="lab" aria-pressed="false"><svg class="i sm"><use href="#i-flask"/></svg>Lab</button>
+      <button data-mode="compact" aria-pressed="false"><svg class="i sm"><use href="#i-pip"/></svg>Compact</button>
+    </nav>
+    <div class="tools">
+      <button class="shellpill" data-action="about-shell" title="What this version does">Version 0.1</button>
+      <button class="iconbtn" data-action="tour" aria-label="Take the tour" title="Take the tour"><svg class="i"><use href="#i-info"/></svg></button>
+      <button class="iconbtn" data-action="open-trouble" aria-label="Troubleshoot" title="Troubleshoot"><svg class="i"><use href="#i-wrench"/></svg></button>
+      <button class="iconbtn" data-action="open-settings" aria-label="Settings" title="Settings (⌘,)"><svg class="i"><use href="#i-gear"/></svg></button>
+      <button class="iconbtn" data-action="theme-cycle" aria-label="Theme" title="Theme: follow system"><svg class="i" id="themeIcon"><use href="#i-contrast"/></svg></button>
+      <button class="iconbtn" data-action="app-fullscreen" aria-label="Full screen" title="Full screen"><svg class="i"><use href="#i-expand"/></svg></button>
+    </div>
+  </header>
+
+  <nav class="jobtabs" id="jobTabs" role="tablist" aria-label="Restorations"></nav>
+
+  <main class="workspace">
+    <!-- STUDIO -->
+    <section class="view" id="view-studio">
+      <div class="studio">
+        <aside class="panel pipeline" aria-label="Restoration settings">
+          <div class="pipe-scroll">
+            <div class="source">
+              <img id="srcThumb" alt="First frame of the video">
+              <div style="min-width:0">
+                <div class="row between"><span class="eyebrow">Source</span><span class="chip example" id="srcChip">Not started</span></div>
+                <h3 id="srcName">New restoration</h3>
+                <dl class="specs">
+                  <dt>Picture</dt><dd id="srcPic">720×480 · 4:3</dd>
+                  <dt>Rate</dt><dd id="srcRate">29.97i · TFF</dd>
+                  <dt>Length</dt><dd id="srcLen">00:42:17;12</dd>
+                  <dt>Audio</dt><dd id="srcAudio">PCM 48 kHz stereo</dd>
+                </dl>
+              </div>
+            </div>
+            <button class="btn small" data-action="choose-file" id="srcReplace"><svg class="i sm"><use href="#i-upload"/></svg>Replace video…</button>
+            <div class="row" id="liveLinks" hidden style="flex-wrap:wrap;gap:6px">
+              <button class="btn small" data-action="job-open" data-what="output"><svg class="i sm"><use href="#i-film"/></svg>Finished video</button>
+              <button class="btn small" data-action="job-open" data-what="compare"><svg class="i sm"><use href="#i-eye"/></svg>Before and after</button>
+              <button class="btn small ghost" data-action="job-open" data-what="samples">Samples folder</button>
+            </div>
+
+            <div class="ai on" id="aiBox">
+              <div class="row between">
+                <strong><svg class="i sm"><use href="#i-sparkle"/></svg>Enhance with AI</strong>
+                <button class="switch" role="switch" aria-checked="true" id="aiSwitch" aria-label="Enhance with AI"></button>
+              </div>
+              <p id="aiText">AI models rebuild lost detail and repair faces. They can invent small details that were never on the tape.</p>
+            </div>
+
+            <label class="field"><span>Preset</span>
+              <select id="preset">
+                <option>Home-video tape · Tested</option>
+                <option>Home-video tape · Balanced</option>
+                <option>Film transfer · Balanced</option>
+                <option>Early digital · Fast</option>
+                <option>Animation · Best</option>
+                <option>Custom</option>
+              </select>
+            </label>
+
+            <p class="locked-note" id="lockedNote" hidden>These are the settings this restoration is using. They stay fixed while it runs, so every piece matches.</p>
+            <div class="stages" id="stages"></div>
+          </div>
+          <div class="pipe-foot">
+            <div class="outline"><b id="inSpec">720×480 29.97i</b><svg class="i sm"><use href="#i-chev-right"/></svg><b id="outSpec">1440×1080 59.94p</b></div>
+            <div class="note" id="pipeNote">Time estimate appears after first-time setup measures this computer.</div>
+            <button class="btn primary block" data-action="restore" id="restoreBtn"><svg class="i sm"><use href="#i-play"/></svg>Restore video</button>
+            <button class="btn small ghost" data-action="queue" id="queueBtn"><svg class="i sm"><use href="#i-plus"/></svg>Add to batch queue</button>
+          </div>
+        </aside>
+
+        <div class="stage-area">
+          <div class="viewer-head">
+            <div class="tabs" role="tablist" aria-label="Preview">
+              <button role="tab" aria-selected="true" data-tab="frame"><svg class="i sm"><use href="#i-eye"/></svg>Frame preview</button>
+              <button role="tab" aria-selected="false" data-tab="clip"><svg class="i sm"><use href="#i-film"/></svg>Clip preview</button>
+              <button role="tab" aria-selected="false" data-tab="samples"><svg class="i sm"><use href="#i-stack"/></svg>Samples <span class="count" id="sampleCount">0</span></button>
+            </div>
+            <div class="viewer-tools" id="frameTools">
+              <div class="seg" data-group="compare" aria-label="Compare">
+                <button aria-pressed="true" data-v="side"><svg class="i sm"><use href="#i-split"/></svg>Side by side</button>
+                <button aria-pressed="false" data-v="wipe"><svg class="i sm"><use href="#i-wipe"/></svg>Wipe</button>
+                <button aria-pressed="false" data-v="toggle"><svg class="i sm"><use href="#i-swap"/></svg>Toggle</button>
+              </div>
+              <div class="seg" data-group="zoom" aria-label="Zoom">
+                <button aria-pressed="true" data-v="1">Fit</button>
+                <button aria-pressed="false" data-v="2">2×</button>
+                <button aria-pressed="false" data-v="4">4×</button>
+              </div>
+              <div class="seg" data-group="faces"><button aria-pressed="false" data-v="faces"><svg class="i sm"><use href="#i-face"/></svg>Faces</button></div>
+            </div>
+          </div>
+
+          <!-- frame tab -->
+          <div class="well" id="frameWell">
+            <div class="compare" id="compare"></div>
+          </div>
+          <!-- clip tab -->
+          <div class="clipview" id="clipView" hidden>
+            <div class="well">
+              <div class="compare">
+                <div class="pane"><div class="frame"><img id="clipOrig" alt="Original clip poster"></div><div class="tag"><span class="dot"></span>Original</div><button class="iconbtn onwell" data-action="lightbox" data-which="orig" aria-label="Full screen original"><svg class="i"><use href="#i-expand"/></svg></button></div>
+                <div class="pane"><div class="frame"><img id="clipRest" alt="Restored clip poster"></div><div class="tag rest"><span class="dot"></span>Restored</div><button class="iconbtn onwell" data-action="lightbox" data-which="rest" aria-label="Full screen restored"><svg class="i"><use href="#i-expand"/></svg></button></div>
+              </div>
+              <button class="playbtn" data-action="play-clip" aria-label="Play both clips"><svg class="i"><use href="#i-play"/></svg></button>
+              <span class="illus">Illustration</span>
+            </div>
+            <div class="panel clipcontrols">
+              <div class="field"><span>Length</span>
+                <div class="seg" data-group="cliplen">
+                  <button aria-pressed="false" data-v="5">5 s</button>
+                  <button aria-pressed="true" data-v="10">10 s</button>
+                  <button aria-pressed="false" data-v="15">15 s</button>
+                </div>
+              </div>
+              <div class="grow">
+                <div class="row between"><span class="muted" id="clipLabel">Ready to render 10 s from 00:12:04;18</span><span class="mono faint" id="clipPct"></span></div>
+                <div class="bar"><i id="clipBar"></i></div>
+              </div>
+              <button class="btn primary" data-action="render-clip"><svg class="i sm"><use href="#i-film"/></svg>Render preview clip</button>
+            </div>
+          </div>
+          <!-- samples tab -->
+          <div class="panel samplesview" id="samplesView" hidden>
+            <div class="samples" id="samples"></div>
+          </div>
+
+          <div class="panel scrub" id="scrub">
+            <div class="tcbox">
+              <button class="iconbtn" data-action="step" data-d="-1" aria-label="Previous frame"><svg class="i sm"><use href="#i-back"/></svg></button>
+              <div><div class="tc" id="tc">00:12:04;18</div><div class="tcsub">Drop-frame · 29.97</div></div>
+              <button class="iconbtn" data-action="step" data-d="1" aria-label="Next frame"><svg class="i sm"><use href="#i-fwd"/></svg></button>
+              <button class="btn primary small" data-action="player-play" id="livePlay" hidden><svg class="i sm"><use href="#i-play"/></svg>Play</button>
+            </div>
+            <div class="stripwrap">
+              <div class="cuts" id="cuts" title="Scene changes"></div>
+              <input type="range" class="wedseek" id="liveSeek" min="0" max="0" value="0" hidden aria-label="Position in the finished part of the tape" title="The whole finished part of the tape: drag to jump">
+              <div class="strip" id="strip" aria-label="Pick a frame"></div>
+            </div>
+            <div class="scrub-actions">
+              <button class="btn primary" data-action="preview-frame"><svg class="i sm"><use href="#i-eye"/></svg>Preview this frame</button>
+              <span class="note">One restored frame with the settings on the left</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUICK -->
+    <section class="view scrollview" id="view-quick" hidden>
+      <div class="quick">
+        <div class="qhero">
+          <div><h1>Quick Restore</h1><p>Choose a video and press Restore: tapewake handles deinterlacing, cleanup, upscaling, faces and sound with the tested settings.</p></div>
+          <button class="btn ghost" data-mode-link="studio"><svg class="i sm"><use href="#i-sliders"/></svg>Fine-tune in Studio</button>
+        </div>
+        <section class="panel step">
+          <div class="stepnum">1</div>
+          <div>
+            <h2>Choose the video</h2>
+            <p class="lead">Drop a file on the window or browse. MKV, AVI, MP4, MOV, MPG, VOB and DV all work.</p>
+            <div class="drop" id="drop">
+              <img id="qThumb" alt="Video frame">
+              <div style="min-width:0;display:grid;gap:4px">
+                <div class="fname" id="qName">New restoration</div>
+                <div class="muted mono" style="font-size:var(--t-12)" id="qSpec">No video chosen yet</div>
+              </div>
+              <button class="btn" data-action="choose-file"><svg class="i sm"><use href="#i-folder"/></svg>Choose video…</button>
+            </div>
+          </div>
+        </section>
+        <section class="panel step">
+          <div class="stepnum">2</div>
+          <div>
+            <h2>What kind of footage is it?</h2>
+            <p class="lead">Version 0.1 restores home-video tapes; the other kinds come later.</p>
+            <div class="cards" role="radiogroup" aria-label="Footage type" data-radio="kind">
+              <button class="choice" role="radio" aria-checked="true"><span class="ct"><svg class="i"><use href="#i-tape"/></svg>Home-video tape</span><small>VHS, VHS-C, Hi8, Video8, MiniDV</small></button>
+              <button class="choice" role="radio" aria-checked="false" disabled><span class="ct"><svg class="i"><use href="#i-film"/></svg>Film transfer</span><small>8 mm, Super 8, 16 mm scans</small><span class="meta">Later version</span></button>
+              <button class="choice" role="radio" aria-checked="false" disabled><span class="ct"><svg class="i"><use href="#i-phone"/></svg>Early digital</span><small>Old phones, webcams, DVD rips</small><span class="meta">Later version</span></button>
+              <button class="choice" role="radio" aria-checked="false" disabled><span class="ct"><svg class="i"><use href="#i-brush"/></svg>Animation</span><small>Cartoons and anime from tape or DVD</small><span class="meta">Later version</span></button>
+            </div>
+            <div class="detect" id="qDetect" hidden><span class="chip accent"><svg class="i sm"><use href="#i-info"/></svg>Detected</span><span id="qDetectText"></span></div>
+          </div>
+        </section>
+        <section class="panel step">
+          <div class="stepnum">3</div>
+          <div>
+            <h2>How much time should it spend?</h2>
+            <p class="lead">Version 0.1 uses the tested settings, proven on a full two-hour tape.</p>
+            <div class="cards" role="radiogroup" aria-label="Quality" data-radio="quality">
+              <button class="choice" role="radio" aria-checked="false" disabled><span class="ct">Fast</span><small>Classic cleanup and a light AI upscale. Good for a first look.</small><span class="meta">Later version</span></button>
+              <button class="choice" role="radio" aria-checked="true"><span class="ct">Tested</span><small>QTGMC deinterlacing, AI upscale to 1280×960, careful face restoration, restored sound. Thorough, so it takes days for a long tape.</small><span class="meta">QTGMC · Real-ESRGAN · DicFace</span></button>
+              <button class="choice" role="radio" aria-checked="false" disabled><span class="ct">Best</span><small>Slowest. A generative model rebuilds detail; faces may change slightly. Needs a strong GPU.</small><span class="meta">Later version</span></button>
+            </div>
+            <div class="toggles">
+              <div class="toggle"><div><b>Restore faces</b><small>Close, clearly seen faces only; keeps likeness</small></div><button class="switch" role="switch" aria-checked="true" aria-label="Restore faces" disabled></button></div>
+              <div class="toggle"><div><b>Smooth motion</b><small>One frame per field: 59.94 fps</small></div><button class="switch" role="switch" aria-checked="true" aria-label="Smooth motion" disabled></button></div>
+              <div class="toggle"><div><b>Clean up audio</b><small>Hum, hiss and clearer voices; the original sound is kept as a second track</small></div><button class="switch" role="switch" aria-checked="true" aria-label="Clean up audio" disabled></button></div>
+            </div>
+          </div>
+        </section>
+        <section class="panel step">
+          <div class="stepnum">4</div>
+          <div>
+            <h2>Start</h2>
+            <p class="lead">Progress shows on the right. Pause any time; finished parts are kept.</p>
+            <div class="final">
+              <div class="mini-compare">
+                <div class="pane"><img id="qOrig" alt="Original frame"><div class="tag"><span class="dot"></span>Original</div></div>
+                <div class="pane"><img id="qRest" alt="Restored frame"><div class="tag rest"><span class="dot"></span>Restored</div></div>
+              </div>
+              <div style="display:grid;gap:14px">
+                <div class="summary">
+                  <div><span>Output</span><b>1280×960 · MKV (H.264), restored + original sound</b></div>
+                  <div><span>Save to</span><b>Next to the original video</b></div>
+                  <div><span>Time</span><b>About 2–3 days per hour of tape (8 GB graphics card)</b></div>
+                </div>
+                                <button class="btn primary" data-action="restore"><svg class="i sm"><use href="#i-play"/></svg>Restore video</button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <!-- BATCH -->
+    <section class="view scrollview" id="view-batch" hidden>
+      <div class="batchgrid">
+        <div class="panel">
+          <div class="toolbar">
+            <button class="btn" data-action="choose-file"><svg class="i sm"><use href="#i-plus"/></svg>Add videos…</button>
+            <button class="btn" data-action="stub" data-msg="Choosing a folder here comes in a later version."><svg class="i sm"><use href="#i-folder"/></svg>Add folder…</button>
+            <div class="watch"><button class="switch" role="switch" aria-checked="false" aria-label="Watch a folder"></button><span class="muted">Watch folder</span><input type="text" id="watchPath" value="~/Movies/To restore" aria-label="Watched folder"></div>
+            <span class="spacer"></span>
+            <label class="row"><span class="muted" style="white-space:nowrap">When the queue finishes</span>
+              <select id="whenDone" style="width:auto"><option>Notify me</option><option>Do nothing</option><option>Put the computer to sleep</option></select>
+            </label>
+            <button class="btn primary" data-action="restore"><svg class="i sm"><use href="#i-play"/></svg>Start queue</button>
+          </div>
+          <div class="tablewrap">
+            <table>
+              <thead><tr><th style="width:32px"></th><th>Video</th><th>Length</th><th>Kind</th><th>Preset</th><th>Status</th><th style="width:140px">Progress</th><th style="width:44px"></th></tr></thead>
+              <tbody id="queueBody"></tbody>
+            </table>
+          </div>
+          <div class="batchfoot"><span><span class="chip example">Example queue</span>&nbsp; 5 videos · 2 h 50 min of footage</span><span>Each video saves a checkpoint, so a stopped queue resumes where it left off.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LAB -->
+    <section class="view scrollview" id="view-lab" hidden>
+      <div class="labgrid">
+        <div class="panel">
+          <div class="labhead">
+            <div><h2 style="font-size:var(--t-15)">Pipeline</h2><span class="note">The tested pipeline, in the order the engine runs it. Changing stages comes in a later version.</span></div>
+            <label class="row"><span class="muted" style="white-space:nowrap">Compute</span>
+              <select id="backend" style="width:auto" disabled><option>NVIDIA CUDA (tested)</option></select>
+            </label>
+          </div>
+          <ol class="nodes" id="nodes"></ol>
+          <div style="padding:0 10px 12px;display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn small" data-action="stub" data-msg="Adding stages comes in a later version."><svg class="i sm"><use href="#i-plus"/></svg>Add stage</button>
+            <button class="btn small" data-action="stub" data-msg="Importing models comes in a later version."><svg class="i sm"><use href="#i-upload"/></svg>Import model…</button>
+          </div>
+        </div>
+        <div class="panel" style="min-width:0">
+          <div class="labhead">
+            <div class="tabs" role="tablist">
+              <button role="tab" aria-selected="true" data-labtab="cmd">Command plan</button>
+              <button role="tab" aria-selected="false" data-labtab="scenes">Scene overrides</button>
+            </div>
+            <button class="btn small" data-action="copy-cmd"><svg class="i sm"><use href="#i-copy"/></svg>Copy</button>
+          </div>
+          <div id="lab-cmd">
+<pre class="code" id="cmd"></pre>
+          </div>
+          <div id="lab-scenes" hidden>
+            <div class="tablewrap">
+              <table style="min-width:520px">
+                <thead><tr><th>Scene</th><th>From</th><th>To</th><th>Override</th></tr></thead>
+                <tbody>
+                  <tr><td>Scene 3</td><td class="mono">00:04:12;08</td><td class="mono">00:06:40;02</td><td><select aria-label="Override for scene 3"><option>Denoise: strong (low light)</option><option>None</option></select></td></tr>
+                  <tr><td>Scene 7</td><td class="mono">00:12:01;00</td><td class="mono">00:14:55;20</td><td><select aria-label="Override for scene 7"><option>Faces: fidelity 0.8</option><option>None</option></select></td></tr>
+                  <tr><td>Scene 12</td><td class="mono">00:31:18;14</td><td class="mono">00:31:42;06</td><td><select aria-label="Override for scene 12"><option>Skip (tape damage)</option><option>None</option></select></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="note" style="padding:0 14px 14px"><span class="chip example">Example</span> Scene changes are found automatically; add an override to any of them.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPACT -->
+    <section class="view" id="view-compact" hidden>
+      <div class="compactwrap">
+        <div class="panel miniwin">
+          <div class="mhead">
+            <div class="row"><svg class="i sm" style="color:var(--accent)"><use href="#i-pip"/></svg><b>tapewake</b><span class="faint" style="font-size:var(--t-12)">compact</span></div>
+            <button class="iconbtn" data-mode-link="studio" aria-label="Open the full window" title="Open the full window"><svg class="i sm"><use href="#i-expand"/></svg></button>
+          </div>
+          <div class="mbody">
+            <div class="latest"><img id="cmpThumb" alt="Latest restored frame"></div>
+            <div class="row between"><span class="jobfile" id="cmpFile">New restoration</span><span class="mono" id="cmpPct">0%</span></div>
+            <div class="bar"><i id="cmpBar"></i></div>
+            <div class="row between"><span class="muted" id="cmpStage" style="font-size:var(--t-12)">Not started</span><span class="mono faint" id="cmpEta" style="font-size:var(--t-12)"></span></div>
+            <div class="row"><button class="btn small" data-action="toggle-pause" id="cmpPause"><svg class="i sm"><use href="#i-play"/></svg>Start</button></div>
+          </div>
+        </div>
+        <p class="note" style="text-align:center;max-width:44ch" >Compact shrinks tapewake to this small window. Restorations keep running, even when tapewake is closed.</p>
+      </div>
+    </section>
+
+    <!-- PROGRESS RAIL -->
+    <aside class="panel rail" id="rail" aria-label="Progress">
+      <div class="mini" id="railMini">
+        <button class="iconbtn" data-action="rail-toggle" aria-label="Show progress details" title="Show progress details"><svg class="i sm"><use href="#i-chev-left"/></svg></button>
+        <span class="statusdot" id="railDot"></span>
+        <button class="vtrack" data-action="rail-toggle" aria-label="Progress"><span class="vfill" id="railFill"></span></button>
+        <span class="vpct" id="railPct">0%</span>
+        <button class="iconbtn" data-action="progress-full" aria-label="Full-screen progress" title="Full-screen progress"><svg class="i sm"><use href="#i-expand"/></svg></button>
+      </div>
+      <div class="full" id="railFull" hidden>
+        <div class="railhead">
+          <h2>Progress</h2>
+          <div class="row" style="gap:2px">
+            <button class="iconbtn" data-action="progress-full" aria-label="Full-screen progress" title="Full screen"><svg class="i sm"><use href="#i-expand"/></svg></button>
+            <button class="iconbtn" data-action="rail-toggle" aria-label="Collapse to a bar" title="Collapse to a bar"><svg class="i sm"><use href="#i-chev-right"/></svg></button>
+          </div>
+        </div>
+        <div id="railBody"></div>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<input type="file" id="fileInput" accept="video/*,.avi,.mkv,.mpg,.mpeg,.dv,.vob,.mts,.m2ts" hidden>
+
+<!-- Launch screen -->
+<div class="overlay" id="welcome" hidden>
+  <div class="welcome" role="dialog" aria-modal="true" aria-labelledby="wTitle">
+    <div class="wside">
+      <div style="display:grid;gap:14px">
+        <span class="wordmark">tapewake</span>
+        <p>Restores old video on your own computer: tapes, film transfers, early digital and animation.</p>
+      </div>
+      <div style="display:grid;gap:8px">
+        <span class="eyebrow">Runs locally</span>
+        <p style="font-size:var(--t-12)">Your videos never leave this computer. Models download once during setup.</p>
+      </div>
+    </div>
+    <div class="wmain">
+      <div><h2 id="wTitle">How do you want to work?</h2><p class="muted">You can switch any time from the top bar.</p></div>
+      <div class="modecards" role="radiogroup" aria-label="Mode" data-radio="wmode">
+        <button class="choice" role="radio" aria-checked="false" data-v="quick"><span class="ct"><svg class="i"><use href="#i-bolt"/></svg>Quick Restore</span><small>Drop a video, answer three questions, press Restore.</small></button>
+        <button class="choice" role="radio" aria-checked="true" data-v="studio"><span class="ct"><svg class="i"><use href="#i-sliders"/></svg>Studio</span><small>Every stage and setting, with live side-by-side compare.</small></button>
+        <button class="choice" role="radio" aria-checked="false" data-v="batch"><span class="ct"><svg class="i"><use href="#i-stack"/></svg>Batch</span><small>Queue a box of tapes and let it run overnight.</small></button>
+        <button class="choice" role="radio" aria-checked="false" data-v="lab"><span class="ct"><svg class="i"><use href="#i-flask"/></svg>Lab</span><small>Reorder the pipeline and bring your own models.</small></button>
+        <button class="choice" role="radio" aria-checked="false" data-v="compact"><span class="ct"><svg class="i"><use href="#i-pip"/></svg>Compact</span><small>A small window that stays out of the way.</small></button>
+      </div>
+      <div class="wopts">
+        <div class="field"><span>Performance</span>
+          <div class="seg" data-group="perf"><button aria-pressed="false" data-v="quiet">Quiet</button><button aria-pressed="true" data-v="balanced">Balanced</button><button aria-pressed="false" data-v="max">Maximum</button></div>
+        </div>
+        <div class="field"><span>Look</span>
+          <div class="seg" data-group="theme"><button aria-pressed="true" data-v="system">System</button><button aria-pressed="false" data-v="dark">Dark</button><button aria-pressed="false" data-v="light">Light</button></div>
+        </div>
+      </div>
+      <div class="wfoot">
+        <label><input type="checkbox" id="askEvery"> Show this at every launch</label>
+        <div class="row">
+          <button class="btn" data-action="open-setup"><svg class="i sm"><use href="#i-cpu"/></svg>Run first-time setup</button>
+          <button class="btn primary" data-action="welcome-go">Start</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- First-time setup -->
+<div class="overlay" id="setup" hidden>
+  <div class="modal narrow" role="dialog" aria-modal="true" aria-labelledby="setupTitle">
+    <div class="mhd"><h2 id="setupTitle">First-time setup</h2><button class="iconbtn" data-action="close" aria-label="Close"><svg class="i"><use href="#i-x"/></svg></button></div>
+    <div class="mbd" style="display:grid;gap:16px">
+      <p class="muted">tapewake checks this computer, then offers only the downloads that suit it. Nothing downloads without your OK.</p>
+      <ul class="checks" id="checks"></ul>
+      <div style="display:grid;gap:8px">
+        <span class="eyebrow">Optional downloads</span>
+        <label class="toggle"><div><b data-win="Graphics card pack">Apple Silicon pack</b><small data-win="NVIDIA, AMD or Intel GPU acceleration · recommended for this PC">Metal-accelerated models · recommended for this Mac</small></div><input type="checkbox" checked></label>
+        <label class="toggle"><div><b>Best-quality pack (SeedVR2 3B)</b><small>Large download · needs a strong GPU</small></div><input type="checkbox"></label>
+        <label class="toggle"><div><b>Better deinterlacing (QTGMC)</b><small>Slower, cleaner edges on tape footage</small></div><input type="checkbox"></label>
+      </div>
+    </div>
+    <div class="mft"><span class="note left">Downloads from here come in a later version.</span><button class="btn" data-action="close">Later</button><button class="btn primary" data-action="run-setup" id="runSetup">Run checks</button></div>
+  </div>
+</div>
+
+<!-- Settings -->
+<div class="overlay" id="settings" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="setTitle" style="height:min(720px,100%)">
+    <div class="mhd"><h2 id="setTitle">Settings</h2><button class="iconbtn" data-action="close" aria-label="Close"><svg class="i"><use href="#i-x"/></svg></button></div>
+    <div class="settings" style="min-height:0">
+      <nav class="snav" role="tablist" aria-label="Settings sections">
+        <button role="tab" aria-selected="true" data-s="general">General</button>
+        <button role="tab" aria-selected="false" data-s="performance">Performance</button>
+        <button role="tab" aria-selected="false" data-s="appearance">Appearance</button>
+        <button role="tab" aria-selected="false" data-s="models">Engines and models</button>
+        <button role="tab" aria-selected="false" data-s="storage">Storage and samples</button>
+        <button role="tab" aria-selected="false" data-s="privacy">Privacy and updates</button>
+        <button role="tab" aria-selected="false" data-s="about">About</button>
+      </nav>
+      <div class="spane" data-sp="general">
+        <div class="srow"><div class="lbl"><b>At launch</b><small>Which screen opens first</small></div><select id="sLaunch" style="width:auto"><option>Ask me which mode</option><option selected>Open the last mode I used</option><option>Always open Studio</option></select></div>
+        <div class="srow"><div class="lbl"><b>Closing the window</b><small data-win="Rendering carries on from the system tray">Rendering carries on from the menu bar</small></div><select id="sClose" style="width:auto"><option selected>Keep restoring in the background</option><option>Pause and quit</option></select></div>
+        <div class="srow"><div class="lbl"><b>Quitting tapewake</b><small>Saves a checkpoint and pauses. Resuming checks finished parts for damage first.</small></div><span class="chip good">Always on</span></div>
+        <div class="srow"><div class="lbl"><b>Save restored videos to</b><small>New files never overwrite the original</small></div><div class="row"><span class="mono muted" data-win="Videos\tapewake">~/Movies/tapewake</span><button class="btn small" data-action="stub" data-msg="Choosing a folder here comes in a later version.">Change…</button></div></div>
+      </div>
+      <div class="spane" data-sp="performance" hidden>
+        <div class="srow"><div class="lbl"><b>Performance profile</b><small>Quiet keeps fans down; Maximum uses the whole GPU</small></div><div class="seg" data-group="perf"><button aria-pressed="false" data-v="quiet">Quiet</button><button aria-pressed="true" data-v="balanced">Balanced</button><button aria-pressed="false" data-v="max">Maximum</button></div></div>
+        <div class="srow"><div class="lbl"><b>Graphics processor</b><small>Found during first-time setup</small></div><select id="sGpu" style="width:auto"><option>Auto</option><option>CPU only</option></select></div>
+        <div class="srow"><div class="lbl"><b>Keep the computer awake while restoring</b><small>Lets the display sleep, not the machine</small></div><button class="switch" role="switch" aria-checked="true" aria-label="Keep awake"></button></div>
+        <div class="srow"><div class="lbl"><b>Pause on battery</b><small>Resumes when you plug in</small></div><button class="switch" role="switch" aria-checked="true" aria-label="Pause on battery"></button></div>
+        <div class="srow stack"><div class="fieldtop"><label for="sVram"><b style="color:var(--fg);font-size:var(--t-13)">GPU memory limit</b></label><output id="sVramOut">75%</output></div><input type="range" id="sVram" min="25" max="100" step="5" value="75" data-suffix="%"></div>
+      </div>
+      <div class="spane" data-sp="appearance" hidden>
+        <div class="srow"><div class="lbl"><b>Theme</b></div><div class="seg" data-group="theme"><button aria-pressed="true" data-v="system">System</button><button aria-pressed="false" data-v="dark">Dark</button><button aria-pressed="false" data-v="light">Light</button></div></div>
+        <div class="srow"><div class="lbl"><b>Text size</b></div><div class="seg" data-group="scale"><button aria-pressed="false" data-v="0.92">Small</button><button aria-pressed="true" data-v="1">Default</button><button aria-pressed="false" data-v="1.12">Large</button></div></div>
+        <div class="srow"><div class="lbl"><b>Higher contrast</b><small>Stronger borders and text</small></div><button class="switch" role="switch" aria-checked="false" id="sHc" aria-label="Higher contrast"></button></div>
+        <div class="srow"><div class="lbl"><b>Reduce motion</b></div><button class="switch" role="switch" aria-checked="false" id="sRm" aria-label="Reduce motion"></button></div>
+      </div>
+      <div class="spane" data-sp="models" hidden>
+        <p class="muted">Every engine is free and open source. Included ones ship with the app; the rest download on request.</p>
+        <div class="models" id="models"></div>
+      </div>
+      <div class="spane" data-sp="storage" hidden>
+        <div class="srow"><div class="lbl"><b>Preview frames kept</b><small>When full, the oldest is deleted to make room</small></div><span class="mono">10</span></div>
+        <div class="srow"><div class="lbl"><b>Preview clips kept</b><small>When full, the oldest is deleted to make room</small></div><span class="mono">3</span></div>
+        <div class="srow"><div class="lbl"><b>Samples</b><small>Export copies before they rotate out</small></div><div class="row"><button class="btn small" data-action="export-all"><svg class="i sm"><use href="#i-export"/></svg>Export all</button><button class="btn small" data-action="clear-samples"><svg class="i sm"><use href="#i-trash"/></svg>Clear</button></div></div>
+        <div class="srow"><div class="lbl"><b>Work folder</b><small>Checkpoints for paused jobs live here</small></div><span class="mono muted" data-win="%LOCALAPPDATA%\tapewake\work">~/Library/Caches/tapewake</span></div>
+      </div>
+      <div class="spane" data-sp="privacy" hidden>
+        <div class="srow"><div class="lbl"><b>Work offline</b><small>Blocks update checks and model downloads</small></div><button class="switch" role="switch" aria-checked="false" aria-label="Work offline"></button></div>
+        <div class="srow"><div class="lbl"><b>Send crash reports</b><small>Off unless you turn it on. You see each report before it goes.</small></div><button class="switch" role="switch" aria-checked="false" aria-label="Send crash reports"></button></div>
+        <div class="srow"><div class="lbl"><b>Check for updates automatically</b></div><button class="switch" role="switch" aria-checked="true" aria-label="Check for updates"></button></div>
+      </div>
+      <div class="spane" data-sp="about" hidden>
+        <div class="row" style="gap:14px"><span class="wordmark" style="font-size:34px">tapewake</span><span class="chip">0.1.0</span></div>
+        <p class="muted">Restores old video on your own computer. Version 0.1 restores home-video tapes with the tested settings, follows each restoration live and plays the finished parts. Editable settings, single-frame previews and preview clips come next.</p>
+        <div class="row" style="flex-wrap:wrap"><button class="btn small" data-action="open-welcome">Show the launch screen</button><button class="btn small" data-action="tour">Take the tour</button><button class="btn small" data-action="open-setup">Run first-time setup again</button><button class="btn small" data-action="stub" data-msg="The third-party licence list appears here: FFmpeg, Real-ESRGAN, RIFE, GFPGAN and others.">Third-party licences</button></div>
+      </div>
+    </div>
+    <div class="mft"><span class="note left">Appearance settings apply now. The other settings take effect in a later version.</span><button class="btn primary" data-action="close">Done</button></div>
+  </div>
+</div>
+
+<!-- Troubleshoot -->
+<div class="overlay" id="trouble" hidden>
+  <div class="modal narrow" role="dialog" aria-modal="true" aria-labelledby="trTitle">
+    <div class="mhd"><h2 id="trTitle">Troubleshoot</h2><button class="iconbtn" data-action="close" aria-label="Close"><svg class="i"><use href="#i-x"/></svg></button></div>
+    <div class="mbd" style="display:grid;gap:16px">
+      <p class="muted">Each restoration writes a log, <span class="mono">run.log</span>, in its work folder. When something goes wrong, its last lines say which step stopped and why.</p>
+      <ol class="steps-list">
+        <li><b>Stopped or paused?</b> Press Resume: finished pieces are kept, so it carries on where it stopped.</li>
+        <li><b>Out of graphics memory?</b> Close other programs that use the graphics card, then pause and resume.</li>
+        <li><b>A tool missing?</b> Run the setup checks again.</li>
+      </ol>
+    </div>
+    <div class="mft"><button class="btn primary" data-action="open-log"><svg class="i sm"><use href="#i-terminal"/></svg>Open this job's log</button></div>
+  </div>
+</div>
+
+<!-- Image full screen -->
+<div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Full-screen image">
+  <div class="lbhead">
+    <div class="tag" id="lbTag"><span class="dot"></span>Original</div>
+    <div class="row">
+      <button class="btn small" data-action="lb-swap" style="background:var(--well-chip);color:var(--well-fg);border-color:rgba(255,255,255,.2)"><svg class="i sm"><use href="#i-swap"/></svg>Switch image</button>
+      <button class="iconbtn onwell" data-action="close" aria-label="Close full screen"><svg class="i"><use href="#i-x"/></svg></button>
+    </div>
+  </div>
+  <div class="lbbody"><div class="frame"><img id="lbImg" alt=""></div></div>
+</div>
+
+<!-- Full-screen progress -->
+<div class="pfull" id="pfull" hidden role="dialog" aria-modal="true" aria-label="Restoration progress">
+  <div class="row between">
+    <div class="row"><span class="wordmark" style="font-size:22px">tapewake</span><span class="jobfile muted" id="pfFile">New restoration</span></div>
+    <button class="btn" data-action="close"><svg class="i sm"><use href="#i-x"/></svg>Exit full screen</button>
+  </div>
+  <div class="pfgrid">
+    <div>
+      <div class="pfpct" id="pfPct">0%</div>
+      <div class="pfstage" id="pfStage">Not started</div>
+      <div class="segbar" id="pfSeg"></div>
+      <div class="seglabels" id="pfSegLabels"></div>
+      <div class="pfstats" id="pfStats"></div>
+    </div>
+    <div class="mini-compare" style="border-radius:14px">
+      <div class="pane"><img id="pfOrig" alt="Latest original frame"><div class="tag"><span class="dot"></span>Original</div></div>
+      <div class="pane"><img id="pfRest" alt="Latest restored frame"><div class="tag rest"><span class="dot"></span>Restored</div></div>
+    </div>
+  </div>
+  <div class="row" style="justify-content:center"><button class="btn" data-action="toggle-pause" id="pfPause"><svg class="i sm"><use href="#i-pause"/></svg>Pause</button><button class="btn ghost" data-action="cancel-job" id="pfCancel">Cancel</button></div>
+</div>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script>
+(() => {
+  const $ = (s, el = document) => el.querySelector(s);
+  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem('tapewake.' + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem('tapewake.' + k, JSON.stringify(v)); } catch (e) {} }
+  };
+  const root = document.documentElement;
+  const isTauri = !!window.__TAURI_INTERNALS__;
+  if (isTauri && /Mac/i.test(navigator.userAgent)) root.classList.add('tauri-mac');
+  const icon = (id, cls = 'i sm') => `<svg class="${cls}"><use href="#${id}"/></svg>`;
+  const isWin = /Windows/i.test(navigator.userAgent);
+  const TRAY = isWin ? 'system tray' : 'menu bar';
+  const GPU = isWin ? 'GPU (DirectML)' : 'Apple GPU';
+  if (isWin) $$('[data-win]').forEach(el => { el.textContent = el.dataset.win; });
+
+  /* ---------- Toasts ---------- */
+  function toast(msg, ic = 'i-info') {
+    const t = document.createElement('div');
+    t.className = 'toast';
+    t.innerHTML = icon(ic) + '<span></span>';
+    t.querySelector('span').textContent = msg;
+    $('#toasts').appendChild(t);
+    setTimeout(() => t.remove(), 4200);
+  }
+
+  /* ---------- Placeholder pictures (drawn in code) ---------- */
+  const FW = 960, FH = 720;
+  function rng(seed) { let s = seed >>> 0; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296); }
+  function rr(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); ctx.fill(); }
+  function circle(ctx, x, y, r) { ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); }
+  const figures = t => ({ ax: .52 + .02 * t, cx: .66 + .04 * t });
+  function drawScene(ctx, W, H, t) {
+    let g = ctx.createLinearGradient(0, 0, 0, H * .64);
+    g.addColorStop(0, '#5d7fb3'); g.addColorStop(.5, '#c9a3a0'); g.addColorStop(.82, '#efbb86'); g.addColorStop(1, '#f6d29b');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    const sx = W * (.8 - .04 * t), sy = H * .5;
+    g = ctx.createRadialGradient(sx, sy, 0, sx, sy, W * .24);
+    g.addColorStop(0, 'rgba(255,247,218,1)'); g.addColorStop(.12, 'rgba(255,233,182,.95)'); g.addColorStop(.42, 'rgba(255,205,140,.35)'); g.addColorStop(1, 'rgba(255,190,130,0)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#9b8f86'; ctx.beginPath(); ctx.moveTo(0, H * .64);
+    for (let x = 0; x <= W; x += W / 48) ctx.lineTo(x, H * (.555 - .03 * Math.sin(x / W * 5.2 + 1) - .014 * Math.sin(x / W * 13)));
+    ctx.lineTo(W, H * .64); ctx.fill();
+    ctx.fillStyle = '#3f5136';
+    for (let i = 0; i < 28; i++) { const x = i / 27 * W, r = W * (.032 + .02 * ((i * 37) % 7) / 7); ctx.beginPath(); ctx.ellipse(x, H * .6, r * 1.1, r * 1.55, 0, 0, Math.PI * 2); ctx.fill(); }
+    ctx.fillRect(0, H * .6, W, H * .04);
+    g = ctx.createLinearGradient(0, H * .62, 0, H); g.addColorStop(0, '#7c9a45'); g.addColorStop(1, '#46682a');
+    ctx.fillStyle = g; ctx.fillRect(0, H * .62, W, H * .38);
+    ctx.fillStyle = 'rgba(255,255,255,.045)'; for (let i = 0; i < 6; i++) ctx.fillRect(0, H * (.66 + i * .06), W, H * .024);
+    // bunting
+    const y0 = H * .1, y1 = H * .08, sag = H * .07;
+    ctx.strokeStyle = '#f3efe6'; ctx.lineWidth = Math.max(1, W * .002);
+    ctx.beginPath(); ctx.moveTo(0, y0); ctx.quadraticCurveTo(W / 2, y0 + sag * 2, W, y1); ctx.stroke();
+    const cols = ['#d8463b', '#f2b33d', '#3f8fd1', '#4fae5a', '#f3efe6'];
+    for (let i = 0; i < 14; i++) { const u = (i + .5) / 14, x = u * W, y = (1 - u) * (1 - u) * y0 + 2 * (1 - u) * u * (y0 + sag * 2) + u * u * y1; ctx.fillStyle = cols[i % 5]; ctx.beginPath(); ctx.moveTo(x - W * .022, y); ctx.lineTo(x + W * .022, y); ctx.lineTo(x, y + H * .07); ctx.closePath(); ctx.fill(); }
+    // table and cake
+    const tx = W * .06, tw = W * .34, ty = H * .7;
+    ctx.fillStyle = '#6b4a2f'; ctx.fillRect(tx + W * .02, ty + H * .04, W * .015, H * .15); ctx.fillRect(tx + tw - W * .035, ty + H * .04, W * .015, H * .15);
+    ctx.fillStyle = '#ece6d8'; ctx.fillRect(tx, ty, tw, H * .045);
+    ctx.fillStyle = '#d65a4f'; for (let i = 0; i < 8; i++) ctx.fillRect(tx + i * tw / 8, ty, tw / 16, H * .045);
+    ctx.fillStyle = '#f7f1e6'; ctx.fillRect(tx + tw * .4, ty - H * .065, tw * .22, H * .065);
+    ctx.fillStyle = '#ef9fb2'; ctx.fillRect(tx + tw * .4, ty - H * .07, tw * .22, H * .016);
+    for (let i = 0; i < 3; i++) { const cx = tx + tw * (.45 + i * .06); ctx.fillStyle = '#7fb6e6'; ctx.fillRect(cx, ty - H * .1, W * .004, H * .03); ctx.fillStyle = '#ffd36b'; circle(ctx, cx + W * .002, ty - H * .106, W * .004); }
+    // people
+    const f = figures(t), ax = W * f.ax, cx = W * f.cx;
+    ctx.fillStyle = '#2e3442'; ctx.fillRect(ax - W * .03, H * .76, W * .024, H * .17); ctx.fillRect(ax + W * .006, H * .76, W * .024, H * .17);
+    ctx.fillStyle = '#3a6db3'; rr(ctx, ax - W * .05, H * .47, W * .1, H * .31, W * .03);
+    ctx.fillStyle = '#d9a27c'; ctx.fillRect(ax - W * .01, H * .45, W * .02, H * .03); circle(ctx, ax, H * .425, W * .034);
+    ctx.fillStyle = '#3b2a20'; ctx.beginPath(); ctx.arc(ax, H * .418, W * .036, Math.PI * 1.02, Math.PI * 1.98); ctx.fill();
+    ctx.fillStyle = '#2f3a4f'; ctx.fillRect(cx - W * .022, H * .77, W * .018, H * .12); ctx.fillRect(cx + W * .004, H * .77, W * .018, H * .12);
+    ctx.fillStyle = '#e05547'; rr(ctx, cx - W * .035, H * .62, W * .07, H * .17, W * .02);
+    ctx.fillStyle = '#e4b08b'; circle(ctx, cx, H * .585, W * .027);
+    ctx.fillStyle = '#6a4426'; ctx.beginPath(); ctx.arc(cx, H * .579, W * .029, Math.PI * 1.02, Math.PI * 1.98); ctx.fill();
+    const hx = cx + W * .03, hy = H * .66, balls = [[.07, .3, '#e8443a'], [.11, .34, '#f5c242'], [.045, .37, '#4a9be0']];
+    ctx.strokeStyle = 'rgba(255,255,255,.75)'; ctx.lineWidth = Math.max(1, W * .0015);
+    balls.forEach(([dx, y]) => { ctx.beginPath(); ctx.moveTo(hx, hy); ctx.lineTo(cx + W * dx, H * y + H * .045); ctx.stroke(); });
+    balls.forEach(([dx, y, c]) => { ctx.fillStyle = c; ctx.beginPath(); ctx.ellipse(cx + W * dx, H * y, W * .03, H * .05, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.beginPath(); ctx.ellipse(cx + W * dx - W * .009, H * y - H * .015, W * .007, H * .012, -.5, 0, Math.PI * 2); ctx.fill(); });
+    // camcorder date stamp
+    ctx.font = `600 ${Math.round(H * .046)}px ui-monospace, Menlo, monospace`;
+    ctx.textAlign = 'right'; ctx.fillStyle = 'rgba(0,0,0,.45)';
+    ctx.fillText('JUN 14 1996', W * .945 + 2, H * .88 + 2); ctx.fillText('4:32 PM', W * .945 + 2, H * .94 + 2);
+    ctx.fillStyle = '#ffb547'; ctx.fillText('JUN 14 1996', W * .945, H * .88); ctx.fillText('4:32 PM', W * .945, H * .94);
+  }
+  function faceBoxes(t) {
+    if (isLive()) return [];
+    const f = figures(t), k = 4 / 3;
+    const box = (x, y, r, label) => ({ x: x - r * 1.6, y: y - r * k * 1.7, w: r * 3.2, h: r * k * 3.4, label });
+    return [box(f.ax, .425, .034, 'Face 1 · 0.98'), box(f.cx, .585, .027, 'Face 2 · 0.95')];
+  }
+  function sceneCanvas(t, W, H) { const c = document.createElement('canvas'); c.width = W; c.height = H; drawScene(c.getContext('2d'), W, H, t); return c; }
+  function degrade(src, seed) {
+    const W = src.width, H = src.height;
+    const small = document.createElement('canvas'); small.width = Math.max(8, Math.round(W / 4)); small.height = Math.max(6, Math.round(H / 4));
+    small.getContext('2d').drawImage(src, 0, 0, small.width, small.height);
+    const out = document.createElement('canvas'); out.width = W; out.height = H;
+    const o = out.getContext('2d'); o.imageSmoothingEnabled = true; o.drawImage(small, 0, 0, W, H);
+    const img = o.getImageData(0, 0, W, H), d = img.data, s = new Uint8ClampedArray(d), r = rng(seed);
+    const comb = Math.max(1, Math.round(W / 320)), bleed = Math.max(1, Math.round(W / 300));
+    for (let y = 0; y < H; y++) {
+      let off = (y & 1) ? comb : 0;
+      const band = y > H * .86 && y < H * .9;
+      if (band) off += Math.round(r() * W / 60);
+      for (let x = 0; x < W; x++) {
+        const xs = Math.min(W - 1, Math.max(0, x - off)), xr = Math.min(W - 1, Math.max(0, xs - bleed));
+        const i = (y * W + x) * 4, j = (y * W + xs) * 4, jr = (y * W + xr) * 4;
+        let R = s[jr], G = s[j + 1], B = s[j + 2];
+        const l = .3 * R + .59 * G + .11 * B;
+        R = R + (l - R) * .45 + 18; G = G + (l - G) * .45 + 8; B = B + (l - B) * .45 - 8;
+        R = 128 + (R - 128) * .76 + 12; G = 128 + (G - 128) * .76 + 10; B = 128 + (B - 128) * .76 + 8;
+        const n = (r() - .5) * (band ? 90 : 30);
+        d[i] = R + n; d[i + 1] = G + n; d[i + 2] = B + n;
+      }
+    }
+    o.putImageData(img, 0, 0);
+    const v = o.createRadialGradient(W / 2, H / 2, W * .3, W / 2, H / 2, W * .75);
+    v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,.35)');
+    o.fillStyle = v; o.fillRect(0, 0, W, H);
+    return out;
+  }
+  const jpg = c => c.toDataURL('image/jpeg', .88);
+  const TOTAL = 76046;
+  let FRAMES = Array.from({ length: 12 }, (_, i) => ({ t: i / 11, fn: Math.round(TOTAL * (i + .5) / 12) }));
+  FRAMES[4].fn = 21706; // 00:12:04;18
+  const cache = {};
+  function frameImages(i) {
+    if (isLive()) return J.latest || { orig: BLANK, rest: BLANK };
+    if (curTab().kind === 'new') return { orig: BLANK, rest: BLANK };  // no pictures until a video is restored
+    if (!cache[i]) { const sc = sceneCanvas(FRAMES[i].t, FW, FH); cache[i] = { orig: jpg(degrade(sc, 7 + i)), rest: jpg(sc) }; }
+    return cache[i];
+  }
+  let thumbs = FRAMES.map((f, i) => jpg(degrade(sceneCanvas(f.t, 192, 144), 31 + i)));
+
+  /* ---------- Timecode (29.97 drop-frame) ---------- */
+  const p2 = n => String(n).padStart(2, '0');
+  function dfTC(fn) {
+    const D = Math.floor(fn / 17982), M = fn % 17982;
+    fn += 18 * D + (M > 1 ? 2 * Math.floor((M - 2) / 1798) : 0);
+    return `${p2(Math.floor(fn / 108000))}:${p2(Math.floor(fn / 1800) % 60)}:${p2(Math.floor(fn / 30) % 60)};${p2(fn % 30)}`;
+  }
+
+  /* ---------- State ---------- */
+  const S = {
+    mode: store.get('mode', 'studio'), theme: store.get('theme', 'system'), scale: store.get('scale', 1),
+    ai: true, compare: 'side', zoom: 1, faces: false, tab: 'frame', clipLen: 10, frame: 4, fnOffset: 0,
+    file: 'New restoration', rail: store.get('rail', false), lb: 'orig',
+    samples: [], job: null
+  };
+
+  /* ---------- Stages ---------- */
+  const STAGES = [
+    { id: 'deint', name: 'Deinterlace', on: true, sum: 'bwdif · TFF · 59.94p', body: `
+      <label class="field"><span>Method</span><select id="st-deint-m"><option>bwdif (built in)</option><option>QTGMC (download)</option><option>Yadif</option></select></label>
+      <label class="field"><span>Field order</span><select id="st-deint-f"><option>Auto (detected: top first)</option><option>Top field first</option><option>Bottom field first</option></select></label>
+      <label class="field"><span>Output rate</span><select id="st-deint-r"><option>Double rate · 59.94p (smoother)</option><option>Single rate · 29.97p</option></select></label>` },
+    { id: 'denoise', name: 'Denoise', on: true, sum: 'temporal · 40', body: `
+      ${slider('st-dn', 'Strength', 40)}
+      <div class="row between"><span class="muted" style="font-size:var(--t-12)">Use neighbouring frames</span><button class="switch" role="switch" aria-checked="true" aria-label="Temporal denoise"></button></div>` },
+    { id: 'deblock', name: 'Compression cleanup', on: false, sum: 'off', body: `${slider('st-db', 'Strength', 30)}<p class="note">For DVD rips and early phone video with blocky artefacts.</p>` },
+    { id: 'stab', name: 'Stabilize', on: false, sum: 'off', body: `${slider('st-stab', 'Smoothness', 50)}<label class="field"><span>Edges</span><select id="st-stab-e"><option>Crop to hide edges</option><option>Fill edges</option></select></label>` },
+    { id: 'color', name: 'Colour and de-fade', on: true, sum: 'auto WB · 601→709', body: `
+      <div class="row between"><span class="muted" style="font-size:var(--t-12)">Auto white balance</span><button class="switch" role="switch" aria-checked="true" aria-label="Auto white balance"></button></div>
+      ${slider('st-fade', 'Restore faded colour', 55)}
+      <div class="row between"><span class="muted" style="font-size:var(--t-12)">Convert Rec.601 to Rec.709</span><button class="switch" role="switch" aria-checked="true" aria-label="Convert colour standard"></button></div>` },
+    { id: 'up', name: 'Upscale', on: true, ai: true, sum: 'Real-ESRGAN · 1080p', body: `
+      <label class="field"><span>Model</span><select id="st-up-m"><option>Real-ESRGAN general x4v3 · dn 0.3, colour-locked, flicker-smoothed</option><option>Real-ESRGAN · fast, general</option><option>BasicVSR++ · steadier on motion</option><option>SeedVR2 3B · best, generative</option><option>Real-CUGAN · animation</option><option>Lanczos · classic, no AI</option></select></label>
+      <label class="field"><span>Target</span><select id="st-up-t"><option>2× square pixels (1280×960, 4:3)</option><option>1080p (1440×1080, 4:3)</option><option>2× (1440×960)</option><option>4K (2880×2160)</option></select></label>
+      <p class="note">720×480 uses non-square pixels; output is corrected to true 4:3.</p>` },
+    { id: 'faces', name: 'Face restoration', on: true, ai: true, sum: 'GFPGAN · 0.6', body: `
+      <label class="field"><span>Model</span><select id="st-face-m"><option>DicFace · video, steadiest (tested)</option><option>GFPGAN · natural cleanup</option><option>CodeFormer · adjustable (download)</option></select></label>
+      ${slider('st-fid', 'Likeness', 60, 'More repair', 'Closer to original')}
+      ${slider('st-blend', 'Blend into frame', 80)}` },
+    { id: 'interp', name: 'Frame interpolation', on: false, ai: true, sum: 'off', body: `
+      <label class="field"><span>Model</span><select id="st-int-m"><option>RIFE 4.x</option></select></label>
+      <label class="field"><span>Target rate</span><select id="st-int-r"><option>59.94 fps</option><option>60 fps</option></select></label>
+      <p class="note">Scene changes are detected so cuts stay sharp.</p>` },
+    { id: 'audio', name: 'Audio', on: true, sum: 'hiss reduction', body: `
+      <label class="field"><span>Treatment</span><select id="st-aud"><option>Separate voices and clean them, keep the original as track 2 (tested)</option><option>Reduce hiss and hum</option><option>Keep original audio</option><option>Reduce noise and even out levels</option></select></label>` },
+    { id: 'out', name: 'Output', on: true, lockOn: true, sum: 'MP4 · H.264', body: `
+      <label class="field"><span>Format</span><select id="st-out-f"><option>MKV · H.264 CRF 14, restored + original audio (tested)</option><option>MP4 · H.264 (plays everywhere)</option><option>MOV · ProRes 422 HQ (archive)</option><option>MKV · H.265</option></select></label>
+      ${slider('st-q', 'Quality', 80, 'Smaller file', 'Higher quality')}` }
+  ];
+  // Presets. 'Tested' matches what the engine actually runs (all values in engine/presets/vhs-tested.json)
+  const PRESETS = {
+    'Home-video tape · Tested': {
+      spec: '1280×960 59.94p',
+      deint: { on: true, sum: 'QTGMC · TFF · 59.94p', set: { 'st-deint-m': 'QTGMC (download)', 'st-deint-f': 'Top field first', 'st-deint-r': 'Double rate · 59.94p (smoother)' } },
+      denoise: { on: true, sum: 'QTGMC DFTTest σ6 · gentle', set: { 'st-dn': 25 } },
+      deblock: { on: false, sum: 'off' },
+      stab: { on: false, sum: 'off (flicker smoothing in Upscale)' },
+      color: { on: true, sum: 'locked to source · 601→709', set: { 'st-fade': 0 } },
+      up: { on: true, sum: 'ESRGAN x4v3 · TensorRT · 1280×960', set: { 'st-up-m': 'Real-ESRGAN general x4v3 · dn 0.3, colour-locked, flicker-smoothed', 'st-up-t': '2× square pixels (1280×960, 4:3)' } },
+      faces: { on: true, sum: 'DicFace · eyes ≥12 px · tone 0.8', set: { 'st-face-m': 'DicFace · video, steadiest (tested)', 'st-fid': 80, 'st-blend': 100 } },
+      interp: { on: false, sum: 'off' },
+      audio: { on: true, sum: 'Demucs + AI voices · 2 tracks', set: { 'st-aud': 'Separate voices and clean them, keep the original as track 2 (tested)' } },
+      out: { on: true, sum: 'MKV · H.264 CRF 14 · sharpen 1.8 · grain 2', set: { 'st-out-f': 'MKV · H.264 CRF 14, restored + original audio (tested)', 'st-q': 90 } }
+    }
+  };
+  const STAGE_DEFAULTS = Object.fromEntries(STAGES.map(st => [st.id, { on: st.on, sum: st.sum }]));
+  const TESTED_FIRST = ['st-up-m', 'st-up-t', 'st-face-m', 'st-aud', 'st-out-f'];  // menus whose first choice is the tested one
+  function applyPreset(name) {
+    const p = PRESETS[name];
+    STAGES.forEach(st => Object.assign(st, p && p[st.id] ? { on: p[st.id].on, sum: p[st.id].sum } : STAGE_DEFAULTS[st.id]));
+    renderStages();
+    if (p) STAGES.forEach(st => Object.entries((p[st.id] && p[st.id].set) || {}).forEach(([id, v]) => {
+      const el = document.getElementById(id); if (!el) return;
+      el.value = v; const o = document.getElementById(id + '-o'); if (o) o.textContent = v;
+    }));
+    else TESTED_FIRST.forEach(id => { const el = document.getElementById(id); if (el) el.selectedIndex = 1; });
+    $('#outSpec').textContent = p ? p.spec : '1440×1080 59.94p';
+  }
+  function slider(id, label, v, lo, hi) {
+    return `<div class="field"><div class="fieldtop"><label for="${id}">${label}</label><output id="${id}-o">${v}</output></div><input type="range" id="${id}" min="0" max="100" value="${v}">${lo ? `<div class="scale-hint"><span>${lo}</span><span>${hi}</span></div>` : ''}</div>`;
+  }
+  function renderStages() {
+    $('#stages').innerHTML = STAGES.map(st => `
+      <div class="stagerow ${st.on ? '' : 'off'}" data-stage="${st.id}">
+        <div class="stagehead">
+          <button class="switch" role="switch" aria-checked="${st.on}" aria-label="${st.name}" ${st.lockOn ? 'disabled' : ''} data-stage-switch="${st.id}"></button>
+          <button class="stagebtn" aria-expanded="false" aria-controls="sb-${st.id}"><span class="nm">${st.name}</span><span class="sum">${st.sum}</span><svg class="i sm chev"><use href="#i-chev-down"/></svg></button>
+        </div>
+        <div class="stagebody" id="sb-${st.id}" hidden>${st.body}</div>
+      </div>`).join('');
+  }
+
+  /* ---------- Viewer ---------- */
+  function paneHTML(which, img, label) {
+    const faces = S.faces ? faceBoxes(FRAMES[S.frame].t).map(b => `<div class="face" style="left:${b.x * 100}%;top:${b.y * 100}%;width:${b.w * 100}%;height:${b.h * 100}%"><span>${b.label}</span></div>`).join('') : '';
+    return `<div class="pane" data-pane="${which}"><div class="frame" style="--z:${S.zoom}"><img src="${img}" alt="${label} frame">${faces}</div>
+      <div class="tag ${which === 'rest' ? 'rest' : ''}"><span class="dot"></span>${label}<span style="opacity:.7">${sizeOf(which)}</span></div>
+      <button class="iconbtn onwell" data-action="lightbox" data-which="${which}" aria-label="Full screen ${label}"><svg class="i"><use href="#i-expand"/></svg></button></div>`;
+  }
+  function renderViewer() {
+    if (isLive()) return renderLiveViewer();
+    if (curTab().kind === 'new') {
+      const t = curTab(), c = $('#compare');
+      c.className = 'compare single';
+      c.innerHTML = `<div class="pane"><div class="empty-view">${icon('i-film', 'i')}<b>${t.chosen ? esc(t.file) : 'No video yet'}</b>
+        <span>${t.chosen ? 'Press Restore video to start. The restored picture appears here as each part finishes.' : 'Choose a video to restore. Its original and restored frames appear here side by side.'}</span>
+        ${t.chosen ? '' : `<button class="btn primary" data-action="choose-file">${icon('i-upload')}Choose video…</button>`}</div></div>`;
+      $('#tc').textContent = '—';
+      return;
+    }
+    const im = frameImages(S.frame), c = $('#compare');
+    if (S.compare === 'side') {
+      c.className = 'compare';
+      c.innerHTML = paneHTML('orig', im.orig, 'Original') + paneHTML('rest', im.rest, 'Restored');
+    } else if (S.compare === 'wipe') {
+      c.className = 'compare single';
+      const faces = S.faces ? faceBoxes(FRAMES[S.frame].t).map(b => `<div class="face" style="left:${b.x * 100}%;top:${b.y * 100}%;width:${b.w * 100}%;height:${b.h * 100}%"><span>${b.label}</span></div>`).join('') : '';
+      c.innerHTML = `<div class="pane"><div class="frame" id="wipeFrame" style="--z:${S.zoom};--cut:50%"><img src="${im.orig}" alt="Original frame"><img class="wipe-top" src="${im.rest}" alt="Restored frame">${faces}<div class="wipe-handle"></div><div class="wipe-hit" role="slider" tabindex="0" aria-label="Wipe position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"></div></div>
+        <div class="tag"><span class="dot"></span>Original ◂ ▸ Restored</div>
+        <button class="iconbtn onwell" data-action="lightbox" data-which="rest" aria-label="Full screen"><svg class="i"><use href="#i-expand"/></svg></button></div>`;
+      bindWipe();
+    } else {
+      c.className = 'compare single';
+      c.innerHTML = paneHTML('rest', im.rest, 'Restored') ;
+      const pane = $('.pane', c);
+      pane.insertAdjacentHTML('beforeend', '<button class="hold" id="holdBtn">Hold to see the original</button>');
+      const hb = $('#holdBtn'), img = $('img', pane), tag = $('.tag', pane);
+      const show = o => { img.src = o ? im.orig : im.rest; tag.classList.toggle('rest', !o); tag.innerHTML = `<span class="dot"></span>${o ? 'Original' : 'Restored'}<span style="opacity:.7">${sizeOf(o ? 'orig' : 'rest')}</span>`; };
+      hb.addEventListener('pointerdown', () => show(true)); ['pointerup', 'pointerleave'].forEach(e => hb.addEventListener(e, () => show(false)));
+      hb.addEventListener('keydown', e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); show(true); } });
+      hb.addEventListener('keyup', () => show(false));
+    }
+    c.insertAdjacentHTML('beforeend', '<span class="illus">Illustration · not a real restoration</span>');
+    bindLoupe();
+    $('#tc').textContent = dfTC(tcOf(S.frame, S.fnOffset));
+    $$('#strip button').forEach((b, i) => b.setAttribute('aria-current', i === S.frame));
+    $('#clipLabel').textContent = `Ready to render ${S.clipLen} s from ${dfTC(tcOf(S.frame, S.fnOffset))}`;
+    $('#clipOrig').src = im.orig; $('#clipRest').src = im.rest;
+  }
+  function bindWipe() {
+    const fr = $('#wipeFrame'), hit = $('.wipe-hit', fr);
+    const set = pct => { pct = Math.max(0, Math.min(100, pct)); fr.style.setProperty('--cut', pct + '%'); hit.setAttribute('aria-valuenow', Math.round(pct)); };
+    const fromEvt = e => { const r = fr.getBoundingClientRect(); set((e.clientX - r.left) / r.width * 100); };
+    let drag = false;
+    hit.addEventListener('pointerdown', e => { drag = true; hit.setPointerCapture(e.pointerId); fromEvt(e); });
+    hit.addEventListener('pointermove', e => drag && fromEvt(e));
+    hit.addEventListener('pointerup', () => drag = false);
+    hit.addEventListener('keydown', e => { const v = +hit.getAttribute('aria-valuenow'); if (e.key === 'ArrowLeft') set(v - 5); if (e.key === 'ArrowRight') set(v + 5); });
+  }
+  function bindLoupe() {
+    if (S.zoom === 1) return;
+    $$('#compare .pane').forEach(p => p.addEventListener('pointermove', e => {
+      const fr = $('.frame', p).getBoundingClientRect();
+      const ox = ((e.clientX - fr.left) / fr.width * 100).toFixed(1) + '%', oy = ((e.clientY - fr.top) / fr.height * 100).toFixed(1) + '%';
+      $$('#compare .frame img').forEach(img => { img.style.setProperty('--ox', ox); img.style.setProperty('--oy', oy); });
+    }));
+  }
+  function renderStrip() {
+    $('#strip').classList.toggle('player', isLive());
+    if (isLive()) return renderLiveStrip();
+    if (curTab().kind === 'new') { $('#strip').innerHTML = ''; $('#cuts').innerHTML = ''; return; }
+    $('#strip').innerHTML = FRAMES.map((f, i) => `<button style="background-image:url(${thumbs[i]})" aria-label="Frame at ${dfTC(f.fn)}" title="${dfTC(f.fn)}"></button>`).join('');
+    const r = rng(99);
+    $('#cuts').innerHTML = Array.from({ length: 9 }, () => `<i style="left:${(r() * 98).toFixed(1)}%"></i>`).join('');
+  }
+
+  /* ---------- Samples (keeps the last 10 frames / 3 clips) ---------- */
+  const LIMIT = { frame: 10, clip: 3 };
+  let sid = 0;
+  function addSample(kind, frameIdx, quiet, live) {
+    const im = live || frameImages(frameIdx);
+    S.samples.push({ id: ++sid, kind, frame: frameIdx, wk: live ? live.k : null, wj: live ? live.j : 0, tc: live ? live.tc : dfTC(tcOf(frameIdx, frameIdx === S.frame ? S.fnOffset : 0)), off: frameIdx === S.frame ? S.fnOffset : 0, len: kind === 'clip' ? S.clipLen : 0, settings: isLive() ? 'Tested · real frame' : S.ai ? 'Balanced · Real-ESRGAN · GFPGAN' : 'Classic filters · Lanczos', orig: im.orig, rest: im.rest });
+    const ofKind = S.samples.filter(s => s.kind === kind);
+    let removed = false;
+    if (ofKind.length > LIMIT[kind]) { S.samples.splice(S.samples.indexOf(ofKind[0]), 1); removed = true; }
+    renderSamples();
+    if (!quiet) toast(`${kind === 'clip' ? 'Preview clip' : 'Preview frame'} saved to Samples.${removed ? ` The oldest ${kind} was removed to keep ${LIMIT[kind]}.` : ''}`, 'i-check');
+  }
+  function sampleCard(s) {
+    return `<div class="sample"><div class="sthumb"><img src="${s.orig}" alt=""><img src="${s.rest}" alt=""><span class="badge">${s.kind === 'clip' ? s.len + ' s clip' : 'Frame'}</span></div>
+      <div class="smeta"><b>${s.tc}</b><span>${s.settings}</span></div>
+      <div class="sactions"><button class="iconbtn" data-action="open-sample" data-id="${s.id}" aria-label="Open in viewer" title="Open in viewer"><svg class="i sm"><use href="#i-eye"/></svg></button>
+      <button class="iconbtn" data-action="export-sample" data-id="${s.id}" aria-label="Export" title="Export"><svg class="i sm"><use href="#i-export"/></svg></button>
+      <button class="iconbtn" data-action="delete-sample" data-id="${s.id}" aria-label="Delete" title="Delete"><svg class="i sm"><use href="#i-trash"/></svg></button></div></div>`;
+  }
+  function renderSamples() {
+    const fr = S.samples.filter(s => s.kind === 'frame').reverse(), cl = S.samples.filter(s => s.kind === 'clip').reverse();
+    const sec = (title, list, lim, kind) => `
+      <section style="display:grid;gap:10px">
+        <div class="samplehead"><h3 style="font-size:var(--t-13)">${title}</h3><div class="cap">${list.length} of ${lim}<div class="bar"><i style="--p:${list.length / lim * 100}%"></i></div></div></div>
+        <div class="grid-samples">${list.map(sampleCard).join('') || `<div class="emptyslot">No ${kind}s yet.<br>${kind === 'clip' ? 'Render one from Clip preview.' : 'Use “Preview this frame”.'}</div>`}</div>
+      </section>`;
+    $('#samples').innerHTML = `
+      <div class="samplehead"><p class="muted" style="max-width:60ch">tapewake keeps your last ${LIMIT.frame} preview frames and ${LIMIT.clip} preview clips. When a new one would go over, the oldest is deleted. Export any you want to keep.</p>
+        <div class="row"><button class="btn small" data-action="export-all">${icon('i-export')}Export all</button><button class="btn small ghost" data-action="clear-samples">${icon('i-trash')}Clear</button></div></div>
+      ${sec('Frames', fr, LIMIT.frame, 'frame')}${sec('Clips', cl, LIMIT.clip, 'clip')}`;
+    $('#sampleCount').textContent = S.samples.length;
+  }
+
+  /* ---------- Restoration tabs ---------- */
+  // Tabs. A job tab follows a real restoration (desktop app only); a new tab turns into one once you hit Restore.
+  const DEMO_FRAMES = FRAMES, DEMO_THUMBS = thumbs;
+  const BLANK = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+  // start with an empty tab, replaced by real jobs if there are any (unless the user already touched it)
+  const TABS = [{ id: 't0', kind: 'new', file: 'New restoration', frame: 4, preset: 'Home-video tape · Tested', starter: true }];
+  let tabSeq = 0;
+  S.tabId = 't0';
+  function curTab() { return TABS.find(t => t.id === S.tabId) || TABS[0]; }
+  function isLive() { return curTab().kind === 'live'; }
+  function sizeOf(which) { return isLive() ? (which === 'rest' ? '1280×960' : `${liveSrc().picture.split(' · ')[0]} · shown 4:3`) : (which === 'rest' ? '1440×1080' : '720×480'); }
+  const esc = v => String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  function tcOf(i, off) { return isLive() ? (P.k < 0 ? 0 : Math.floor((J.start[P.k] + curJ() + off) / 2)) : FRAMES[i].fn + off; }
+
+  // Player for a job's finished pieces. The restored piece plays directly; the original needs a playable copy
+  // which the bridge makes once per piece (see app_bridge.video). Both run at 59.94 from 0 so frames line up.
+  // Decoding happens on the GPU's video decoder, so it doesn't get in the way of the restore.
+  const FT = 1001 / 60000;
+  const J = { id: '', name: '', pieces: [], start: [], img: {}, latest: null, latestKey: '' };
+  const jobInvoke = (action, args) => tauriInvoke('job', { action, job: J.id, args });
+  const liveSrc = () => (S.live && S.live.source) || { picture: '?', rate: '', frames: 0, audio: '', interlaced: '' };
+  const P = { k: -1, j: 0, info: null, orig: null, rest: null, playing: false, loading: false, err: null, idx: -1, seq: 0, pref: -1, drag: false };
+  function liveSetPieces(frames) {
+    J.pieces = frames; J.start = []; let s = 0; frames.forEach(n => { J.start.push(s); s += n; });
+    $('#liveSeek').max = Math.max(0, s - 1);
+  }
+  async function livePieces() {
+    try { liveSetPieces(JSON.parse(await jobInvoke('pieces')).frames); } catch (e) { liveSetPieces([]); }
+    if (J.pieces.length) liveLatest();
+  }
+  // exact frame pair as JPEGs (full screen, save frame, latest piece thumbnail)
+  function liveFrame(k, j) {
+    const key = `${k}_${j}`;
+    return J.img[key] || (J.img[key] = jobInvoke('frame', [String(k), String(j)]).then(JSON.parse).catch(e => { delete J.img[key]; throw e; }));
+  }
+  function liveLatest() {
+    const k = J.pieces.length - 1, j = Math.floor(J.pieces[k] / 2), key = `${k}_${j}`;
+    J.latestKey = key;
+    liveFrame(k, j).then(im => { if (J.latestKey !== key) return; J.latest = im; if (isLive()) applyTabImages(); if (S.live && !S.job) renderJob(); }, () => {});
+  }
+  async function liveRefreshPieces() {
+    if (J.refreshing) return;
+    J.refreshing = true;
+    try {
+      const frames = JSON.parse(await jobInvoke('pieces')).frames;
+      if (frames.length > J.pieces.length) {
+        const first = !J.pieces.length;
+        liveSetPieces(frames); liveLatest(); liveUpdate();
+        if (first && isLive() && P.k < 0) liveLoadPiece(0);
+        toast(`Piece ${frames.length} of ${S.live ? S.live.total : ''} finished. It is ready to watch at the end of the tape.`, 'i-check');
+      }
+    } catch (e) {}
+    J.refreshing = false;
+  }
+  function liveVideos() {
+    if (P.rest) return;
+    [P.orig, P.rest] = ['Original', 'Restored'].map(l => {
+      const v = document.createElement('video');
+      v.muted = true; v.preload = 'auto'; v.playsInline = true; v.disablePictureInPicture = true; v.setAttribute('aria-label', l + ' video');
+      return v;
+    });
+    P.rest.addEventListener('ended', liveEnded);
+    ['seeked', 'timeupdate', 'play', 'pause'].forEach(e => P.rest.addEventListener(e, liveUpdate));
+    const cb = () => { liveSync(); liveUpdate(); P.rest.requestVideoFrameCallback(cb); };
+    P.rest.requestVideoFrameCallback(cb);
+  }
+  function curJ() {
+    if (!P.info || P.loading) return P.j;
+    return Math.max(0, Math.min(P.info.frames - 1, Math.floor(P.rest.currentTime / FT + 0.01)));
+  }
+  async function liveLoadPiece(k, j = 0, play = false) {
+    liveVideos(); livePause();
+    const seq = ++P.seq;
+    P.k = k; P.j = j; P.loading = true; P.err = null; P.info = null; P.idx = -1;
+    renderLiveStrip(); liveUpdate();
+    let info;
+    try { info = JSON.parse(await jobInvoke('video', [String(k)])); }
+    catch (e) { if (seq === P.seq) { P.loading = false; P.err = String(e); liveUpdate(); } return; }
+    if (seq !== P.seq) return;
+    const url = window.__TAURI__.core.convertFileSrc;
+    const ready = [P.rest, P.orig].map(v => new Promise(r => {
+      v.addEventListener('loadeddata', () => r(true), { once: true }); v.addEventListener('error', () => r(false), { once: true });
+    }));
+    P.rest.src = url(info.rest); P.orig.src = url(info.orig);
+    const ok = await Promise.all(ready);
+    if (seq !== P.seq) return;
+    P.info = info; P.loading = false;
+    if (!ok.every(Boolean)) { P.err = 'This piece could not be played.'; liveUpdate(); return; }
+    renderLiveStrip(); liveSeekFrame(j);
+    if (play) livePlay();
+  }
+  function liveSeekFrame(j) {
+    if (!P.info) return;
+    P.j = Math.max(0, Math.min(P.info.frames - 1, j));
+    P.rest.currentTime = P.orig.currentTime = (P.j + 0.5) * FT;  // the middle of the frame, so both land on it
+  }
+  function livePlay() {
+    if (!P.info || P.loading) return;
+    if (curJ() >= P.info.frames - 1) liveSeekFrame(0);
+    P.playing = true; P.orig.currentTime = P.rest.currentTime;
+    P.rest.play().catch(() => {}); P.orig.play().catch(() => {});
+    liveUpdate();
+  }
+  function livePause() {
+    if (!P.rest) return;
+    P.playing = false; P.rest.pause(); P.orig.pause();
+    if (P.info && !P.loading) { P.j = curJ(); P.orig.currentTime = P.rest.currentTime; }
+    liveUpdate();
+  }
+  function liveEnded() {
+    if (!P.playing) return;
+    if (P.k + 1 < J.pieces.length) liveLoadPiece(P.k + 1, 0, true);  // carry on into the next piece
+    else { livePause(); toast('That is the end of the finished part. New pieces appear here as they finish.', 'i-info'); }
+  }
+  // keep the original in sync: small drift -> adjust playbackRate, big drift -> seek
+  function liveSync() {
+    if (!P.playing || P.orig.paused) return;
+    const d = P.orig.currentTime - P.rest.currentTime;
+    if (Math.abs(d) > 0.1) { P.orig.currentTime = P.rest.currentTime + 0.02; P.orig.playbackRate = 1; }
+    else P.orig.playbackRate = d > 0.017 ? 0.95 : d < -0.017 ? 1.05 : 1;
+  }
+  function liveStep(d) {
+    livePause();
+    const j = curJ() + d;
+    if (j < 0 && P.k > 0) liveLoadPiece(P.k - 1, J.pieces[P.k - 1] - 1);
+    else if (P.info && j >= P.info.frames && P.k + 1 < J.pieces.length) liveLoadPiece(P.k + 1, 0);
+    else liveSeekFrame(j);
+  }
+  function liveSeekGlobal(g) {
+    let k = 0; while (k + 1 < J.start.length && J.start[k + 1] <= g) k++;
+    if (k === P.k && P.info) liveSeekFrame(g - J.start[k]); else liveLoadPiece(k, g - J.start[k], P.playing);
+  }
+  function liveLabel() {
+    if (P.err) return 'Could not load this piece';
+    if (P.loading) return `Preparing piece ${P.k + 1}…`;
+    if (!P.info) return J.pieces.length ? '' : 'The first restored piece appears here as soon as it is finished.';
+    return `Real video · piece ${P.k + 1} of ${S.live ? S.live.total : '…'} · frame ${curJ() + 1} of ${P.info.frames}`;
+  }
+  function renderLiveStrip() {
+    const inf = P.info, st = $('#strip');
+    if (!inf) { st.innerHTML = ''; return; }
+    const n = Math.floor(inf.frames * FT * inf.per_s), url = window.__TAURI__.core.convertFileSrc(inf.strip);
+    st.innerHTML = Array.from({ length: n }, (_, i) => {
+      const tc = dfTC(Math.floor((J.start[P.k] + i / inf.per_s / FT) / 2));
+      return `<button style="background-image:url('${url}');background-size:${inf.cols * 100}% 100%;background-position:${i / (inf.cols - 1) * 100}% 0" aria-label="Go to ${tc}" title="${tc}"></button>`;
+    }).join('');
+    P.idx = -1;
+  }
+  // runs every frame while playing, keep it light
+  function liveUpdate() {
+    if (!isLive()) return;
+    const j = curJ(), lab = $('#liveLabel');
+    if (lab) lab.textContent = liveLabel();
+    if (P.k >= 0) { $('#tc').textContent = dfTC(Math.floor((J.start[P.k] + j) / 2)); if (!P.drag) $('#liveSeek').value = J.start[P.k] + j; }
+    const pb = $('#livePlay'), html = icon(P.playing ? 'i-pause' : 'i-play') + (P.playing ? 'Pause' : 'Play');
+    if (pb.innerHTML !== html) pb.innerHTML = html;
+    pb.disabled = !P.info || P.loading;
+    const inf = P.info, bs = $('#strip').children;
+    if (inf && !P.loading && bs.length) {
+      const i = Math.min(bs.length - 1, Math.floor(P.rest.currentTime * inf.per_s));
+      if (i !== P.idx) {
+        if (bs[P.idx]) bs[P.idx].setAttribute('aria-current', 'false');
+        P.idx = i; bs[i].setAttribute('aria-current', 'true');
+        const st = $('#strip');
+        st.scrollTo({ left: bs[i].offsetLeft - st.clientWidth / 2 + bs[i].offsetWidth / 2, behavior: P.playing ? 'smooth' : 'auto' });
+      }
+      // preload the next piece
+      if (P.playing && j > inf.frames * 0.6 && P.pref !== P.k + 1 && P.k + 1 < J.pieces.length) {
+        P.pref = P.k + 1; jobInvoke('video', [String(P.k + 1)]).catch(() => {});
+      }
+    }
+  }
+  // we move the same two <video>s around instead of recreating them, so switching layout doesn't stop playback
+  function renderLiveViewer() {
+    liveVideos();
+    const c = $('#compare'), z = `style="--z:${S.zoom}"`;
+    const tag = (w, l) => `<div class="tag ${w === 'rest' ? 'rest' : ''}"><span class="dot"></span>${l}<span style="opacity:.7">${sizeOf(w)}</span></div>`;
+    const full = (w, l) => `<button class="iconbtn onwell" data-action="lightbox" data-which="${w}" aria-label="Full screen ${l}"><svg class="i"><use href="#i-expand"/></svg></button>`;
+    P.orig.className = P.rest.className = '';
+    if (S.compare === 'side') {
+      c.className = 'compare';
+      c.innerHTML = ['orig', 'rest'].map(w => { const l = w === 'orig' ? 'Original' : 'Restored'; return `<div class="pane" data-pane="${w}"><div class="frame" ${z}><i data-v="${w}"></i></div>${tag(w, l)}${full(w, l)}</div>`; }).join('');
+    } else if (S.compare === 'wipe') {
+      c.className = 'compare single'; P.rest.className = 'wipe-top';
+      c.innerHTML = `<div class="pane"><div class="frame" id="wipeFrame" style="--z:${S.zoom};--cut:50%"><i data-v="orig"></i><i data-v="rest"></i><div class="wipe-handle"></div><div class="wipe-hit" role="slider" tabindex="0" aria-label="Wipe position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"></div></div>
+        <div class="tag"><span class="dot"></span>Original ◂ ▸ Restored</div>${full('rest', 'Restored')}</div>`;
+    } else {
+      c.className = 'compare single'; P.orig.className = 'off';
+      c.innerHTML = `<div class="pane"><div class="frame" ${z}><i data-v="orig"></i><i data-v="rest"></i></div>${tag('rest', 'Restored')}${full('rest', 'Restored')}<button class="hold" id="holdBtn">Hold to see the original</button></div>`;
+      const hb = $('#holdBtn'), tg = $('.tag', c);
+      const show = o => { P.orig.classList.toggle('off', !o); P.rest.classList.toggle('off', o); tg.classList.toggle('rest', !o); tg.innerHTML = `<span class="dot"></span>${o ? 'Original' : 'Restored'}<span style="opacity:.7">${sizeOf(o ? 'orig' : 'rest')}</span>`; };
+      hb.addEventListener('pointerdown', () => show(true)); ['pointerup', 'pointerleave'].forEach(e => hb.addEventListener(e, () => show(false)));
+      hb.addEventListener('keydown', e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); show(true); } });
+      hb.addEventListener('keyup', () => show(false));
+    }
+    $$('i[data-v]', c).forEach(ph => ph.replaceWith(ph.dataset.v === 'orig' ? P.orig : P.rest));
+    c.insertAdjacentHTML('beforeend', '<span class="illus" id="liveLabel"></span>');
+    if (S.compare === 'wipe') bindWipe();
+    bindLoupe(); liveUpdate();
+    $('#clipLabel').textContent = 'Before-and-after videos of the finished pieces open in your video player.';
+  }
+  async function liveSaveFrame() {
+    if (!P.info || P.loading) { toast('This piece is still loading.'); return; }
+    livePause();
+    const k = P.k, j = curJ();
+    try { const im = await liveFrame(k, j); addSample('frame', 0, false, { k, j, tc: dfTC(Math.floor((J.start[k] + j) / 2)), orig: im.orig, rest: im.rest }); }
+    catch (e) { toast(`Could not save this frame: ${e}`); }
+  }
+  async function liveLightbox(which) {
+    livePause(); S.lb = which;
+    const tag = $('#lbTag'); tag.className = 'tag' + (which === 'rest' ? ' rest' : ''); tag.innerHTML = `<span class="dot"></span>${which === 'orig' ? 'Original' : 'Restored'} · ${sizeOf(which)}`;
+    $('#lbImg').alt = which === 'orig' ? 'Original frame' : 'Restored frame';
+    openO('lightbox');
+    if (!P.info || P.loading) { $('#lbImg').src = BLANK; return; }
+    try { const im = await liveFrame(P.k, curJ()); if (S.lb === which) $('#lbImg').src = which === 'orig' ? im.orig : im.rest; } catch (e) { toast(`Could not load this frame: ${e}`); }
+  }
+  async function liveOpen(what) {
+    try { toast(JSON.parse(await jobInvoke('open', [what])).msg, 'i-check'); }
+    catch (e) { toast(`Could not open it: ${e}`); }
+  }
+
+  function renderTabs() {
+    $('#jobTabs').innerHTML = TABS.map(t => {
+      const st = t.kind === 'live' ? (S.live && t.jobId === J.id ? `${S.live.pct.toFixed(1)}% · ${S.live.state}` : 'on this PC') : 'not started';
+      const f = esc(t.file);
+      return `<button class="jobtab" role="tab" aria-selected="${t.id === S.tabId}" data-tabid="${t.id}" title="${f}">${icon('i-film')}<span class="nm">${f}</span><span class="st">${st}</span>${t.kind === 'live' ? '' : `<span class="x" data-close="${t.id}" role="button" aria-label="Close ${f}" title="Close tab">×</span>`}</button>`;
+    }).join('') + `<button class="jobtab add" data-action="new-tab" title="Open another restoration">${icon('i-plus')}New restoration</button>`;
+  }
+  function switchTab(id) {
+    const old = curTab();
+    old.samples = S.samples; old.frame = S.frame; old.off = S.fnOffset;
+    S.tabId = id;
+    const t = curTab();
+    S.samples = t.samples || (t.samples = []);
+    if (old.kind === 'live') livePause();
+    S.frame = Math.min(t.frame ?? FRAMES.length - 1, FRAMES.length - 1); S.fnOffset = t.off || 0;
+    S.file = t.file;
+    if (t.kind === 'live' && t.jobId !== J.id) {  // another job: follow it, then show it
+      liveFollow(t.jobId).then(() => { if (curTab() === t) switchTab(t.id); });
+      return;
+    }
+    applyTabView(); renderTabs(); renderStrip(); renderViewer(); renderSamples(); renderJob(); renderCmd();
+    if (t.kind === 'live' && P.k < 0 && J.pieces.length) liveLoadPiece(J.pieces.length - 1);  // the newest finished piece
+  }
+  function newTab() {
+    TABS.push({ id: 't' + (++tabSeq), kind: 'new', file: 'New restoration', frame: 4, preset: 'Home-video tape · Tested' });
+    switchTab(TABS[TABS.length - 1].id);
+  }
+  function closeTab(id) {
+    const i = TABS.findIndex(t => t.id === id);
+    if (i < 0 || TABS[i].kind === 'live') return;
+    if (id === S.tabId) { const next = TABS[i + 1] || TABS[i - 1]; if (next) switchTab(next.id); else newTab(); }
+    TABS.splice(TABS.findIndex(t => t.id === id), 1);
+    renderTabs();
+  }
+  // a tab for each job file, first one selected
+  async function addLiveTabs() {
+    let jobs = [];
+    try { jobs = JSON.parse(await tauriInvoke('job', { action: 'jobs' })).jobs; } catch (e) {}
+    if (!jobs.length) return;
+    TABS.unshift(...jobs.map(j => ({ id: 'job-' + j.id, kind: 'live', jobId: j.id, file: j.name, frame: 0 })));
+    await liveFollow(jobs[0].id);
+    switchTab('job-' + jobs[0].id);
+    TABS.filter(t => t.starter && !t.chosen).forEach(t => TABS.splice(TABS.indexOf(t), 1));
+    renderTabs();
+  }
+  // follow a job (progress rail + player)
+  async function liveFollow(id) {
+    livePause();
+    Object.assign(J, { id, name: (TABS.find(t => t.jobId === id) || {}).file || id, pieces: [], start: [], img: {}, latest: null, latestKey: '' });
+    Object.assign(P, { k: -1, j: 0, info: null, err: null, idx: -1, pref: -1 });
+    S.live = null;
+    await liveCall('status');
+    await livePieces();
+  }
+  // Lab tab: show the actual engine commands for this job
+  function renderCmd() {
+    const t = curTab(), live = t.kind === 'live';
+    const c = x => `<span class="c"># ${esc(x)}</span>`, k = x => `<span class="k">${x}</span>`;
+    const slug = String(t.file).toLowerCase().replace(/\.[^.]*$/, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'new-restoration';
+    const job = `%LOCALAPPDATA%\\com.tapewake.app\\jobs\\${live ? t.jobId : slug}.json`;
+    const E = 'engine\\tapewake_engine';
+    const tested = $('#preset').value === 'Home-video tape · Tested';
+    const lines = [
+      c(`${t.file}: tapewake engine, tested settings, run piece by piece (${E}).`),
+      ...(!live ? [c(`Job file (written when the job is created): ${job}`)] : []),
+      ...(!tested ? [c(`The preset "${$('#preset').value}" is not in the engine yet; these are the tested settings.`)] : []),
+      '',
+      c('Whole job: cut, deinterlace, audio, then every piece; resumable'),
+      `${k('python')} ${E}\\run.py "${job}"`,
+      `${k('python')} ${E}\\control.py pause|resume|status "${job}"`,
+      '',
+      c('What run.py does for each piece:'),
+      c('1. Lossless constant-rate cut of the source, then QTGMC double rate, DFTTest sigma 6, 640x480'),
+      `${k('vs-python')} ${E}\\prepare.py "${job}"`,
+      c('2. Faces: RetinaFace on 2x frames, every 2nd frame, close faces only; DicFace'),
+      `${k('python')} ${E}\\faces_find.py work\\02_qtgmc.mkv work\\faces --detect-step 2 --min-ed 12 --min-vis 0.5 --clear-ed 20`,
+      `${k('python')} ${E}\\faces_restore.py work\\faces dicface --half-rate --batch 2`,
+      c('3. Real-ESRGAN general x4v3 (dn 0.3) on TensorRT -> 1280x960, colour locked, flicker smoothed'),
+      `${k('python')} ${E}\\upscale.py work\\02_qtgmc.mkv work\\03_bg.mkv --dn 0.3`,
+      c('4. Faces pasted, sharpen 1.8, grain 2, x264 CRF 14, BT.709'),
+      `${k('python')} ${E}\\assemble.py work dicface pieces\\piece_NNN.mkv --audio none --first LEAD --last LEAD+N \\`,
+      `  --sharpen 1.8 --grain 2 --min-ed 12 --full-ed 22 --tone 0.8`,
+      c('5. Audio (once): de-hum, Demucs, AI voices for talking, gentle cleanup for songs, -16 LUFS'),
+      `${k('python')} ${E}\\audio.py "${job}"`,
+      c('6. Join + restored audio (track 1) + original audio (track 2), verify, publish'),
+      '',
+      c('Before/after video of the first N finished pieces'),
+      `${k('python')} ${E}\\compare.py "${job}" --pieces N`,
+    ];
+    $('#cmd').innerHTML = lines.map(l => l.startsWith('<') || !l ? l : esc(l).replace(/^(python|vs-python)/, m => k(m))).join('\n');
+  }
+  function applyTabImages() {
+    const im = isLive() ? frameImages(S.frame) : { orig: BLANK, rest: BLANK };  // a new restoration has no pictures yet
+    $('#srcThumb').src = im.rest; $('#qThumb').src = im.rest;
+    $('#qOrig').src = im.orig; $('#qRest').src = im.rest;
+  }
+  function applyTabView() {
+    const t = curTab(), live = t.kind === 'live', src = liveSrc();
+    ['#topFile', '#srcName', '#qName'].forEach(s => $(s).textContent = t.file);
+    const chip = $('#srcChip');
+    chip.textContent = live ? (S.live && S.live.state === 'finished' ? 'Restored' : 'Restoring on this PC') : 'Not started';
+    chip.className = 'chip ' + (live ? 'accent' : 'example');
+    $('#srcPic').textContent = live ? src.picture : '—';
+    $('#srcRate').textContent = live ? src.rate : '—';
+    $('#srcLen').textContent = live ? dfTC(src.frames) : '—';
+    $('#srcAudio').textContent = live ? src.audio : '—';
+    $('#qDetect').hidden = !live; $('#qDetectText').textContent = live ? `${src.picture} · ${src.rate}` : '';
+    $('#qSpec').textContent = live ? `${src.picture} · ${src.rate}` : t.chosen ? 'Chosen · press Restore video to start' : 'No video chosen yet';
+    $('#srcReplace').innerHTML = icon('i-upload') + (t.chosen ? 'Replace video…' : 'Choose video…');
+    $('#srcReplace').hidden = live; $('#liveLinks').hidden = !live;
+    $('#inSpec').textContent = live ? src.interlaced : '—';
+    $('#pipeNote').textContent = live ? 'Runs piece by piece; finished pieces are kept if it is paused.' : 'Time estimate appears after first-time setup measures this computer.';
+    $('#preset').value = live ? ((S.live && S.live.preset) || 'Home-video tape · Tested') : (t.preset || $('#preset').value);
+    $('#aiSwitch').disabled = live; if (live) setAI(true);
+    $('#preset').disabled = live; applyPreset($('#preset').value);
+    $('.pipeline').classList.toggle('locked', live); $('#lockedNote').hidden = !live;
+    $('#queueBtn').hidden = live;
+    $('#scrub [data-action="preview-frame"]').innerHTML = icon(live ? 'i-stack' : 'i-eye') + (live ? 'Save this frame' : 'Preview this frame');
+    $('#scrub .note').textContent = live ? 'Space plays · ‹ › steps 1/60 s' : 'One restored frame with the settings on the left';
+    $('#livePlay').hidden = !live; $('#liveSeek').hidden = !live;
+    $('#scrub .tcsub').textContent = live ? 'In the original' : 'Drop-frame · 29.97';
+    $('[data-action="render-clip"]').innerHTML = icon('i-film') + (live ? 'Open before and after' : 'Render preview clip');
+    $('#clipView .illus').hidden = live; $('#cuts').hidden = live;
+    $('.shellpill').textContent = live ? 'Live · restoring on this PC' : tauriInvoke ? 'Version 0.1' : 'Web preview';
+    syncRestoreBtn(); applyTabImages();
+  }
+  function syncRestoreBtn() {
+    const b = $('#restoreBtn');
+    if (isLive() && S.live) {
+      const run = S.live.state === 'running';
+      b.dataset.action = S.live.state === 'finished' ? 'job-open' : 'toggle-pause'; b.dataset.what = 'output';
+      b.innerHTML = S.live.state === 'finished' ? icon('i-film') + 'Open finished video' : icon(run ? 'i-pause' : 'i-play') + (run ? 'Pause restoration' : 'Resume restoration');
+    } else { b.dataset.action = 'restore'; b.innerHTML = icon('i-play') + 'Restore video'; }
+  }
+  $('#preset').addEventListener('change', e => { if (!isLive()) curTab().preset = e.target.value; renderCmd(); });
+
+  /* ---------- Demo job (fake progress, web preview only) ---------- */
+  const JOB_STAGES = [['Analyse', 2], ['Deinterlace', 10], ['Denoise', 10], ['Upscale', 46], ['Faces', 16], ['Encode', 12], ['Verify', 4]];
+  const WSUM = JOB_STAGES.reduce((a, s) => a + s[1], 0);
+  const OUT_FRAMES = TOTAL * 2;
+  let timer = null;
+  function startJob() {
+    if (S.job && S.job.state !== 'done') { toast('A restoration is already running. Its progress is on the right.'); return; }
+    S.job = { p: 0, state: 'run', started: Date.now(), elapsed: 0 };
+    tick(); clearInterval(timer); timer = setInterval(tick, 200);
+    toast('Web preview: progress is simulated. Restoring needs the desktop app.', 'i-info');
+  }
+  function tick() {
+    const j = S.job; if (!j) return;
+    if (j.state === 'run') { j.p = Math.min(1, j.p + 0.2 / 60); j.elapsed += 0.2; if (j.p >= 1) { j.state = 'done'; clearInterval(timer); toast('Preview finished. Nothing was written to disk.', 'i-check'); } }
+    renderJob();
+  }
+  function jobInfo() {
+    const j = S.job; if (!j) return null;
+    let acc = 0, idx = JOB_STAGES.length - 1, inStage = 1;
+    for (let i = 0; i < JOB_STAGES.length; i++) { const w = JOB_STAGES[i][1] / WSUM; if (j.p < acc + w || i === JOB_STAGES.length - 1) { idx = i; inStage = Math.min(1, (j.p - acc) / w); break; } acc += w; }
+    const pct = Math.floor(j.p * 100), remain = j.p > .01 ? (j.elapsed / j.p) * (1 - j.p) : 0;
+    const fmt = s => { s = Math.round(s); return `${Math.floor(s / 3600)}:${p2(Math.floor(s / 60) % 60)}:${p2(s % 60)}`; };
+    return { pct, idx, inStage, stage: j.state === 'done' ? 'Finished' : JOB_STAGES[idx][0], frames: Math.round(j.p * OUT_FRAMES), elapsed: fmt(j.elapsed), remain: j.state === 'done' ? '0:00:00' : fmt(remain) };
+  }
+  /* ---------- Jobs running on this computer (desktop app only) ---------- */
+  // Talks to the engine through the `job` command in main.rs, which runs engine/app_bridge.py.
+  const tauriInvoke = window.__TAURI__ && window.__TAURI__.core && window.__TAURI__.core.invoke;
+  let liveBusy = false;
+  async function liveCall(action) {
+    if (!J.id) return;
+    const id = J.id;
+    try {
+      const d = JSON.parse(await jobInvoke(action));
+      if (id !== J.id) return;  // switched to another job meanwhile
+      S.live = d;
+      if (d.msg) toast(d.msg, action === 'pause' ? 'i-pause' : 'i-check');
+      if (d.done > J.pieces.length) liveRefreshPieces();
+    } catch (e) {
+      if (action !== 'status') toast(`Could not ${action} ${J.name}: ${e}`);
+    }
+    renderJob();
+  }
+  function liveInfo() {
+    const d = S.live, cur = d.pieces[0];
+    const fmtH = h => h == null ? '—' : h >= 48 ? `${(h / 24).toFixed(1)} days` : `${Math.floor(h)} h ${p2(Math.round(h * 60) % 60)} m`;
+    return {
+      pct: Math.floor(d.pct), exact: d.pct.toFixed(2),
+      state: d.state === 'running' ? 'run' : d.state === 'finished' ? 'done' : 'pause',
+      stage: d.state === 'finished' ? 'Finished' : cur ? `Piece ${cur[0]} of ${d.total} · ${cur[2]}` : d.state === 'running' ? 'Starting next piece' : 'Paused',
+      cur, remain: d.state === 'finished' ? '0 h' : fmtH(d.hours_left),
+      eta: d.eta ? new Date(d.eta * 1000).toLocaleString([], { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }) : '—'
+    };
+  }
+  function renderLiveJob() {
+    const d = S.live, w = liveInfo(), pct = w.pct;
+    const label = s => s.charAt(0).toUpperCase() + s.slice(1);
+    const stageVal = i => w.state === 'done' ? 100 : !w.cur ? 0 : i < w.cur[1] - 1 ? 100 : i === w.cur[1] - 1 && w.cur[4] ? Math.min(100, 100 * w.cur[3] / w.cur[4]) : 0;
+    const btn = w.state === 'done' ? '' : `<button class="btn small" data-action="toggle-pause" ${liveBusy ? 'disabled' : ''}>${icon(w.state === 'run' ? 'i-pause' : 'i-play')}${liveBusy ? 'Working…' : w.state === 'run' ? 'Pause' : 'Resume'}</button>`;
+    $('#railFill').style.setProperty('--p', pct + '%');
+    $('#railPct').textContent = pct + '%';
+    $('#railDot').className = 'statusdot ' + w.state;
+    $('#railBody').innerHTML = `
+      <div style="display:grid;gap:4px"><span class="jobfile">${esc(d.name)}</span><span class="chip" style="justify-self:start">${esc(d.preset)} · live</span></div>
+      <div class="row between" style="align-items:end"><span class="bigpct">${w.exact}%</span><span class="muted" style="font-size:var(--t-12)">${d.state === 'paused' ? 'Paused' : label(w.stage)}</span></div>
+      <div class="bar"><i style="--p:${d.pct}%"></i></div>
+      ${w.cur ? `<ul class="stagelist">${d.stages.map((s, i) => { const v = stageVal(i); const act = i === w.cur[1] - 1 && v < 100; return `<li class="${v >= 100 ? 'done' : act ? 'active' : ''}"><span class="ic"></span><span>${label(s)}</span><span class="pc">${v >= 100 ? 'done' : act ? Math.round(v) + '%' : ''}</span></li>`; }).join('')}</ul>` : ''}
+      <div class="stats">
+        <div class="stat"><span class="eyebrow">Pieces done</span><b>${d.done}</b></div>
+        <div class="stat"><span class="eyebrow">Of</span><b>${d.total}</b></div>
+        <div class="stat"><span class="eyebrow">Remaining</span><b>${w.remain}</b></div>
+        <div class="stat"><span class="eyebrow">Done around</span><b style="font-size:var(--t-12)">${w.state === 'run' ? w.eta : '—'}</b></div>
+      </div>
+      <div class="row">${btn}</div>
+      <p class="note">${d.state === 'paused' ? 'Paused: the graphics card is free. Resume carries on where it stopped. ' : ''}Keeps running if tapewake is closed. Finished file: ${esc(d.output.replace(/\\[^\\]*$/, ''))}.</p>`;
+    $('#cmpPct').textContent = pct + '%'; $('#cmpBar').style.setProperty('--p', d.pct + '%');
+    $('#cmpStage').textContent = w.stage; $('#cmpEta').textContent = w.state === 'run' ? w.remain + ' left' : '';
+    $('#cmpFile').textContent = d.name;
+    (b => { const fin = w.state === 'done'; b.dataset.action = fin ? 'job-open' : 'toggle-pause'; b.dataset.what = 'output'; b.innerHTML = fin ? icon('i-film') + 'Open finished video' : w.state === 'run' ? icon('i-pause') + 'Pause' : icon('i-play') + 'Resume'; })($('#cmpPause'));
+    $('#pfPct').textContent = w.exact + '%'; $('#pfStage').textContent = (d.state === 'paused' ? 'Paused · ' : '') + w.stage;
+    $('#pfFile').textContent = d.name;
+    $('#pfSeg').innerHTML = d.stages.map((s, i) => `<i style="--w:${d.shares[i] * 100};--p:${stageVal(i)}%"></i>`).join('');
+    $('#pfSegLabels').innerHTML = d.stages.map((s, i) => `<span style="--w:${d.shares[i] * 100}">${label(s)}</span>`).join('');
+    $('#pfStats').innerHTML = [['Pieces done', d.done], ['Of', d.total], ['Remaining', w.remain], ['Done around', w.state === 'run' ? w.eta : '—']].map(([k, v]) => `<div class="stat"><span class="eyebrow">${k}</span><b>${v}</b></div>`).join('');
+    (b => { const fin = w.state === 'done'; b.dataset.action = fin ? 'job-open' : 'toggle-pause'; b.dataset.what = 'output'; b.innerHTML = fin ? icon('i-film') + 'Open finished video' : w.state === 'run' ? icon('i-pause') + 'Pause' : icon('i-play') + 'Resume'; })($('#pfPause'));
+    $('#pfCancel').hidden = true;  // a job on this PC is only paused or resumed from here
+    const last = J.latest;
+    if (!last) { $('#cmpThumb').src = $('#pfOrig').src = $('#pfRest').src = BLANK; }
+    if (last) { $('#cmpThumb').src = last.rest; $('#pfOrig').src = last.orig; $('#pfRest').src = last.rest; $('#railBody .note').insertAdjacentHTML('beforebegin', `<div class="latest"><img src="${last.rest}" alt="Latest restored frame"><div class="tag rest"><span class="dot"></span>Latest finished piece</div></div>`); }
+    renderTabs(); syncRestoreBtn();
+  }
+  async function liveToggle() {
+    if (liveBusy) return;
+    liveBusy = true; renderJob();
+    await liveCall(S.live.state === 'running' ? 'pause' : 'resume');
+    liveBusy = false; renderJob();
+  }
+
+  function renderJob() {
+    if (S.live && !S.job) return renderLiveJob();
+    const info = jobInfo(), j = S.job;
+    const pct = info ? info.pct : 0;
+    $('#railFill').style.setProperty('--p', pct + '%');
+    $('#railPct').textContent = pct + '%';
+    $('#railDot').className = 'statusdot' + (j ? (j.state === 'run' ? ' run' : j.state === 'pause' ? ' pause' : ' done') : '');
+    const im = frameImages(S.frame);
+    if (!j) {
+      $('#railBody').innerHTML = `<div class="idle">${icon('i-film', 'i')}<b style="color:var(--fg)">Nothing restoring</b><span style="font-size:var(--t-12)">Press Restore video to start. Progress stays in this slim bar unless you open it.</span>${tauriInvoke ? `<button class="btn small" data-action="choose-file">${icon('i-upload')}Choose a video</button>` : `<button class="btn small" data-action="restore">${icon('i-play')}Run a preview demo</button>`}</div>`;
+    } else {
+      $('#railBody').innerHTML = `
+        <div style="display:grid;gap:4px"><span class="jobfile">${S.file}</span><span class="chip example" style="justify-self:start">Simulated</span></div>
+        <div class="row between" style="align-items:end"><span class="bigpct">${pct}%</span><span class="muted" style="font-size:var(--t-12)">${info.stage}</span></div>
+        <div class="bar"><i style="--p:${pct}%"></i></div>
+        <ul class="stagelist">${JOB_STAGES.map((s, i) => { const done = j.state === 'done' || i < info.idx; const act = !done && i === info.idx; return `<li class="${done ? 'done' : act ? 'active' : ''}"><span class="ic"></span><span>${s[0]}</span><span class="pc">${done ? 'done' : act ? Math.round(info.inStage * 100) + '%' : ''}</span></li>`; }).join('')}</ul>
+        <div class="stats">
+          <div class="stat"><span class="eyebrow">Frames</span><b>${info.frames.toLocaleString()}</b></div>
+          <div class="stat"><span class="eyebrow">Of</span><b>${OUT_FRAMES.toLocaleString()}</b></div>
+          <div class="stat"><span class="eyebrow">Elapsed</span><b>${info.elapsed}</b></div>
+          <div class="stat"><span class="eyebrow">Remaining</span><b>${info.remain}</b></div>
+        </div>
+        <div class="latest"><img src="${im.rest}" alt="Latest restored frame"><div class="tag rest"><span class="dot"></span>Latest frame</div></div>
+        <div class="row">${j.state === 'done' ? `<button class="btn small" data-action="dismiss-job">${icon('i-check')}Clear</button>` : `<button class="btn small" data-action="toggle-pause">${icon(j.state === 'run' ? 'i-pause' : 'i-play')}${j.state === 'run' ? 'Pause' : 'Resume'}</button><button class="btn small ghost" data-action="cancel-job">Cancel</button>`}</div>
+        <p class="note">Closing the window keeps restoring from the ${TRAY}. Quitting pauses and saves a checkpoint.</p>`;
+    }
+    // compact
+    $('#cmpPct').textContent = pct + '%'; $('#cmpBar').style.setProperty('--p', pct + '%');
+    $('#cmpStage').textContent = j ? info.stage : 'Not started'; $('#cmpEta').textContent = j && j.state !== 'done' ? info.remain + ' left' : '';
+    $('#cmpFile').textContent = S.file; $('#cmpThumb').src = im.rest;
+    $('#cmpPause').innerHTML = !j || j.state === 'done' ? icon('i-play') + (tauriInvoke ? 'Restore video' : 'Start') : j.state === 'run' ? icon('i-pause') + 'Pause' : icon('i-play') + 'Resume';
+    // full-screen
+    $('#pfPct').textContent = pct + '%'; $('#pfStage').textContent = j ? (j.state === 'pause' ? 'Paused · ' : '') + info.stage + (j.state === 'run' ? '…' : '') : 'Not started';
+    $('#pfFile').textContent = S.file;
+    $('#pfSeg').innerHTML = JOB_STAGES.map((s, i) => { const v = !j ? 0 : (j.state === 'done' || i < info.idx) ? 100 : i === info.idx ? info.inStage * 100 : 0; return `<i style="--w:${s[1]};--p:${v}%"></i>`; }).join('');
+    $('#pfSegLabels').innerHTML = JOB_STAGES.map(s => `<span style="--w:${s[1]}">${s[0]}</span>`).join('');
+    $('#pfStats').innerHTML = [['Frames', j ? info.frames.toLocaleString() : '0'], ['Of', OUT_FRAMES.toLocaleString()], ['Elapsed', j ? info.elapsed : '0:00:00'], ['Remaining', j ? info.remain : '—']].map(([k, v]) => `<div class="stat"><span class="eyebrow">${k}</span><b>${v}</b></div>`).join('');
+    $('#pfOrig').src = im.orig; $('#pfRest').src = im.rest;
+    // only the web preview fakes it
+    $('#pfPause').dataset.action = $('#cmpPause').dataset.action = !j && tauriInvoke ? 'restore' : 'toggle-pause'; $('#pfCancel').hidden = !j;
+    $('#pfPause').innerHTML = !j || j.state === 'done' ? icon('i-play') + (tauriInvoke ? 'Restore video' : 'Start demo') : j.state === 'run' ? icon('i-pause') + 'Pause' : icon('i-play') + 'Resume';
+  }
+  function togglePause() {
+    if (S.live && !S.job) { liveToggle(); return; }
+    const j = S.job;
+    if (!j || j.state === 'done') { startJob(); return; }
+    if (j.state === 'run') { j.state = 'pause'; toast('Paused. A checkpoint would be saved here.'); }
+    else { j.state = 'run'; toast('Resumed. Finished parts would be checked for damage first.'); }
+    renderJob();
+  }
+
+  /* ---------- Batch & Lab content ---------- */
+  const QUEUE = [
+    ['tape01_birthday_1994.avi', '00:58:12', 'Home-video tape', 'Balanced', ['Waiting', ''], 0],
+    ['tape02_holidays_1995.avi', '01:02:40', 'Home-video tape', 'Balanced', ['Waiting', ''], 0],
+    ['super8_reel3_1978.mov', '00:03:20', 'Film transfer', 'Best', ['Waiting', ''], 0],
+    ['dv_school_play_2003.mov', '00:24:05', 'Early digital', 'Fast', ['Waiting', ''], 0],
+    ['cartoon_vhs_rip.mp4', '00:21:44', 'Animation', 'Balanced', ['Check field order', 'warn'], 0]
+  ];
+  function renderQueue() {
+    $('#queueBody').innerHTML = QUEUE.map((q, i) => `<tr>
+      <td><svg class="i sm faint"><use href="#i-grip"/></svg></td>
+      <td class="mono">${q[0]}</td><td class="mono">${q[1]}</td><td>${q[2]}</td>
+      <td><select aria-label="Preset for ${q[0]}" style="width:auto;padding:4px 6px">${['Fast', 'Balanced', 'Best'].map(o => `<option ${o === q[3] ? 'selected' : ''}>${o}</option>`).join('')}</select></td>
+      <td><span class="chip ${q[4][1]}">${q[4][0]}</span></td>
+      <td><div class="bar"><i style="--p:${q[5]}%"></i></div></td>
+      <td><button class="iconbtn" data-action="stub" data-msg="Removes this video from the queue." aria-label="Remove ${q[0]}"><svg class="i sm"><use href="#i-x"/></svg></button></td></tr>`).join('');
+  }
+  // same order as run.py
+  const NODES = [['Prepare', 'lossless cut on a constant timeline', 'CPU'], ['Deinterlace', 'QTGMC, DFTTest σ6, 59.94p', 'CPU (VapourSynth)'], ['Audio', 'hum removal, Demucs, AI voices, −16 LUFS', 'GPU (CUDA)'], ['Find faces', 'RetinaFace, tracking, close faces only', 'GPU (CUDA)'], ['Restore faces', 'DicFace, 5-frame window', 'GPU (CUDA)'], ['Upscale', 'Real-ESRGAN x4v3, colour lock, flicker smoothing', 'GPU (TensorRT)'], ['Assemble', 'faces, sharpen 1.8, grain 2, x264 CRF 14', 'CPU']];
+  function renderNodes() {
+    $('#nodes').innerHTML = NODES.map((n, i) => `<li class="node" data-i="${i}">
+      <span class="grip">${icon('i-grip')}</span><span class="idx">${String(i + 1).padStart(2, '0')}</span>
+      <span class="nm">${n[0]}<small>${n[1]}</small></span>
+      <select aria-label="Backend for ${n[0]}" disabled><option>${n[2]}</option></select>
+      <button class="switch" role="switch" aria-checked="true" aria-label="${n[0]} is on" disabled></button></li>`).join('');
+    let from = null;
+    $$('#nodes .node').forEach(el => {
+      el.addEventListener('dragstart', () => { from = +el.dataset.i; el.classList.add('dragging'); });
+      el.addEventListener('dragend', () => el.classList.remove('dragging'));
+      el.addEventListener('dragover', e => e.preventDefault());
+      el.addEventListener('drop', e => { e.preventDefault(); const to = +el.dataset.i; if (from === null || from === to) return; NODES.splice(to, 0, NODES.splice(from, 1)[0]); renderNodes(); toast('Pipeline order changed.'); });
+    });
+  }
+  const MODELS = [
+    ['FFmpeg', 'Decode, deinterlace, encode', 'LGPL / GPL', 'Included'],
+    ['Real-ESRGAN', 'Fast upscaling', 'BSD-3', 'Included'],
+    ['GFPGAN', 'Face restoration', 'Apache 2.0', 'Included'],
+    ['RIFE', 'Frame interpolation', 'MIT', 'Included'],
+    ['Real-CUGAN', 'Animation upscaling', 'MIT', 'Download'],
+    ['BasicVSR++', 'Motion-steady upscaling', 'Apache 2.0', 'Download'],
+    ['QTGMC', 'High-quality deinterlacing', 'Open source', 'Download'],
+    ['SeedVR2 3B', 'Best-quality restoration · strong GPU', 'Apache 2.0', 'Download'],
+    ['CodeFormer', 'Adjustable face repair · personal use', 'S-Lab non-commercial', 'Download']
+  ];
+  function renderModels() {
+    $('#models').innerHTML = MODELS.map(m => `<div class="model"><div><b>${m[0]}</b><small>${m[1]}</small></div><span class="chip">${m[2]}</span>${m[3] === 'Included' ? '<span class="chip good">Included</span>' : `<button class="btn small" data-action="stub" data-msg="${m[0]} downloads here, with its size shown first.">${icon('i-export')}Download</button>`}</div>`).join('');
+  }
+  // setup checks (app_bridge.py tools)
+  const CHECKS = [isWin ? 'Windows version' : 'macOS version', 'Graphics processor and memory', 'Free disk space', 'FFmpeg, Python, VapourSynth and models'];
+  function renderChecks(results) {
+    $('#checks').innerHTML = (results || CHECKS.map(c => [c, null, 'Waiting'])).map(([name, ok, detail]) =>
+      `<li class="${ok === true ? 'ok' : ok === false ? 'warn' : ''}"><span class="ci">${ok ? icon('i-check') : ok === false ? '!' : ''}</span><span>${esc(name)}<small style="display:block;color:var(--muted)">${esc(detail)}</small></span><span class="st">${ok === true ? 'OK' : ok === false ? 'Needs attention' : ''}</span></li>`).join('');
+  }
+  async function runSetup() {
+    if (!tauriInvoke) { toast('The checks need the desktop app.'); return; }
+    $('#runSetup').disabled = true;
+    renderChecks(CHECKS.map(c => [c, null, 'Checking…']));
+    try {
+      const d = JSON.parse(await tauriInvoke('job', { action: 'tools' }));
+      renderChecks(d.checks);
+      toast(d.missing.length ? 'Some tools are missing. Downloading them from here comes in a later version.' : 'This computer has everything tapewake needs.', d.missing.length ? 'i-info' : 'i-check');
+    } catch (e) { toast(`Could not run the checks: ${e}`); renderChecks(); }
+    $('#runSetup').disabled = false;
+  }
+
+  /* ---------- Modes, theme, overlays ---------- */
+  function setMode(m) {
+    S.mode = m; store.set('mode', m);
+    if (m !== 'studio') livePause();
+    $$('.modes button').forEach(b => b.setAttribute('aria-pressed', b.dataset.mode === m));
+    ['studio', 'quick', 'batch', 'lab', 'compact'].forEach(v => $('#view-' + v).hidden = v !== m);
+    const wasCompact = S.prevMode === 'compact', isCompact = m === 'compact';
+    if (isTauri && window.__TAURI__?.window && S.prevMode && wasCompact !== isCompact) {
+      try {
+        const T = window.__TAURI__, LS = (T.dpi && T.dpi.LogicalSize) || T.window.LogicalSize;
+        T.window.getCurrentWindow().setSize(new LS(isCompact ? 420 : 1360, isCompact ? 600 : 860)).catch(() => {});
+      } catch (e) {}
+    }
+    S.prevMode = m;
+  }
+  const THEMES = ['system', 'dark', 'light'];
+  function setTheme(t) {
+    S.theme = t; store.set('theme', t);
+    if (t === 'system') root.removeAttribute('data-theme'); else root.setAttribute('data-theme', t);
+    $$('.seg[data-group="theme"] button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === t));
+    $('#themeIcon').innerHTML = `<use href="#${t === 'dark' ? 'i-moon' : t === 'light' ? 'i-sun' : 'i-contrast'}"/>`;
+    $('[data-action="theme-cycle"]').title = 'Theme: ' + (t === 'system' ? 'follow system' : t);
+  }
+  function setScale(v) { S.scale = v; store.set('scale', v); root.style.setProperty('--scale', v); $$('.seg[data-group="scale"] button').forEach(b => b.setAttribute('aria-pressed', +b.dataset.v === v)); }
+  const OVERLAYS = ['lightbox', 'pfull', 'setup', 'trouble', 'settings', 'welcome'];
+  function openO(id) { $('#' + id).hidden = false; const f = $('#' + id).querySelector('button, select, input'); f && f.focus({ preventScroll: true }); }
+  function closeTop() { for (const id of OVERLAYS) { const el = $('#' + id); if (!el.hidden) { el.hidden = true; if (id === 'welcome') store.set('welcomeSeen', true); return true; } } return false; }
+  function lightbox(which) {
+    if (isLive()) return liveLightbox(which);
+    S.lb = which; const im = frameImages(S.frame);
+    $('#lbImg').src = which === 'orig' ? im.orig : im.rest; $('#lbImg').alt = which === 'orig' ? 'Original frame' : 'Restored frame';
+    const tag = $('#lbTag'); tag.className = 'tag' + (which === 'rest' ? ' rest' : ''); tag.innerHTML = `<span class="dot"></span>${which === 'orig' ? 'Original' : 'Restored'} · ${sizeOf(which)}`;
+    openO('lightbox');
+  }
+  async function appFullscreen() {
+    try {
+      if (isTauri && window.__TAURI__?.window) { const w = window.__TAURI__.window.getCurrentWindow(); await w.setFullscreen(!(await w.isFullscreen())); return; }
+      if (document.fullscreenElement) await document.exitFullscreen(); else await root.requestFullscreen();
+    } catch (e) { toast(isWin ? 'Full screen is not available here. Press F11 instead.' : 'Full screen is not available here. In the Mac app, press Control-Command-F.'); }
+  }
+  function setAI(on) {
+    S.ai = on; $('#aiSwitch').setAttribute('aria-checked', on); $('#aiBox').classList.toggle('on', on);
+    $('#aiText').textContent = on ? 'AI models rebuild lost detail and repair faces. They can invent small details that were never on the tape.' : 'Classic filters only: faithful and fast, and nothing is invented. Upscaling uses Lanczos.';
+    STAGES.filter(s => s.ai).forEach(s => {
+      const row = $(`[data-stage="${s.id}"]`), sw = $('.switch', row);
+      row.classList.toggle('locked', !on && s.id !== 'up'); sw.disabled = !on && s.id !== 'up';
+      if (s.id === 'up') $('.sum', row).textContent = on ? 'Real-ESRGAN · 1080p' : 'Lanczos · 1080p';
+    });
+  }
+
+  /* ---------- Events ---------- */
+  document.addEventListener('click', e => {
+    const modeBtn = e.target.closest('.modes button'); if (modeBtn) { setMode(modeBtn.dataset.mode); return; }
+    const ml = e.target.closest('[data-mode-link]'); if (ml) { setMode(ml.dataset.modeLink); return; }
+    const segBtn = e.target.closest('.seg button');
+    if (segBtn) {
+      const seg = segBtn.parentElement, g = seg.dataset.group, v = segBtn.dataset.v;
+      if (g === 'faces') { S.faces = !S.faces; segBtn.setAttribute('aria-pressed', S.faces); renderViewer(); return; }
+      $$('.seg[data-group="' + g + '"] button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === v));
+      if (g === 'compare') { S.compare = v; renderViewer(); }
+      if (g === 'zoom') { S.zoom = +v; renderViewer(); }
+      if (g === 'theme') setTheme(v);
+      if (g === 'scale') setScale(+v);
+      if (g === 'cliplen') { S.clipLen = +v; renderViewer(); }
+      return;
+    }
+    const radio = e.target.closest('[data-radio] .choice');
+    if (radio) { $$('.choice', radio.parentElement).forEach(c => c.setAttribute('aria-checked', c === radio)); return; }
+    const sw = e.target.closest('.switch');
+    if (sw && !sw.disabled) {
+      if (sw.id === 'aiSwitch') { setAI(sw.getAttribute('aria-checked') !== 'true'); return; }
+      const on = sw.getAttribute('aria-checked') !== 'true'; sw.setAttribute('aria-checked', on);
+      if (sw.dataset.stageSwitch) { const row = sw.closest('.stagerow'); row.classList.toggle('off', !on); }
+      if (sw.id === 'sHc') root.classList.toggle('hc', on);
+      if (sw.id === 'sRm') root.classList.toggle('rm', on);
+      return;
+    }
+    const sb = e.target.closest('.stagebtn');
+    if (sb) { const open = sb.getAttribute('aria-expanded') !== 'true'; sb.setAttribute('aria-expanded', open); $('#' + sb.getAttribute('aria-controls')).hidden = !open; return; }
+    const tab = e.target.closest('[data-tab]');
+    if (tab) {
+      S.tab = tab.dataset.tab; if (S.tab !== 'frame') livePause(); $$('[data-tab]').forEach(t => t.setAttribute('aria-selected', t === tab));
+      $('#frameWell').hidden = S.tab !== 'frame'; $('#clipView').hidden = S.tab !== 'clip'; $('#samplesView').hidden = S.tab !== 'samples';
+      $('#frameTools').hidden = S.tab !== 'frame';
+      $('#scrub').hidden = S.tab === 'samples';
+      return;
+    }
+    const lt = e.target.closest('[data-labtab]');
+    if (lt) { $$('[data-labtab]').forEach(t => t.setAttribute('aria-selected', t === lt)); $('#lab-cmd').hidden = lt.dataset.labtab !== 'cmd'; $('#lab-scenes').hidden = lt.dataset.labtab !== 'scenes'; return; }
+    const sn = e.target.closest('.snav button');
+    if (sn) { $$('.snav button').forEach(b => b.setAttribute('aria-selected', b === sn)); $$('.spane').forEach(p => p.hidden = p.dataset.sp !== sn.dataset.s); return; }
+    const xt = e.target.closest('[data-close]');
+    if (xt) { closeTab(xt.dataset.close); return; }
+    const jt = e.target.closest('.jobtab[data-tabid]');
+    if (jt) { if (jt.dataset.tabid !== S.tabId) switchTab(jt.dataset.tabid); return; }
+    const strip = e.target.closest('#strip button');
+    if (strip && isLive()) { if (P.info) liveSeekFrame(Math.round($$('#strip button').indexOf(strip) / P.info.per_s / FT)); return; }
+    if (strip) { S.frame = $$('#strip button').indexOf(strip); S.fnOffset = 0; renderViewer(); return; }
+    if (e.target.classList.contains('overlay')) { closeTop(); return; }
+
+    const a = e.target.closest('[data-action]'); if (!a) return;
+    const act = a.dataset.action;
+    const actions = {
+      'restore': () => tauriInvoke ? restoreNew() : startJob(),
+      'new-tab': newTab,
+      'job-open': () => liveOpen(a.dataset.what),
+      'queue': () => toast('Added to the batch queue. Switch to Batch to see it.'),
+      'preview-frame': () => {
+        if (isLive()) { liveSaveFrame(); return; }
+        if (tauriInvoke) { toast('Single-frame previews come in a later version. Start the restoration to watch its finished parts here.', 'i-info'); return; }
+        if (S.mode === 'studio' && S.tab !== 'frame') $('[data-tab="frame"]').click();
+        const target = S.mode === 'quick' ? $('#qRest').parentElement : $('#compare .pane:last-child') || $('#compare .pane');
+        const busy = document.createElement('div'); busy.className = 'busy'; busy.innerHTML = '<div><div class="spinner"></div>Rendering frame…</div>';
+        target.appendChild(busy); setTimeout(() => { busy.remove(); addSample('frame', S.frame); }, 1100);
+      },
+      'render-clip': () => {
+        if (isLive()) { liveOpen('compare'); return; }
+        if (tauriInvoke) { toast('Preview clips come in a later version. Start the restoration to watch its finished parts here.', 'i-info'); return; }
+        const bar = $('#clipBar'); let v = 0; a.disabled = true;
+        const iv = setInterval(() => { v += 2.5; bar.style.setProperty('--p', v + '%'); $('#clipPct').textContent = Math.round(v) + '%'; $('#clipLabel').textContent = `Rendering ${S.clipLen} s preview…`;
+          if (v >= 100) { clearInterval(iv); a.disabled = false; $('#clipLabel').textContent = `${S.clipLen} s preview ready · plays side by side`; addSample('clip', S.frame); } }, 100);
+      },
+      'play-clip': () => isLive() ? liveOpen('compare') : toast('Preview clips come in a later version. Start the restoration to watch its finished parts here.'),
+      'step': () => { if (isLive()) { liveStep(+a.dataset.d); return; } S.fnOffset += +a.dataset.d; $('#tc').textContent = dfTC(Math.max(0, tcOf(S.frame, S.fnOffset))); },
+      'player-play': () => P.playing ? livePause() : livePlay(),
+      'lightbox': () => lightbox(a.dataset.which || 'rest'),
+      'lb-swap': () => lightbox(S.lb === 'orig' ? 'rest' : 'orig'),
+      'close': () => closeTop(),
+      'rail-toggle': () => { S.rail = !S.rail; store.set('rail', S.rail); $('#rail').classList.toggle('open', S.rail); $('#railMini').hidden = S.rail; $('#railFull').hidden = !S.rail; },
+      'progress-full': () => openO('pfull'),
+      'toggle-pause': togglePause,
+      'cancel-job': () => { if (S.live && !S.job) { toast('A job on this PC is only paused or resumed from here, so no finished work can be lost.'); return; } clearInterval(timer); S.job = null; renderJob(); toast('Cancelled. Finished parts would be kept so you can resume later.'); },
+      'dismiss-job': () => { S.job = null; renderJob(); },
+      'open-settings': () => openO('settings'),
+      'tour': tourStart,
+      'open-trouble': () => openO('trouble'),
+      'open-welcome': () => { closeTop(); openO('welcome'); },
+      'open-setup': () => { if (!$('#welcome').hidden) { $('#welcome').hidden = true; store.set('welcomeSeen', true); } if (!$('#settings').hidden) $('#settings').hidden = true; renderChecks(); openO('setup'); },
+      'run-setup': runSetup,
+      'welcome-go': () => { const c = $('[data-radio="wmode"] .choice[aria-checked="true"]'); setMode(c ? c.dataset.v : 'studio'); if (!store.get('tourSeen', false)) setTimeout(tourStart, 400); store.set('welcomeSeen', !$('#askEvery').checked); store.set('askEvery', $('#askEvery').checked); $('#welcome').hidden = true; },
+      'theme-cycle': () => setTheme(THEMES[(THEMES.indexOf(S.theme) + 1) % 3]),
+      'app-fullscreen': appFullscreen,
+      'choose-file': chooseVideo,
+      'open-log': () => isLive() ? liveOpen('log') : toast('Open a restoration first: each one keeps its log (run.log) in its work folder.', 'i-terminal'),
+      'copy-cmd': () => { const txt = $('#cmd').textContent; if (navigator.clipboard) navigator.clipboard.writeText(txt).then(() => toast('Command plan copied.', 'i-check'), () => toast('Copy was blocked. Select the text and copy it instead.')); else toast('Select the text and copy it.'); },
+      'open-sample': () => { const s = S.samples.find(x => x.id === +a.dataset.id); if (s && s.wk != null) { $('[data-tab="frame"]').click(); liveLoadPiece(s.wk, s.wj); } else if (s) { S.frame = s.frame; S.fnOffset = s.off || 0; $('[data-tab="frame"]').click(); renderViewer(); } },
+      'export-sample': () => isLive() ? liveOpen('samples') : toast('Exporting samples comes in a later version.'),
+      'export-all': () => isLive() ? liveOpen('samples') : toast('Exporting samples comes in a later version.'),
+      'delete-sample': () => { S.samples = S.samples.filter(x => x.id !== +a.dataset.id); renderSamples(); toast('Sample deleted.'); },
+      'clear-samples': () => { S.samples = []; renderSamples(); toast('All samples cleared.'); },
+      'about-shell': () => toast(tauriInvoke ? 'Version 0.1: restores home-video tapes with the tested settings, one at a time. Settings, single-frame previews and clips are next.' : 'Web preview of the interface. Restoring needs the desktop app.', 'i-info'),
+      'stub': () => toast(a.dataset.msg || 'This comes in a later version.')
+    };
+    if (actions[act]) actions[act]();
+  });
+  document.addEventListener('input', e => {
+    if (e.target.type === 'range') { const o = document.getElementById(e.target.id + '-o') || document.getElementById(e.target.id + 'Out'); if (o) o.textContent = e.target.value + (e.target.dataset.suffix || ''); }
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && closeTop()) e.preventDefault();
+    if (isLive() && S.mode === 'studio' && S.tab === 'frame' && $('#lightbox').hidden && !e.target.closest('input, select, textarea, button, [role="slider"]')) {
+      if (e.key === ' ') { e.preventDefault(); P.playing ? livePause() : livePlay(); }
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); liveStep(e.key === 'ArrowLeft' ? -1 : 1); }
+    }
+    if ((e.metaKey || e.ctrlKey) && e.key === ',') { e.preventDefault(); openO('settings'); }
+  });
+  // picking a video opens a tab for it; Restore creates the job and starts it
+  function useVideo(path) {
+    const name = path.split(/[\\/]/).pop();
+    if (isLive() || curTab().path) newTab();  // a job keeps its own video; another video gets another tab
+    const t = curTab();
+    Object.assign(t, { file: name, path, chosen: true });
+    S.file = name; ['#topFile', '#srcName', '#qName', '#cmpFile', '#pfFile'].forEach(s => $(s).textContent = name);
+    renderTabs(); applyTabView(); renderViewer(); renderCmd();
+    toast(`Chose ${name}. Press Restore video to start.`, 'i-film');
+  }
+  async function chooseVideo() {
+    if (!tauriInvoke) { $('#fileInput').click(); return; }
+    const path = await tauriInvoke('pick_video');
+    if (path) useVideo(path);
+  }
+  async function restoreNew() {
+    if (!curTab().path) { await chooseVideo(); if (!curTab().path) return; }
+    const tab = curTab(), b = $('#restoreBtn');
+    b.disabled = true;
+    try {
+      const { id, name } = JSON.parse(await tauriInvoke('job_create', { path: tab.path }));
+      Object.assign(tab, { id: 'job-' + id, kind: 'live', jobId: id, file: name, starter: false });
+      S.tabId = tab.id;
+      await liveFollow(id);
+      switchTab(tab.id);
+      await liveCall('resume');
+    } catch (e) { toast(`Could not start the restoration: ${e}`); }
+    b.disabled = false;
+  }
+  const seek = $('#liveSeek');
+  seek.addEventListener('input', () => { P.drag = true; $('#tc').textContent = dfTC(Math.floor(+seek.value / 2)); });
+  seek.addEventListener('change', () => { P.drag = false; liveSeekGlobal(+seek.value); });
+  document.addEventListener('visibilitychange', () => { if (document.hidden) livePause(); });  // nothing plays unseen
+  // in a plain browser we only get the file name, not the path, so there's nothing to restore
+  $('#fileInput').addEventListener('change', e => {
+    const f = e.target.files && e.target.files[0]; if (!f) return;
+    if (isLive()) newTab();
+    S.file = curTab().file = f.name; curTab().chosen = true; ['#topFile', '#srcName', '#qName', '#cmpFile', '#pfFile'].forEach(s => $(s).textContent = f.name); renderTabs(); applyTabView(); renderViewer(); renderCmd();
+    e.target.value = '';
+    toast(`Chose ${f.name}. Restoring needs the desktop app; this web preview only shows the interface.`, 'i-film');
+  });
+  const drop = $('#drop');
+  ['dragenter', 'dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+  ['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+  if (window.__TAURI__ && window.__TAURI__.event) {  // the desktop app: a video dropped anywhere on the window
+    const ev = window.__TAURI__.event;
+    ev.listen('tauri://drag-enter', () => drop.classList.add('over'));
+    ev.listen('tauri://drag-leave', () => drop.classList.remove('over'));
+    ev.listen('tauri://drag-drop', e => { drop.classList.remove('over'); const p = e.payload && e.payload.paths && e.payload.paths[0]; if (p) useVideo(p); });
+  }
+  drop.addEventListener('drop', e => { const f = e.dataTransfer.files[0]; if (f) { if (isLive()) newTab(); S.file = curTab().file = f.name; curTab().chosen = true; renderTabs(); applyTabView(); renderViewer(); renderCmd(); ['#topFile', '#srcName', '#qName', '#cmpFile', '#pfFile'].forEach(s => $(s).textContent = f.name); toast(`Chose ${f.name}.`, 'i-film'); } });
+
+
+  /* ---------- Guided tour ---------- */
+  const TOUR = [
+    ['.modes', 'Modes', 'Quick Restore does it in one step. Studio (this view) gives full control. Batch queues several videos, Lab shows the exact commands, and Compact is a small progress window.'],
+    ['#jobTabs', 'Restorations', 'Each video has its own tab. A restoration running on this computer shows its progress here. “New restoration” opens another tab.'],
+    ['.pipeline .source', 'Source', 'The video this tab is about: picture size, frame rate, length and sound. For a running job, the buttons open the finished video, a before-and-after video and the saved samples.'],
+    ['.pipeline', 'Restoration steps', 'The preset and each step: deinterlace, denoise, upscale, faces, audio and output. They are locked while a job runs, so every part of the video matches.'],
+    ['.viewer-head', 'Preview and compare', 'Frame preview, clip preview and saved samples. Compare the original and the restored video side by side, with a wipe, or by holding to toggle, and zoom in.'],
+    ['#frameWell', 'Viewer', 'The original and the restored picture at the same moment. For a running job it plays the finished parts as video.'],
+    ['#scrub', 'Player and filmstrip', 'Play or pause, step one frame at a time, drag the bar to jump anywhere, and click the filmstrip. “Save this frame” keeps the picture in Samples.'],
+    ['#restoreBtn', 'Start, pause, resume', 'Starts the restoration, or pauses and resumes a running one. Pausing keeps every finished part and frees the graphics card.'],
+    ['#rail', 'Progress', 'How far the restoration is, the step it is on and the time left. Open it for details, or show it full screen.'],
+    ['.topbar .tools', 'Help and settings', 'Troubleshoot, settings, light or dark look, and full screen. The ⓘ button plays this tour again.'],
+  ];
+  let tourAt = -1;
+  function tourEnd() {
+    tourAt = -1; ['tourBlock', 'tourSpot', 'tourCard'].forEach(id => { const el = document.getElementById(id); if (el) el.remove(); });
+    store.set('tourSeen', true);
+  }
+  function tourShow(i) {
+    const steps = TOUR.filter(([sel]) => { const el = $(sel); return el && el.offsetParent !== null; });
+    if (i < 0 || i >= steps.length) { tourEnd(); return; }
+    tourAt = i;
+    if (!$('#tourBlock')) {
+      document.body.insertAdjacentHTML('beforeend', '<div class="tour-block" id="tourBlock"></div><div class="tour-spot" id="tourSpot"></div><div class="tour-card" id="tourCard" role="dialog" aria-live="polite"></div>');
+    }
+    const [sel, title, text] = steps[i], el = $(sel), card = $('#tourCard'), spot = $('#tourSpot');
+    el.scrollIntoView({ block: 'nearest' });
+    const r = el.getBoundingClientRect(), pad = 6;
+    Object.assign(spot.style, { left: r.left - pad + 'px', top: r.top - pad + 'px', width: r.width + 2 * pad + 'px', height: r.height + 2 * pad + 'px' });
+    card.innerHTML = `<span class="tour-count">${i + 1} of ${steps.length}</span><h4>${title}</h4><p>${text}</p>
+      <div class="row"><button class="btn small ghost" data-tour="end">Skip tour</button><div class="row" style="gap:6px">
+      ${i ? '<button class="btn small" data-tour="back">Back</button>' : ''}<button class="btn small primary" data-tour="next">${i === steps.length - 1 ? 'Done' : 'Next'}</button></div></div>`;
+    // try below, above, right, left, otherwise centre it
+    const cw = card.offsetWidth, ch = card.offsetHeight, vw = innerWidth, vh = innerHeight, g = 14;
+    let x = r.left, y;
+    if (r.bottom + g + ch < vh) y = r.bottom + g;
+    else if (r.top - g - ch > 0) y = r.top - g - ch;
+    else if (r.right + g + cw < vw) { x = r.right + g; y = r.top; }
+    else if (r.left - g - cw > 0) { x = r.left - g - cw; y = r.top; }
+    else { x = (vw - cw) / 2; y = (vh - ch) / 2; }
+    card.style.left = Math.max(16, Math.min(vw - cw - 16, x)) + 'px';
+    card.style.top = Math.max(16, Math.min(vh - ch - 16, y)) + 'px';
+    $('[data-tour="next"]', card).focus({ preventScroll: true });
+  }
+  function tourStart() {
+    closeTop();
+    if (S.mode !== 'studio') setMode('studio');
+    if (S.tab !== 'frame') $('[data-tab="frame"]').click();
+    tourShow(0);
+  }
+  document.addEventListener('click', e => {
+    const b = e.target.closest('[data-tour]'); if (!b) return;
+    const a = b.dataset.tour;
+    if (a === 'end') tourEnd(); else tourShow(tourAt + (a === 'next' ? 1 : -1));
+  });
+  document.addEventListener('keydown', e => {
+    if (tourAt < 0) return;
+    if (e.key === 'Escape') { e.preventDefault(); e.stopImmediatePropagation(); tourEnd(); }
+    if (e.key === 'ArrowRight') { e.preventDefault(); e.stopImmediatePropagation(); tourShow(tourAt + 1); }
+    if (e.key === 'ArrowLeft' && tourAt > 0) { e.preventDefault(); e.stopImmediatePropagation(); tourShow(tourAt - 1); }
+  }, true);
+  addEventListener('resize', () => { if (tourAt >= 0) tourShow(tourAt); });
+
+  /* ---------- Boot ---------- */
+  setTheme(S.theme); setScale(S.scale);
+  renderStages(); renderStrip(); renderViewer(); renderQueue(); renderNodes(); renderModels(); renderChecks();
+  renderTabs(); applyTabView(); renderCmd();
+  $('#preset').addEventListener('change', e => { applyPreset(e.target.value); if (PRESETS[e.target.value]) toast('The tested settings are loaded.', 'i-check'); });
+  if (S.rail) { $('#rail').classList.add('open'); $('#railMini').hidden = true; $('#railFull').hidden = false; }
+  renderJob();
+  // poll every 5 s when visible, every minute when hidden (each poll is ~1 s of CPU, no GPU)
+  if (tauriInvoke) {
+    let polls = 0;
+    addLiveTabs();
+    setInterval(() => { polls++; if (!liveBusy && (!document.hidden || polls % 12 === 0)) liveCall('status'); }, 5000);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden && !liveBusy) liveCall('status'); });
+  }
+  setMode(S.mode);
+  if (!store.get('welcomeSeen', false) || store.get('askEvery', false)) { $('#askEvery').checked = store.get('askEvery', false); $('#welcome').hidden = false; }
+  else if (!store.get('tourSeen', false)) setTimeout(tourStart, tauriInvoke ? 2500 : 600);  // once the job tabs have loaded
+})();
+</script>
+
+</body>
+</html>

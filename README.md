@@ -25,8 +25,59 @@ uploaded anywhere.
 
 ## Status
 
-Version 0.1 runs on Windows with an NVIDIA graphics card. The restoration engine is in `engine/`; the desktop app's
-source will follow. There's no installer yet, and first-run setup doesn't download the tools for you yet.
+Version 0.1, Windows only, needs an NVIDIA card. There's no installer to download yet, and the app doesn't
+install its tools for you yet, so for now it's for people comfortable setting things up by hand.
+
+## Requirements
+
+- Windows 10 (2004 or later) or Windows 11, 64-bit
+- NVIDIA graphics card with 8 GB or more
+- About 150 GB free while a two-hour tape is being restored (the working files can go on another drive)
+- Patience: the two-hour test tape took several days
+
+## Building it
+
+You need Rust (stable, MSVC), the Visual Studio 2022 Build Tools with the C++ workload, and Node.js LTS.
+
+```
+npm install
+npm run tauri build -- --bundles nsis
+```
+
+The installer ends up in `src-tauri/target/release/bundle/nsis/`. `npm run dev` runs it with live reload.
+Opening `ui/index.html` in a browser shows just the interface with fake progress.
+
+## Setting it up
+
+Install the tools listed in [THIRD_PARTY.md](THIRD_PARTY.md), then tell tapewake where they are in
+`%LOCALAPPDATA%\com.tapewake.app\tools.json`:
+
+```json
+{
+  "ffmpeg": "C:\\path\\to\\ffmpeg.exe",
+  "python": "C:\\path\\to\\engine-venv\\Scripts\\python.exe",
+  "vs_python": "C:\\path\\to\\vs-python\\python.exe",
+  "models": "C:\\path\\to\\models",
+  "codeformer": "C:\\path\\to\\CodeFormer",
+  "work_root": "D:\\tapewake"
+}
+```
+
+`engine/README.md` explains what goes where. Then open tapewake, run the setup check in Settings, pick a video
+and press **Restore video**. The result is saved next to the original as `<name> - Restored.mkv`.
+
+## What's where
+
+| Path | What it is |
+|---|---|
+| `ui/index.html` | The whole interface, one file (HTML/CSS/JS, no framework) |
+| `src-tauri/` | The desktop app (Tauri 2, Rust): window, file picker, the bridge to the engine |
+| `engine/tapewake_engine/` | The restoration engine (Python) |
+| `engine/app_bridge.py` | How the app talks to the engine |
+| `engine/presets/vhs-tested.json` | Every setting of the tested preset |
+| `assets/` | Logo |
+
+The engine also runs without the app: `python engine\tapewake_engine\run.py <job file>`.
 
 ## Example footage
 
