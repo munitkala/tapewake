@@ -115,6 +115,12 @@ is part of this repository, and their authors are not involved with tapewake.
 The face models (CodeFormer, DicFace, KEEP) may only be used for non-commercial purposes, so tapewake will stay free
 while it uses them. The full list with versions is in [THIRD_PARTY.md](THIRD_PARTY.md).
 
+## About this project
+
+tapewake is a hobby project. I first started writing it to restore my parents' wedding video, and it grew into
+something anyone can use for their own tapes. Part of the development was done with the help of Claude, an AI
+assistant. It's looked after in my spare time, so replies to issues and pull requests may take a while.
+
 ## Before you use it
 
 Please read this before restoring anything you care about.
