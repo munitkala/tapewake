@@ -42,34 +42,17 @@ install its tools for you yet, so for now it's for people comfortable setting th
 
 ## Building it
 
-You need Rust (stable, MSVC), the Visual Studio 2022 Build Tools with the C++ workload, and Node.js LTS.
+[BUILDING.md](BUILDING.md) walks through everything step by step, from cloning this repo to the first
+restoration: building the app, FFmpeg, the two Python environments, the models and `tools.json`.
+
+The short version, for the app itself (needs Rust, the Visual Studio C++ build tools and Node.js):
 
 ```
+git clone https://github.com/munitkala/tapewake.git
+cd tapewake
 npm install
 npm run tauri build -- --bundles nsis
 ```
-
-The installer ends up in `src-tauri/target/release/bundle/nsis/`. `npm run dev` runs it with live reload.
-Opening `ui/index.html` in a browser shows just the interface with fake progress.
-
-## Setting it up
-
-Install the tools listed in [THIRD_PARTY.md](THIRD_PARTY.md), then tell tapewake where they are in
-`%LOCALAPPDATA%\com.tapewake.app\tools.json`:
-
-```json
-{
-  "ffmpeg": "C:\\path\\to\\ffmpeg.exe",
-  "python": "C:\\path\\to\\engine-venv\\Scripts\\python.exe",
-  "vs_python": "C:\\path\\to\\vs-python\\python.exe",
-  "models": "C:\\path\\to\\models",
-  "codeformer": "C:\\path\\to\\CodeFormer",
-  "work_root": "D:\\tapewake"
-}
-```
-
-`engine/README.md` explains what goes where. Then open tapewake, run the setup check in Settings, pick a video
-and press **Restore video**. The result is saved next to the original as `<name> - Restored.mkv`.
 
 ## What's where
 
