@@ -121,6 +121,12 @@ tapewake is a hobby project. I first started writing it to restore my parents' w
 something anyone can use for their own tapes. Part of the development was done with the help of Claude, an AI
 assistant. It's looked after in my spare time, so replies to issues and pull requests may take a while.
 
+All the code in this repository was written for tapewake and is mine to release under the MIT licence. Other
+projects are only used, never copied in, and they're credited above. That said, this is a hobby project and I'm not
+an expert programmer, so I may have missed something obvious. I have no intention of including anything that isn't
+mine. If you spot code here that comes from somewhere else, please let me know by opening an issue, and I'll make
+sure it's credited and licensed properly, or remove it.
+
 ## Before you use it
 
 Please read this before restoring anything you care about.
