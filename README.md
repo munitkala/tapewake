@@ -30,11 +30,12 @@ Nothing is uploaded anywhere.
 
 ## Status
 
-Version 0.1.1, Windows only, needs an NVIDIA card. There's no installer to download yet, and the app doesn't
+Version 0.1.2, Windows only, needs an NVIDIA card. There's no installer to download yet, and the app doesn't
 install its tools for you yet, so for now it's for people comfortable setting things up by hand.
 
-What changed in each update is in [CHANGELOG.md](CHANGELOG.md). The latest, 0.1.1, cuts the disk space a
-restoration needs roughly in half and adds a **Free up space** button.
+What changed in each update is in [CHANGELOG.md](CHANGELOG.md). The latest, 0.1.2, asks when a restoration
+has finished, then shows the restored video and tidies up. 0.1.1 cut the disk space a restoration needs
+roughly in half and added a **Free up space** button.
 
 ## Requirements
 

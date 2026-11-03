@@ -5,6 +5,10 @@ number yet are listed under **Unreleased**.
 
 ## Unreleased
 
+Nothing yet.
+
+## 0.1.2 (2026-11-03)
+
 ### A "Restoration finished" prompt
 
 **Why:** when a restoration finished, nothing told you. The job just sat in its tab, and you had to
