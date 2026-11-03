@@ -9,7 +9,8 @@
 
 tapewake restores old VHS and home videos on your own computer: it deinterlaces the tape, upscales it with AI,
 restores faces carefully, cleans up the sound, and gives you the restored film plus a before-and-after comparison.
-Nothing is uploaded anywhere.
+Videos that are already progressive, such as DVD rips, are restored without deinterlacing. Nothing is uploaded
+anywhere.
 
 ![Before and after: a 1938 street scene, soft and interlaced on the left, sharper on the right](screenshots/before-after.gif)
 
@@ -18,7 +19,12 @@ Nothing is uploaded anywhere.
 - Restores home-video tapes (interlaced NTSC, 4:3) with settings proven on a full two-hour VHS tape: QTGMC
   deinterlacing, Real-ESRGAN upscaling to 1280×960 at 59.94 fps, face restoration that keeps likeness, gentle grain,
   and sound restoration.
-- Works piece by piece and can be paused and resumed at any time; finished parts are kept and checked.
+- Restores videos that are already progressive (DVD and Blu-ray rips, digital video) without deinterlacing, at their
+  own frame rate and twice their size. It checks each video and picks the right mode.
+- Checks your settings before it starts, and explains any setting that can't work for that video.
+- Works piece by piece and can be paused and resumed at any time; finished parts are kept and checked. A
+  restoration started by mistake can be stopped and deleted (three clicks, the original is never touched).
+- When a restoration finishes, it shows you the file and tidies up its working files.
 - Shows each restoration live, with a player that plays the finished parts next to the original
   (side by side, wipe, or hold-to-compare) and a filmstrip.
 
@@ -45,11 +51,15 @@ In both, you can switch **Face restoration** and **Audio** on or off. The other 
 (including Animation) don't change the restoration yet: tapewake says so and won't start until they're back
 at the tested values. Interlaced videos that aren't NTSC (for example PAL at 25 fps) can't be restored yet.
 
-What changed in each update is in [CHANGELOG.md](CHANGELOG.md). The latest, 0.1.4, adds Progressive
-video mode and checks the settings before starting. 0.1.3 adds a red **Stop and delete
-project** button, gives every project its own working folder, shows the preparation before the first piece, and shows only the steps a project really
-runs. 0.1.2 added the "Restoration finished" prompt; 0.1.1 cut the disk space a restoration needs roughly in
-half.
+Progressive mode is new in 0.1.4 and has been tested on a short film clip with face restoration off; with face
+restoration on it hasn't been tested yet. Animated films can be restored in this mode, but they get the general
+upscaler and the light film grain meant for camera footage, which shows as a faint speckle on flat colours. A mode
+made for animation is planned.
+
+What changed in each update is in [CHANGELOG.md](CHANGELOG.md). The latest, 0.1.4, adds Progressive video mode
+and checks the settings before starting. 0.1.3 added a red **Stop and delete project** button, gave every project
+its own working folder and made the progress screen show the preparation and only the steps a project really runs.
+0.1.2 added the "Restoration finished" prompt; 0.1.1 cut the disk space a restoration needs roughly in half.
 
 ## Requirements
 
@@ -102,7 +112,7 @@ is part of this repository, and their authors are not involved with tapewake.
 | Project | Used for | Licence |
 |---|---|---|
 | [FFmpeg](https://ffmpeg.org) | Reading, cutting and encoding video and sound | GPL-3.0 (build used) |
-| [VapourSynth](https://www.vapoursynth.com) and [vs-jetpack](https://github.com/Jaded-Encoding-Thaumaturgy/vs-jetpack) (QTGMC) | Deinterlacing | LGPL-2.1 / MIT |
+| [VapourSynth](https://www.vapoursynth.com) and [vs-jetpack](https://github.com/Jaded-Encoding-Thaumaturgy/vs-jetpack) (QTGMC, DFTTest) | Deinterlacing and denoising | LGPL-2.1 / MIT |
 | VapourSynth plugins: mvtools (mvutensils), znedi3, dfttest2, bestsource, akarin, resize2, zsmooth, vszip | Parts of QTGMC | GPL / LGPL / MIT |
 | [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN) weights | Upscaling | BSD-3-Clause |
 | [CodeFormer](https://github.com/sczhou/CodeFormer) | Finding, aligning and checking faces; optional face model | S-Lab License 1.0 (non-commercial) |
