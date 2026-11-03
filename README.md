@@ -71,6 +71,9 @@ its own working folder and made the progress screen show the preparation and onl
   finished, **Free up space** (or **Finish** in the prompt that appears) deletes the rest (about 30 GB
   per hour of tape), leaving only the restored video (about 17.5 GB per hour). See [engine/README.md](engine/README.md#disk-space)
 - Patience: the two-hour test tape took several days
+- Progressive videos need less. On a 90-second DVD clip (720×462, face and sound restoration off) it took
+  about 4 times the clip's length to restore, and the working files plus the restored video came to about
+  40 GB per hour of video before **Finish**. Measured on a short clip only, so treat it as a rough guide.
 
 ## Building it
 
@@ -94,9 +97,13 @@ npm run tauri build -- --bundles nsis
 | `src-tauri/` | The desktop app (Tauri 2, Rust): window, file picker, the bridge to the engine |
 | `engine/tapewake_engine/` | The restoration engine (Python) |
 | `engine/app_bridge.py` | How the app talks to the engine |
-| `engine/presets/vhs-tested.json` | Every setting of the tested preset |
+| `engine/presets/vhs-tested.json` | Every setting of the tested tape preset |
+| `engine/stubs/` | Two tiny placeholder modules some model code imports (see THIRD_PARTY.md) |
+| `scripts/clean-engine.mjs` | Run by every build: keeps Python cache files out of the installer |
 | `assets/` | Logo |
+| `screenshots/` | The pictures in this README (version 0.1) |
 | `CHANGELOG.md` | What changed in each update |
+| `THIRD_PARTY.md` | Everything tapewake uses that it didn't write, and the licences |
 
 The engine also runs without the app: `python engine\tapewake_engine\run.py <job file>`.
 
@@ -152,6 +159,9 @@ Please read this before restoring anything you care about.
   from using it.
 - **Keep your originals.** tapewake never changes the source file, but always keep your original tapes and a copy
   of every file you restore.
+- **Try a short clip first.** A restoration takes hours or days, and the result depends on the video: tapewake adds
+  sharpening and a light film grain, and animated films and progressive videos are newer and less tested than
+  tapes (see Status). Restore a minute or two and check it before starting a whole film.
 - **Restored footage is not the original.** The AI upscaling and face restoration add detail that was never on the
   tape. Faces in particular can end up looking slightly different from the real person. Don't use restored footage
   as evidence or as an exact record of what happened, and say that it's been restored when you share it.
