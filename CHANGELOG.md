@@ -5,7 +5,11 @@ number yet are listed under **Unreleased**.
 
 ## Unreleased
 
-### Disk space: working files are deleted once nothing needs them (2026-11-02)
+Nothing yet.
+
+## 0.1.1 (2026-11-02)
+
+### Disk space: working files are deleted once nothing needs them
 
 **Why:** restoring a tape makes large working files at every stage, and the lossless ones are huge.
 Before this update every one of them was kept until the very end, and none were deleted after the
@@ -25,6 +29,8 @@ README said about 150 GB.
   before/after player for that video explains that its files were deleted.
 - Resuming a finished restoration no longer rebuilds its finished video.
 - New setting `keep_work_files` keeps everything, for debugging.
+- `qtgmc_ahead` can't go below 2. Restoring a piece needs the next one deinterlaced too, so a smaller
+  value would have stalled the restoration (found while testing this update).
 
 **Disk space needed now**, per hour of tape:
 
@@ -36,8 +42,17 @@ README said about 150 GB.
 The README, BUILDING.md, the in-app setup check and [engine/README.md](engine/README.md#disk-space)
 now give these figures.
 
-**Testing:** checked on a simulated job (deletion rules, a failed piece being redone, progress, the
-button's refusals). It has not yet been run on a full tape.
+**Testing**
+
+- Simulated jobs: the deletion rules, a failed piece being redone, a hand-deleted piece being rebuilt,
+  progress, the button's refusals, and no stalls at any `qtgmc_ahead` value.
+- A real restoration of a 12-second NTSC clip, cut into 4 pieces with `qtgmc_ahead` set to 2:
+  - Deinterlacing waited for the graphics card as intended, with at most 3 deinterlaced pieces at once.
+  - The deinterlaced and in-progress folders were empty after the finish.
+  - Free up space left only the restored video and the logs, and Resume then refused to start.
+  - The output had the same 722 frames as a restore of the same clip with 0.1.0, and averaged 42.9 dB
+    PSNR against it (lowest frame 41.4 dB, joins between pieces no worse), so the picture is the same.
+- Not yet run on a full-length tape.
 
 ## 0.1.0
 

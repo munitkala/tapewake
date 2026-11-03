@@ -70,15 +70,17 @@ def main():
         """Index of the last restored piece (-1 if none yet)."""
         return max((j for j in range(n) if os.path.exists(job.piece(j))), default=-1)
 
+    # restoring piece K needs K+1 deinterlaced too, so anything under 2 would wait forever
+    ahead = max(2, int(job['qtgmc_ahead']))
     t0, done_now = time.time(), 0
     for k in range(n):
         out = job.qt_piece(k)
         if os.path.exists(out) or space.finished(job, k, n):  # nothing needs it any more
             continue
         told = False
-        while k > front() + job['qtgmc_ahead']:  # keep the deinterlaced folder small
+        while k > front() + ahead:  # keep the deinterlaced folder small
             if not told:
-                log(job, f"piece {k + 1}/{n}: waiting, {job['qtgmc_ahead']} deinterlaced pieces are ready ahead")
+                log(job, f'piece {k + 1}/{n}: waiting, {ahead} deinterlaced pieces are ready ahead')
                 told = True
             time.sleep(20)
         if told:
