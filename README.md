@@ -33,6 +33,9 @@ Nothing is uploaded anywhere.
 Version 0.1, Windows only, needs an NVIDIA card. There's no installer to download yet, and the app doesn't
 install its tools for you yet, so for now it's for people comfortable setting things up by hand.
 
+What changed in each update is in [CHANGELOG.md](CHANGELOG.md). The latest update cuts the disk space a
+restoration needs roughly in half and adds a **Free up space** button.
+
 ## Requirements
 
 - Windows 10 (2004 or later) or Windows 11, 64-bit
@@ -67,6 +70,7 @@ npm run tauri build -- --bundles nsis
 | `engine/app_bridge.py` | How the app talks to the engine |
 | `engine/presets/vhs-tested.json` | Every setting of the tested preset |
 | `assets/` | Logo |
+| `CHANGELOG.md` | What changed in each update |
 
 The engine also runs without the app: `python engine\tapewake_engine\run.py <job file>`.
 
