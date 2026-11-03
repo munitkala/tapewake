@@ -10,8 +10,10 @@ The app embeds this file and runs it with the engine's Python. Every command pri
     frame <id> K J             frame J of piece K, restored and original, as data URLs
     video <id> K               files the player needs for piece K
     open <id> samples|output|compare|log
+    cleanup <id>               finished job: delete its working files (space.py), keep the restored video
 
-Nothing here changes a job's settings or its finished pieces. Pause/resume go through control.py.
+Nothing here changes a job's settings. Finished pieces are only deleted by cleanup, which refuses
+unless the restored video exists and the job isn't running. Pause/resume go through control.py.
 """
 import base64
 import glob
@@ -26,6 +28,7 @@ sys.path.insert(0, os.environ.get('TAPEWAKE_ENGINE') or os.path.dirname(os.path.
 sys.path.insert(0, os.path.join(sys.path[0], 'tapewake_engine'))
 from settings import (APP_DATA, CODEFORMER, FFMPEG, FFPROBE, JOBS, MODELS, PYTHON, TOOLS_FILE, VS_PYTHON,  # noqa: E402
                       Job, all_jobs, job_file, work_root)
+import space  # noqa: E402
 
 NO_WINDOW = 0x08000000
 LOW = NO_WINDOW | 0x00004000  # below normal priority, so we never slow the restore down
@@ -82,16 +85,50 @@ def source_info(job):
     return info
 
 
+def space_info(job, state):
+    """What Free up space would delete, for finished jobs only (the folder sizes are read each time)."""
+    if state != 'finished':
+        return None
+    u = space.usage(job)
+    work = u['source_cut'] + u['deinterlaced'] + u['in_progress'] + u['pieces']
+    return {'working_gb': round(work / 1e9, 1), 'output_gb': round(u['output'] / 1e9, 1),
+            'cleaned': os.path.exists(job.cleaned_flag), 'refused': space.can_free_up(job)}
+
+
 def status(job, ctl, msg=''):
     pct, done, total, hours, start = ctl.percent()
+    state = ctl.state()
     return {
         'id': job.id, 'name': job.name, 'preset': job.data.get('preset', 'Home-video tape · Tested'),
-        'source': source_info(job), 'state': ctl.state(), 'pct': pct, 'done': done, 'total': total,
+        'source': source_info(job), 'state': state, 'pct': pct, 'done': done, 'total': total,
         'hours_left': hours, 'eta': time.time() + hours * 3600 if hours is not None else None,
         'started': start, 'pieces': ctl.live(), 'stages': list(ctl.STAGES), 'shares': list(ctl.STEP_SHARE),
         'log': [ln.split('] ', 1)[-1] for ln in ctl.last_lines(4)],
-        'output': job.output, 'msg': msg,
+        'output': job.output, 'msg': msg, 'space': space_info(job, state),
     }
+
+
+CLEANED_MSG = ('The working files of this restoration were deleted to free up space, so the before/after '
+               'player has nothing to show. The restored video is not affected.')
+
+
+def cleanup(job, ctl):
+    """Delete a finished job's working files and its player cache. Returns the message for the app."""
+    if ctl.runner_running():
+        return 'It is still running, so its working files are in use.'
+    why = space.can_free_up(job)
+    if why:
+        return why
+    freed = space.free_up_space(job)
+    c = cache_dir(job)
+    for name in os.listdir(c):
+        if name != 'source.json':
+            try:
+                os.remove(os.path.join(c, name))
+            except OSError:
+                pass
+    ctl.log(f'Free up space: deleted {space.gb(freed)} of working files (the restored video is kept)')
+    return f'Deleted {space.gb(freed)} of working files. The restored video is kept.'
 
 
 def prune(folder, pattern, keep, partner=None):
@@ -151,6 +188,8 @@ def frame(job, k, j):
 
     The original is bobbed with bwdif (one picture per field), so restored frame j == source field j.
     """
+    if os.path.exists(job.cleaned_flag):
+        raise SystemExit(CLEANED_MSG)
     c = cache_dir(job)
     s0 = max(0, j // 2 - 2)  # start a little early so bwdif has neighbours
     pick = 2 * (j // 2 - s0) + j % 2
@@ -171,6 +210,8 @@ def video(job, k):
     a small 640x480 H.264 copy once (bobbed like frame(), so the timelines match). The filmstrip comes out
     of the same ffmpeg pass. Takes ~4 s on two CPU threads, no GPU.
     """
+    if os.path.exists(job.cleaned_flag):
+        raise SystemExit(CLEANED_MSG)
     c = cache_dir(job)
     if not os.path.exists(job.piece(k)):
         raise SystemExit(f'Piece {k + 1} is not finished yet.')
@@ -239,7 +280,8 @@ def checks():
     root = work_root(os.path.expanduser('~\\x'))
     try:
         free = shutil.disk_usage(root if os.path.exists(root) else os.path.splitdrive(root)[0] + os.sep).free / 1e9
-        out.append(['Free disk space', free > 200, f'{free:.0f} GB free in {root} (a two-hour tape needs about 150 GB while it runs)'])
+        out.append(['Free disk space', free > 110, f'{free:.0f} GB free in {root} (a two-hour tape needs about '
+                    '100 GB at the peak: about 50 GB per hour of tape)'])
     except OSError:
         out.append(['Free disk space', False, f'Could not read {root}'])
     missing = missing_tools()
@@ -315,7 +357,9 @@ def main():
         return
     ctl = controller(job)
     msg = ''
-    if cmd == 'pause':
+    if cmd == 'cleanup':
+        msg = cleanup(job, ctl)
+    elif cmd == 'pause':
         if ctl.state() != 'running':
             msg = 'It is not running.'
         else:

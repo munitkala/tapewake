@@ -21,6 +21,7 @@ the models and the two Pythons are installed.
 | Assemble | `assemble.py` | Pastes the faces back with the source's tones, fades by size/angle/visibility/focus, sharpen 1.8, grain 2, x264 CRF 14 BT.709 |
 | Audio | `audio.py`, `audio_tools.py` | Hum removal, Demucs voice split, Resemble Enhance (speech) / DeepFilterNet3 (songs), EQ, -16 LUFS, sync check |
 | Run | `run.py` | Goes piece by piece, checks each one, joins them and adds both audio tracks |
+| Disk space | `space.py` | Deletes working files once nothing needs them; "Free up space" for finished jobs |
 | Control | `control.py` | Pause (kills the job's processes, frees the GPU), resume, progress |
 | Before/after | `compare.py` | Side-by-side video of the finished pieces |
 | App bridge | `app_bridge.py` | Embedded in the app: jobs, progress, pause/resume, frames for the player |
@@ -48,6 +49,24 @@ so Resemble Enhance and DicFace can be imported on Windows.
 - **8 GB of GPU memory** means DicFace batch 2, parser batches of 4, TensorRT workspace 1 GB.
 - **Long runs:** write `.part` files and only rename after a frame-count check, make pause actually
   kill the GPU processes, and keep Windows from sleeping (`SetThreadExecutionState`).
+- **Lossless intermediates add up fast.** On the test tape, per hour of tape: source cut 11 GB,
+  deinterlaced 36 GB, restored pieces 17.5 GB (x264 CRF 14), finished video another 17.5 GB. Keeping
+  everything until the end peaked near 90 GB per hour. Deinterlacing only a few pieces ahead and deleting
+  each deinterlaced piece once its neighbours are restored brings the peak to about 50 GB per hour.
+
+## Disk space
+
+| Per hour of tape | Size | Deleted |
+|---|---|---|
+| `src/` lossless source cut | ~11 GB | by **Free up space** (the before/after player needs it) |
+| `qtgmc/` lossless deinterlaced | ~36 GB in total, but only ~3 GB at a time | piece by piece during the run, the rest after the final checks |
+| `work/` piece in progress | ~1.5 GB | after each piece's check, the rest after the final checks |
+| `pieces/` restored pieces | ~17.5 GB | by **Free up space** (the player plays them) |
+| Finished video | ~17.5 GB | never |
+
+**Free up space** is a button in the app for finished jobs (`app_bridge.py cleanup <id>`). It refuses
+while the job runs, before the finished video exists, and for jobs that run from their own scripts.
+Set `keep_work_files` in a job's settings to keep every working file (debugging).
 
 ## Tools it needs
 

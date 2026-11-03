@@ -9,11 +9,13 @@ Anything missing falls back to the defaults below.
 A job is jobs/<id>.json with id, name, source, folder, output, samples (optional) and
 settings (overrides for TESTED). Inside the work folder:
 
-    src/src_NNN.mkv      lossless interlaced pieces
-    qtgmc/qt_NNN.mkv     deinterlaced
+    src/src_NNN.mkv      lossless interlaced pieces (+ src/done: how many)
+    qtgmc/qt_NNN.mkv     deinterlaced; each is deleted once it and its neighbours are restored
     work/pNNN/           piece in progress
     pieces/piece_NNN.mkv finished
-    audio/, run.log, PAUSED
+    audio/, run.log, PAUSED, CLEANED (working files deleted after the finish, see space.py)
+
+src/ and qtgmc/ are lossless, so they're big: see space.py and the README for how much.
 
 Stdlib only - the VapourSynth Python imports this too.
 """
@@ -67,7 +69,7 @@ PYTHON = _T.get('python') or os.path.join(APP_DATA, 'python', 'python.exe')
 VS_PYTHON = _T.get('vs_python') or os.path.join(MODELS, 'vs-python', 'python.exe')
 
 def work_root(source):
-    # a 2h tape needs ~150 GB of temp files, so people may want this on a big drive
+    # working files need about 50 GB per hour of tape at the peak, so people may want this on a big drive
     return _T.get('work_root') or os.path.dirname(os.path.abspath(source))
 
 
@@ -81,6 +83,10 @@ TESTED = {
     'face_clear_ed': 20, 'face_tone': 0.8, 'face_model': 'dicface', 'face_batch': 2,
     'upscale_dn': 0.3, 'sharpen': 1.8, 'grain': 2.0, 'crf': 14,
     'audio_talk': 'AI_LIGHT', 'audio_song': 'NEW',
+    # disk space: deinterlace at most this many pieces ahead of the graphics card (about 0.35 GB each)
+    'qtgmc_ahead': 8,
+    # True keeps every deinterlaced piece and the work folder after the finish (for debugging)
+    'keep_work_files': False,
 }
 
 
@@ -100,9 +106,17 @@ class Job:
         self.src, self.qtgmc, self.work, self.pieces = (os.path.join(f, n) for n in ('src', 'qtgmc', 'work', 'pieces'))
         self.audio = os.path.join(f, 'audio', 'audio_restored.flac')
         self.log, self.pause_flag = os.path.join(f, 'run.log'), os.path.join(f, 'PAUSED')
+        self.cleaned_flag = os.path.join(f, 'CLEANED')
 
     def __getitem__(self, key):
         return self.settings[key]
+
+    def pieces_total(self):
+        """How many pieces the source was cut into (0 until the cut is done). Survives the clean-up."""
+        try:
+            return int(open(os.path.join(self.src, 'done')).read())
+        except (OSError, ValueError):
+            return 0
 
     def piece(self, k):
         return os.path.join(self.pieces, f'piece_{k:03d}.mkv')

@@ -15,7 +15,8 @@ of the parts you'll download have their own licences. The face models in particu
 - Windows 10 (2004 or later) or Windows 11, 64-bit
 - An NVIDIA graphics card with at least 8 GB, and a recent driver (the CUDA 12.1 builds of PyTorch need driver
   530 or newer)
-- About 20 GB free for the tools, plus about 150 GB while a two-hour tape is being restored
+- About 20 GB free for the tools, plus about 50 GB per hour of tape while it's being restored (about 100 GB
+  for a two-hour tape; see [engine/README.md](engine/README.md#disk-space))
 - An internet connection the first time you restore something (a few models download themselves then)
 
 In the steps below everything goes into one folder, `C:\tapewake-tools`. You can use any folder you like, just

@@ -145,6 +145,7 @@
     "overlap": "composite (CPU) of piece k runs while piece k+1 is on the GPU",
     "pause": "PAUSED flag file + kill all job processes (frees GPU memory for games)",
     "awake": "SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED)",
+    "disk": "deinterlace at most 8 pieces ahead of the GPU (qtgmc_ahead); delete each deinterlaced piece once it and both neighbours are restored, and the rest of qtgmc/ and work/ after the final checks (keep_work_files: false). Measured per hour of tape: source cut 11 GB, deinterlaced 36 GB, restored pieces 17.5 GB, finished video 17.5 GB. Peak about 50 GB per hour; Free up space in the app deletes the source cut and pieces afterwards",
     "temperature_guard": {
       "cpu_c": 95,
       "gpu_c": 88,

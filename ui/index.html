@@ -572,6 +572,7 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
               <button class="btn small" data-action="job-open" data-what="output"><svg class="i sm"><use href="#i-film"/></svg>Finished video</button>
               <button class="btn small" data-action="job-open" data-what="compare"><svg class="i sm"><use href="#i-eye"/></svg>Before and after</button>
               <button class="btn small ghost" data-action="job-open" data-what="samples">Samples folder</button>
+              <button class="btn small ghost" data-action="job-cleanup" id="cleanBtn" hidden></button>
             </div>
 
             <div class="ai on" id="aiBox">
@@ -1727,6 +1728,26 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
       b.dataset.action = S.live.state === 'finished' ? 'job-open' : 'toggle-pause'; b.dataset.what = 'output';
       b.innerHTML = S.live.state === 'finished' ? icon('i-film') + 'Open finished video' : icon(run ? 'i-pause' : 'i-play') + (run ? 'Pause restoration' : 'Resume restoration');
     } else { b.dataset.action = 'restore'; b.innerHTML = icon('i-play') + 'Restore video'; }
+    // Free up space: finished jobs with working files left. First click arms it, a second click within 6 s deletes.
+    const c = $('#cleanBtn'), sp = isLive() && S.live && S.live.space;
+    const show = !!(sp && !sp.cleaned && !sp.refused && sp.working_gb >= 0.1);
+    c.hidden = !show;
+    if (show) {
+      c.title = `Deletes the ${sp.working_gb} GB of working files. The restored video (${sp.output_gb} GB) is kept, but the before/after player stops working for this video.`;
+      c.innerHTML = icon('i-trash') + (J.cleanArmed ? `Delete ${sp.working_gb} GB? Click again` : `Free up ${sp.working_gb} GB`);
+    }
+  }
+  async function liveCleanup() {
+    if (liveBusy) return;
+    if (!J.cleanArmed) {
+      J.cleanArmed = true; syncRestoreBtn();
+      clearTimeout(J.cleanTimer); J.cleanTimer = setTimeout(() => { J.cleanArmed = false; syncRestoreBtn(); }, 6000);
+      toast('This deletes the working files. The restored video is kept, but the before/after player stops working for this video. Click again to delete.', 'i-info');
+      return;
+    }
+    clearTimeout(J.cleanTimer); J.cleanArmed = false;
+    liveBusy = true; renderJob();
+    try { await liveCall('cleanup'); livePause(); await livePieces(); } finally { liveBusy = false; renderJob(); }
   }
   $('#preset').addEventListener('change', e => { if (!isLive()) curTab().preset = e.target.value; renderCmd(); });
 
@@ -2049,6 +2070,7 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
       'restore': () => tauriInvoke ? restoreNew() : startJob(),
       'new-tab': newTab,
       'job-open': () => liveOpen(a.dataset.what),
+      'job-cleanup': liveCleanup,
       'queue': () => toast('Added to the batch queue. Switch to Batch to see it.'),
       'preview-frame': () => {
         if (isLive()) { liveSaveFrame(); return; }

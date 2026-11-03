@@ -5,6 +5,9 @@ Needs the VapourSynth Python:  python prepare.py <job.json>
 The cut forces a constant frame rate starting at 0 - old captures often have gaps in their
 timestamps. Each piece borrows piece_margin frames from its neighbours when deinterlacing so the
 joins don't show. Can be restarted, finished pieces are skipped.
+
+Deinterlaced pieces are big (~0.35 GB each), so this stays at most `qtgmc_ahead` pieces ahead of the
+last restored piece; run.py deletes each one once nothing needs it (see space.py).
 """
 import os
 import subprocess
@@ -13,6 +16,7 @@ import time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import deinterlace as q  # noqa: E402
+import space  # noqa: E402
 from settings import FFMPEG, FFPROBE, Job  # noqa: E402
 
 core = q.core
@@ -34,8 +38,8 @@ def source_frames(job):
 
 
 def cut(job):
-    if os.path.exists(os.path.join(job.src, 'done')):
-        return len([f for f in os.listdir(job.src) if f.endswith('.mkv')])
+    if job.pieces_total():
+        return job.pieces_total()
     size = job['piece_frames']
     pieces = (source_frames(job) + size - 1) // size
     log(job, f'cutting the source into {pieces} lossless pieces ...')
@@ -62,11 +66,23 @@ def main():
 
     def piece(k):
         return core.std.SetFieldBased(core.bs.VideoSource(source=job.src_piece(k)), 2 if tff else 1)
+    def front():
+        """Index of the last restored piece (-1 if none yet)."""
+        return max((j for j in range(n) if os.path.exists(job.piece(j))), default=-1)
+
     t0, done_now = time.time(), 0
     for k in range(n):
         out = job.qt_piece(k)
-        if os.path.exists(out):
+        if os.path.exists(out) or space.finished(job, k, n):  # nothing needs it any more
             continue
+        told = False
+        while k > front() + job['qtgmc_ahead']:  # keep the deinterlaced folder small
+            if not told:
+                log(job, f"piece {k + 1}/{n}: waiting, {job['qtgmc_ahead']} deinterlaced pieces are ready ahead")
+                told = True
+            time.sleep(20)
+        if told:
+            t0, done_now = time.time(), 0  # the wait isn't deinterlacing time
         cur = piece(k)
         before = piece(k - 1)[-margin:] if k > 0 else None
         after = piece(k + 1)[:margin] if k + 1 < n else None

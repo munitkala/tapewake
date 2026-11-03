@@ -37,7 +37,10 @@ install its tools for you yet, so for now it's for people comfortable setting th
 
 - Windows 10 (2004 or later) or Windows 11, 64-bit
 - NVIDIA graphics card with 8 GB or more
-- About 150 GB free while a two-hour tape is being restored (the working files can go on another drive)
+- Free disk space: about **50 GB per hour of tape** at the peak, so about 100 GB for a two-hour tape. The
+  working files can go on another drive. Most of them are deleted as the restoration goes; once it's
+  finished, **Free up space** deletes the rest (about 30 GB per hour of tape), leaving only the restored
+  video (about 17.5 GB per hour). See [engine/README.md](engine/README.md#disk-space)
 - Patience: the two-hour test tape took several days
 
 ## Building it

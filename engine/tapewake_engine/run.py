@@ -8,6 +8,9 @@ then each piece in turn:
 
 Assembling is mostly CPU so it overlaps with the next piece. At the end the pieces are joined and
 the audio tracks muxed in. Safe to stop at any point - finished pieces are skipped next time.
+
+Each deinterlaced piece is deleted once it and its neighbours are restored, and what's left of the
+deinterlaced and work folders goes once the finished video passes its checks (space.py).
 """
 import ctypes
 import json
@@ -20,6 +23,7 @@ import threading
 import time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import space  # noqa: E402
 from settings import FFMPEG, FFPROBE, PYTHON, VS_PYTHON, Job  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -48,11 +52,7 @@ class Runner:
             time.sleep(30)
 
     def pieces_total(self):
-        done = os.path.join(self.job.src, 'done')
-        try:
-            return int(open(done).read())
-        except (OSError, ValueError):
-            return 0
+        return self.job.pieces_total()
 
     def build_work(self, k, n_pieces, wd):
         """Piece k with some frames of its neighbours on each side. Returns (lead-in frames, total frames)."""
@@ -91,6 +91,7 @@ class Runner:
             os.replace(part, out)
             shutil.rmtree(wd, ignore_errors=True)
             self.log(f'piece {k + 1}/{n_pieces} CHECK OK ({n} frames)')
+            space.drop_spent_deinterlaced(job, n_pieces, (k - 1, k, k + 1))
         else:
             problems.append(k)
             self.log(f'piece {k + 1}/{n_pieces} CHECK FAILED: {got}/{n} frames (kept {wd} for a retry)')
@@ -126,6 +127,12 @@ class Runner:
         if frames == want and audio == want_audio and abs(dur - frames / (60000 / 1001)) < 1.0:
             os.replace(part, job.output)
             self.log(f'=== FINISHED: {job.output} ({frames} frames, {dur / 60:.1f} min, {audio} audio tracks) - all checks OK')
+            freed = space.clear_after_finish(job)
+            if freed:
+                self.log(f'deleted {space.gb(freed)} of deinterlaced and in-progress files')
+            left = space.usage(job)
+            self.log(f"kept {space.gb(left['source_cut'] + left['pieces'])} of working files for the before/after "
+                     'player; Free up space in the app deletes them')
         else:
             self.log(f'FINAL CHECK FAILED: {frames}/{want} frames, {audio} audio tracks, {dur:.1f}s (kept {part})')
 
@@ -135,6 +142,9 @@ class Runner:
             os.makedirs(d, exist_ok=True)
         if os.path.exists(job.pause_flag):
             self.log('not starting: paused (Resume clears it)')
+            return
+        if os.path.exists(job.output):  # only there once every check passed; its pieces may be deleted
+            self.log(f'not starting: already finished ({job.output}). Delete or move it to restore again.')
             return
         ctypes.windll.kernel32.SetThreadExecutionState(0x80000001)  # don't let Windows sleep mid-run
         self.log('=== run started (finished pieces are skipped)')
@@ -163,12 +173,13 @@ class Runner:
             self.log(f"CUTTING FAILED - see {os.path.join(job.folder, 'prepare.out.log')}; stopping (Resume tries again)")
             return
         n_pieces = self.pieces_total()
+        space.drop_spent_deinterlaced(job, n_pieces, range(n_pieces))  # e.g. left by an older version
         problems, pending = [], None
         t0, done_now = time.time(), 0
         for k in range(n_pieces):
             if os.path.exists(job.piece(k)):
                 continue
-            need = [job.qt_piece(j) for j in (k, k + 1) if j < n_pieces]
+            need = [job.qt_piece(j) for j in (k - 1, k, k + 1) if 0 <= j < n_pieces]  # build_work reads all three
             self.wait_for(lambda: all(os.path.exists(p) for p in need) or prep_failed(), f'deinterlaced piece {k + 1}')
             if not all(os.path.exists(p) for p in need):
                 self.log(f"DEINTERLACING FAILED at piece {k + 1} - see {os.path.join(job.folder, 'prepare.out.log')}; "

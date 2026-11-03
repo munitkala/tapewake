@@ -125,7 +125,9 @@ class Control:
 
     def percent(self):
         """Returns (percent, done, total, hours_left, start_time). The last two can be None."""
-        total = len([f for f in os.listdir(self.job.src) if f.endswith('.mkv')]) if os.path.isdir(self.job.src) else 0
+        total = self.job.pieces_total()
+        if os.path.exists(self.job.output):  # only there once every check passed (its pieces may be deleted)
+            return 100.0, total, total, 0.0, None
         checked = set()
         try:
             with open(self.job.log, encoding='utf-8') as f:
