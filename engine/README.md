@@ -71,6 +71,12 @@ File Explorer with the restored video selected, does the same cleanup (skipped f
 own scripts), deletes the job's player cache and removes its job file. The restored video, the samples and
 the log are kept. **Later** leaves the job as it is.
 
+**Stop and delete project** (`app_bridge.py delete <id> check|confirm`, three clicks in the app) stops a job,
+deletes its working folder's engine files (`space.project_files`: src, qtgmc, work, pieces, audio, logs) and a
+half-written restored video, its player cache and its job file. The source, a finished restored video and the
+samples are kept. New jobs get a work folder no other job uses; when an older job shares one, delete only removes
+the job file and cache.
+
 Set `keep_work_files` in a job's settings to keep every working file (debugging).
 
 ## Tools it needs

@@ -88,6 +88,32 @@ def can_free_up(job):
     return ''
 
 
+ENGINE_DIRS = ('src', 'qtgmc', 'work', 'pieces', 'audio')
+ENGINE_FILES = ('pieces.txt', 'PAUSED', 'CLEANED')
+
+
+def project_files(job):
+    """What deleting the project removes: the engine's folders and files in the work folder, and a half-written
+    restored video. Never the source, the finished restored video or the samples."""
+    found = [os.path.join(job.folder, n) for n in ENGINE_DIRS + ENGINE_FILES]
+    if os.path.isdir(job.folder):
+        found += [os.path.join(job.folder, n) for n in os.listdir(job.folder) if n.endswith('.log')]
+    found.append(job.output.replace('.mkv', '.part.mkv'))
+    keep = {os.path.abspath(p) for p in (job.source, job.output, job.samples)}
+    return [p for p in found if os.path.exists(p) and os.path.abspath(p) not in keep]
+
+
+def delete_project_files(job):
+    """Delete project_files(job), then the work folder if nothing else is left in it. The caller must make sure the
+    job is not running. Returns the bytes freed."""
+    freed = sum(_rmtree(p) if os.path.isdir(p) else _remove(p) for p in project_files(job))
+    try:
+        os.rmdir(job.folder)  # only if empty: saved samples or anything else keep it
+    except OSError:
+        pass
+    return freed
+
+
 def free_up_space(job):
     """Delete every working file of a finished job; only the restored video, the audio and the logs stay.
 

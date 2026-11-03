@@ -85,9 +85,8 @@ def main():
             w[-ramp:] = np.minimum(w[-ramp:], np.linspace(1, 0, ramp))
         acc[k0:k1] += y[k0 - c0:k1 - c0] * w
         wsum[k0:k1] += w
-        if b % 10 == 0 or b == blocks - 1:
-            el = time.time() - t_start
-            log(f'block {b + 1}/{blocks} done; {el / 60:.0f} min so far, about {el / (b + 1) * (blocks - b - 1) / 60:.0f} min left')
+        el = time.time() - t_start  # every block: the app's progress screen reads these lines
+        log(f'block {b + 1}/{blocks} done; {el / 60:.0f} min so far, about {el / (b + 1) * (blocks - b - 1) / 60:.0f} min left')
     y = acc / np.maximum(wsum, 1e-9)
     del acc, wsum
 

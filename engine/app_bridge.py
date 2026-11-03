@@ -4,7 +4,7 @@ The app embeds this file and runs it with the engine's Python. Every command pri
 
     jobs                       list the jobs
     tools                      setup checks, missing tools
-    create <video>             new job with the tested settings
+    create <video> [--no-faces]  new job with the tested settings (optionally without face restoration)
     status|pause|resume <id>   state and progress of a job
     pieces <id>                frame count of each finished piece
     frame <id> K J             frame J of piece K, restored and original, as data URLs
@@ -12,9 +12,11 @@ The app embeds this file and runs it with the engine's Python. Every command pri
     open <id> samples|output|compare|log
     cleanup <id>               finished job: delete its working files (space.py), keep the restored video
     finish <id>                finished job: show the restored video in Explorer and take the job out of tapewake
+    delete <id> check|confirm  stop a job and delete its working files and its entry (check says what goes)
 
 Nothing here changes a job's settings. Finished pieces are only deleted by cleanup and finish, which
-refuse unless the restored video exists and the job isn't running. Pause/resume go through control.py.
+refuse unless the restored video exists and the job isn't running, and by delete, which the app only sends
+after three clicks. None of them touch the source video. Pause/resume go through control.py.
 """
 import base64
 import glob
@@ -107,6 +109,9 @@ def status(job, ctl, msg=''):
         'started': start, 'pieces': ctl.live(), 'stages': list(ctl.STAGES), 'shares': list(ctl.STEP_SHARE),
         'log': [ln.split('] ', 1)[-1] for ln in ctl.last_lines(4)],
         'output': job.output, 'msg': msg, 'space': space_info(job, state),
+        'own_scripts': bool(job.data.get('controller')),
+        'prep': None if state == 'finished' else ctl.prep(),  # [step, fraction] until piece 1 starts
+        'problem': ctl.prep_problem() if state == 'running' else '',
     }
 
 
@@ -147,6 +152,43 @@ def finish(job, ctl):
     subprocess.Popen(f'explorer /select,"{job.output}"')
     kept = f'Deleted {space.gb(freed)} of working files. ' if freed else ''
     return {'done': True, 'msg': f'{kept}{os.path.basename(job.output)} is ready in {os.path.dirname(job.output)}.'}
+
+
+def sharing_folder(job):
+    """Another job using the same work folder (projects made before 0.1.3 could), or None."""
+    same = os.path.normcase(os.path.abspath(job.folder))
+    return next((o for o in all_jobs() if o.id != job.id and os.path.normcase(os.path.abspath(o.folder)) == same), None)
+
+
+def delete_check(job):
+    """What Stop and delete would do, for the confirmation window."""
+    if job.data.get('controller'):
+        return {'refused': 'This restoration runs from its own scripts, so tapewake does not delete it.'}
+    other = sharing_folder(job)
+    return {'refused': '', 'folder': job.folder, 'shared_with': other.name if other else None,
+            'gb': 0.0 if other else round(sum(space._size(p) for p in space.project_files(job)) / 1e9, 1),
+            'output_exists': os.path.exists(job.output)}
+
+
+def delete_project(job, ctl):
+    """Stop the job, delete its working files and player cache, and remove the job file. The source video, a
+    finished restored video and saved samples are kept. When another job shares the work folder, only this job's
+    entry and cache go: its files and processes belong to both."""
+    check = delete_check(job)
+    if check['refused']:
+        return {'done': False, 'msg': check['refused']}
+    freed = 0
+    if not check['shared_with']:
+        if ctl.state() == 'running':
+            ctl.pause()
+        freed = space.delete_project_files(job)
+    shutil.rmtree(os.path.join(APP_DATA, 'cache', job.id), ignore_errors=True)
+    os.remove(job.path)
+    if check['shared_with']:
+        return {'done': True, 'msg': f"Removed {job.name} from tapewake. Its working folder is shared with another "
+                                     f"project of the same video, so its files were kept."}
+    return {'done': True, 'msg': f'Deleted {job.name}: {space.gb(freed)} of working files. '
+                                 f'Your original video was not touched.'}
 
 
 def prune(folder, pattern, keep, partner=None):
@@ -308,10 +350,11 @@ def checks():
     return out
 
 
-def create(source):
-    """Make a job file for `source` with the tested settings.
+def create(source, faces=True):
+    """Make a job file for `source` with the tested settings (faces=False turns face restoration off).
 
-    Work files go in tools.json's work_root (or next to the video); the result goes next to the video.
+    Work files go in tools.json's work_root (or next to the video), in a folder no other job uses; the result goes
+    next to the video.
     """
     source = os.path.abspath(source)
     if not os.path.isfile(source):
@@ -323,10 +366,14 @@ def create(source):
     while os.path.exists(job_file(job_id)):
         job_id, n = f'{slug}-{n}', n + 1
     os.makedirs(JOBS, exist_ok=True)
-    data = {'id': job_id, 'name': os.path.basename(source), 'source': source,
-            'folder': os.path.join(work_root(source), f'{base} - tapewake work'),
+    used = {os.path.normcase(os.path.abspath(j.folder)) for j in all_jobs()}
+    folder, n = os.path.join(work_root(source), f'{base} - tapewake work'), 2
+    while os.path.exists(folder) or os.path.normcase(os.path.abspath(folder)) in used:
+        folder, n = os.path.join(work_root(source), f'{base} - tapewake work ({n})'), n + 1
+    data = {'id': job_id, 'name': os.path.basename(source), 'source': source, 'folder': folder,
             'output': os.path.join(os.path.dirname(source), f'{base} - Restored.mkv'),
-            'preset': 'Home-video tape · Tested', 'settings': {}, 'created': time.strftime('%Y-%m-%d %H:%M:%S')}
+            'preset': 'Home-video tape · Tested' if faces else 'Home-video tape · Tested, no face restoration',
+            'settings': {} if faces else {'faces': False}, 'created': time.strftime('%Y-%m-%d %H:%M:%S')}
     with open(job_file(job_id), 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
     return data
@@ -356,7 +403,7 @@ def main():
         missing = missing_tools()
         if missing:
             raise SystemExit('tapewake needs ' + ', '.join(missing) + f' before it can restore. Their locations go in {TOOLS_FILE}.')
-        d = create(sys.argv[2])
+        d = create(sys.argv[2], faces='--no-faces' not in sys.argv[3:])
         print(json.dumps({'id': d['id'], 'name': d['name']}))
         return
     job = Job(job_file(sys.argv[2]))
@@ -376,6 +423,10 @@ def main():
     ctl = controller(job)
     if cmd == 'finish':
         print(json.dumps(finish(job, ctl)))
+        return
+    if cmd == 'delete':
+        print(json.dumps(delete_check(job) if args == ['check'] else delete_project(job, ctl) if args == ['confirm']
+                         else {'done': False, 'msg': 'delete needs check or confirm'}))
         return
     msg = ''
     if cmd == 'cleanup':

@@ -37,7 +37,8 @@ fn engine_dir(app: &tauri::AppHandle) -> PathBuf {
 }
 
 /// Runs a bridge action and returns its JSON. Only the actions below are allowed, with checked arguments:
-/// jobs, tools, status/pause/resume/pieces/cleanup/finish <job>, frame <job> <k> <j>, video <job> <k>, open <job> <what>
+/// jobs, tools, status/pause/resume/pieces/cleanup/finish <job>, frame <job> <k> <j>, video <job> <k>, open <job> <what>,
+/// delete <job> check|confirm
 #[tauri::command]
 async fn job(app: tauri::AppHandle, action: String, job: Option<String>, args: Option<Vec<String>>) -> Result<String, String> {
     let args = args.unwrap_or_default();
@@ -49,6 +50,7 @@ async fn job(app: tauri::AppHandle, action: String, job: Option<String>, args: O
         "frame" => id_ok && numbers(2),
         "video" => id_ok && numbers(1),
         "open" => id_ok && args.len() == 1 && matches!(args[0].as_str(), "samples" | "output" | "compare" | "log"),
+        "delete" => id_ok && args.len() == 1 && matches!(args[0].as_str(), "check" | "confirm"),
         _ => false,
     };
     if !ok {
@@ -119,11 +121,15 @@ async fn pick_video() -> Option<String> {
 
 /// Create a job for `path` with the tested settings. Returns {"id", "name"}.
 #[tauri::command]
-async fn job_create(app: tauri::AppHandle, path: String) -> Result<String, String> {
+async fn job_create(app: tauri::AppHandle, path: String, faces: Option<bool>) -> Result<String, String> {
     if !std::path::Path::new(&path).is_file() {
         return Err("That video was not found.".into());
     }
-    bridge(&app, vec!["create".into(), path]).await
+    let mut args = vec!["create".into(), path];
+    if faces == Some(false) {
+        args.push("--no-faces".into());
+    }
+    bridge(&app, args).await
 }
 
 fn main() {

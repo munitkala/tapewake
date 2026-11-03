@@ -7,6 +7,58 @@ number yet are listed under **Unreleased**.
 
 Nothing yet.
 
+## 0.1.3 (2026-11-03)
+
+### Stop and delete a project
+
+**Why:** there was no way to stop a restoration for good or remove a project, for example one started
+with the wrong settings. Pause was the only option, so the project stayed in tapewake.
+
+**What changed**
+
+- New red **Stop and delete project** button (**Delete project** once it has stopped) under each
+  restoration's progress. Deleting takes three clicks: the red button opens a red confirmation window
+  that says how many GB of working files go, you tick "I understand ... can't be undone", and only then
+  does the red **Delete project** button work.
+- It stops the restoration if it is running (freeing the graphics card), deletes its working files and
+  any half-written restored video, deletes the player cache and removes the project from tapewake.
+- Kept: the original video, a finished restored video and saved samples. Not offered for restorations
+  that run from their own scripts.
+
+### Every project gets its own working folder
+
+**Why:** a second project for the same video used the first one's working folder, so the two would
+have overwritten each other's files.
+
+**What changed**
+
+- New projects get a folder no other project uses: `<name> - tapewake work (2)`, `(3)` and so on.
+- For projects made before this update that share a folder, Delete only removes that project from
+  tapewake and keeps the files, because the other project still needs them.
+
+### The progress screen shows the steps a project really runs
+
+**Why:** it always listed finding faces, restoring faces, upscaling and assembling, whatever was chosen.
+
+**What changed**
+
+- A project started with **Face restoration** switched off now restores without faces, and its progress
+  shows only upscaling and assembling. Face restoration is the first setting the app passes on to the
+  restoration; the others still use the tested values (see the Status section of the README).
+
+### Progress no longer looks stuck at the start
+
+**Why:** before the first piece starts, tapewake prepares the sound, cuts the video into pieces and
+deinterlaces the first ones. That can take a while (the sound alone took about 8 minutes for a two-hour
+film), and the progress screen showed 0% and no steps the whole time.
+
+**What changed**
+
+- A **Preparing** stage shows these three steps, each with its own percentage, and they fill the first
+  2% of the overall bar. The sound step now reports after every block of audio.
+- If cutting or deinterlacing fails during the preparation, the progress screen says so in red straight
+  away (with the error), instead of looking stuck until the sound is finished.
+
 ## 0.1.2 (2026-11-03)
 
 ### A "Restoration finished" prompt

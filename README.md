@@ -30,12 +30,17 @@ Nothing is uploaded anywhere.
 
 ## Status
 
-Version 0.1.2, Windows only, needs an NVIDIA card. There's no installer to download yet, and the app doesn't
+Version 0.1.3, Windows only, needs an NVIDIA card. There's no installer to download yet, and the app doesn't
 install its tools for you yet, so for now it's for people comfortable setting things up by hand.
 
-What changed in each update is in [CHANGELOG.md](CHANGELOG.md). The latest, 0.1.2, asks when a restoration
-has finished, then shows the restored video and tidies up. 0.1.1 cut the disk space a restoration needs
-roughly in half and added a **Free up space** button.
+Every restoration uses the tested home-video tape settings. Of the settings in the app, only **Face
+restoration** (on or off) is passed on so far; the other presets, including Animation, don't change the
+restoration yet. Don't use it for animated films yet.
+
+What changed in each update is in [CHANGELOG.md](CHANGELOG.md). The latest, 0.1.3, adds a red **Stop and delete
+project** button, gives every project its own working folder, shows the preparation before the first piece, and shows only the steps a project really
+runs. 0.1.2 added the "Restoration finished" prompt; 0.1.1 cut the disk space a restoration needs roughly in
+half.
 
 ## Requirements
 

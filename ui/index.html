@@ -117,6 +117,17 @@ svg.i.sm{width:15px;height:15px}
 .btn.ghost{background:transparent;border-color:transparent;color:var(--muted)}
 .btn.ghost:hover{color:var(--fg);border-color:var(--line)}
 .btn.small{padding:5px 10px;font-size:var(--t-12)}
+.btn.danger{background:transparent;border-color:var(--crit);color:var(--crit);font-weight:600}
+.btn.danger:hover{background:color-mix(in srgb,var(--crit) 12%,transparent)}
+.btn.danger.solid{background:var(--crit);color:#fff}
+.btn.danger.solid:hover{filter:brightness(1.08)}
+.btn:disabled,.btn.danger.solid:disabled{opacity:.45;cursor:not-allowed;filter:none}
+.modal.danger{border-color:var(--crit)}
+.modal.danger .mhd{border-bottom-color:var(--crit)}
+.modal.danger .mhd h2{color:var(--crit)}
+.confirm-tick{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--crit);border-radius:8px;cursor:pointer}
+.confirm-tick input{margin-top:2px;accent-color:var(--crit)}
+.note.crit{color:var(--crit);font-weight:500}
 .btn.block{width:100%}
 .seg{display:inline-flex;gap:2px;padding:2px;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
 .seg button{padding:5px 10px;border:0;border-radius:6px;background:transparent;color:var(--muted);font-size:var(--t-12);font-weight:500;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
@@ -981,7 +992,7 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
         <div class="srow"><div class="lbl"><b>Check for updates automatically</b></div><button class="switch" role="switch" aria-checked="true" aria-label="Check for updates"></button></div>
       </div>
       <div class="spane" data-sp="about" hidden>
-        <div class="row" style="gap:14px"><span class="wordmark" style="font-size:34px">tapewake</span><span class="chip">0.1.2</span></div>
+        <div class="row" style="gap:14px"><span class="wordmark" style="font-size:34px">tapewake</span><span class="chip">0.1.3</span></div>
         <p class="muted">Restores old video on your own computer. Version 0.1 restores home-video tapes with the tested settings, follows each restoration live and plays the finished parts. Editable settings, single-frame previews and preview clips come next.</p>
         <div class="row" style="flex-wrap:wrap"><button class="btn small" data-action="open-welcome">Show the launch screen</button><button class="btn small" data-action="tour">Take the tour</button><button class="btn small" data-action="open-setup">Run first-time setup again</button><button class="btn small" data-action="stub" data-msg="The third-party licence list appears here: FFmpeg, Real-ESRGAN, RIFE, GFPGAN and others.">Third-party licences</button></div>
       </div>
@@ -1000,6 +1011,21 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
       <p class="note mono" id="finPath"></p>
     </div>
     <div class="mft"><button class="btn" data-action="close">Later</button><button class="btn primary" data-action="job-finish" id="finBtn"><svg class="i sm"><use href="#i-check"/></svg>Finish and show the file</button></div>
+  </div>
+</div>
+
+<!-- Stop and delete a project: the red button, then the tick box, then Delete project (3 clicks) -->
+<div class="overlay" id="deleteJob" hidden>
+  <div class="modal narrow danger" role="alertdialog" aria-modal="true" aria-labelledby="delTitle" aria-describedby="delWhat">
+    <div class="mhd"><h2 id="delTitle">Stop and delete this project?</h2><button class="iconbtn" data-action="close" aria-label="Close"><svg class="i"><use href="#i-x"/></svg></button></div>
+    <div class="mbd" style="display:grid;gap:12px">
+      <p><b id="delName"></b></p>
+      <p id="delWhat" class="muted">Measuring its working files…</p>
+      <p class="muted"><b>Kept:</b> your original video, a finished restored video if there is one, and saved samples.</p>
+      <p class="note mono" id="delFolder"></p>
+      <label class="confirm-tick"><input type="checkbox" id="delTick" disabled><span>I understand this stops the restoration and deletes its working files. It can't be undone.</span></label>
+    </div>
+    <div class="mft"><button class="btn" data-action="close">Cancel</button><button class="btn danger solid" data-action="job-delete-confirm" id="delBtn" disabled><svg class="i sm"><use href="#i-trash"/></svg>Delete project</button></div>
   </div>
 </div>
 
@@ -1778,16 +1804,51 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
     try {
       const r = JSON.parse(await jobInvoke('finish'));
       toast(r.msg, r.done ? 'i-check' : 'i-info');
-      if (r.done) {
-        livePause(); S.live = null;
-        const gone = TABS.find(t => t.jobId === id);
-        const next = TABS.find(t => t.kind === 'live' && t !== gone) || TABS.find(t => t !== gone);
-        if (next) switchTab(next.id); else newTab();  // before removing it, so its state isn't saved into another tab
-        if (J.id === id) J.id = null;
-        if (gone) TABS.splice(TABS.indexOf(gone), 1);
-      }
+      if (r.done) dropJobTab(id);
     } catch (e) { toast(`Could not finish ${J.name}: ${e}`); }
     finally { liveBusy = false; $('#finBtn').disabled = false; closeTop(); renderTabs(); renderJob(); }
+  }
+  // the job file is gone: close its tab and show the next job (or a new tab)
+  function dropJobTab(id) {
+    livePause(); S.live = null;
+    const gone = TABS.find(t => t.jobId === id);
+    const next = TABS.find(t => t.kind === 'live' && t !== gone) || TABS.find(t => t !== gone);
+    if (next) switchTab(next.id); else newTab();  // before removing it, so its state isn't saved into another tab
+    if (J.id === id) J.id = null;
+    if (gone) TABS.splice(TABS.indexOf(gone), 1);
+  }
+  // Stop and delete: click 1 opens this window, click 2 ticks the box, click 3 deletes
+  let delFor = null;
+  async function askDelete() {
+    if (liveBusy || !J.id) return;
+    const id = delFor = J.id;
+    $('#delName').textContent = J.name;
+    $('#delWhat').textContent = 'Measuring its working files…';
+    $('#delFolder').textContent = '';
+    $('#delTick').checked = false; $('#delTick').disabled = true; $('#delBtn').disabled = true;
+    openO('deleteJob');
+    try {
+      const c = JSON.parse(await jobInvoke('delete', ['check']));
+      if (delFor !== id) return;
+      if (c.refused) { $('#delWhat').textContent = c.refused; return; }
+      $('#delWhat').textContent = c.shared_with
+        ? 'Its working folder is shared with another project of the same video, so only this project is removed from tapewake and its files stay for the other one.'
+        : `This stops the restoration if it is running and permanently deletes ${c.gb} GB of working files.`;
+      $('#delFolder').textContent = c.folder;
+      $('#delTick').disabled = false;
+    } catch (e) { $('#delWhat').textContent = `Could not check this project: ${e}`; }
+  }
+  $('#delTick').addEventListener('change', e => { $('#delBtn').disabled = !e.target.checked; });
+  async function liveDelete() {
+    const id = delFor;
+    if (!$('#delTick').checked || liveBusy || !id || id !== J.id) return;
+    liveBusy = true; $('#delBtn').disabled = true; $('#delTick').disabled = true;
+    try {
+      const r = JSON.parse(await jobInvoke('delete', ['confirm']));
+      toast(r.msg, r.done ? 'i-check' : 'i-info');
+      if (r.done) dropJobTab(id);
+    } catch (e) { toast(`Could not delete ${J.name}: ${e}`); }
+    finally { liveBusy = false; delFor = null; closeTop(); renderTabs(); renderJob(); }
   }
   $('#preset').addEventListener('change', e => { if (!isLive()) curTab().preset = e.target.value; renderCmd(); });
 
@@ -1840,7 +1901,9 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
     return {
       pct: Math.floor(d.pct), exact: d.pct.toFixed(2),
       state: d.state === 'running' ? 'run' : d.state === 'finished' ? 'done' : 'pause',
-      stage: d.state === 'finished' ? 'Finished' : cur ? `Piece ${cur[0]} of ${d.total} · ${cur[2]}` : d.state === 'running' ? 'Starting next piece' : 'Paused',
+      stage: d.state === 'finished' ? 'Finished' : cur ? `Piece ${cur[0]} of ${d.total} · ${cur[2]}`
+        : d.prep && d.state === 'running' ? `Preparing · ${(d.prep.find(p => p[1] < 1) || d.prep[d.prep.length - 1])[0]}`
+        : d.state === 'running' ? 'Starting next piece' : 'Paused',
       cur, remain: d.state === 'finished' ? '0 h' : fmtH(d.hours_left),
       eta: d.eta ? new Date(d.eta * 1000).toLocaleString([], { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }) : '—'
     };
@@ -1857,14 +1920,16 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
       <div style="display:grid;gap:4px"><span class="jobfile">${esc(d.name)}</span><span class="chip" style="justify-self:start">${esc(d.preset)} · live</span></div>
       <div class="row between" style="align-items:end"><span class="bigpct">${w.exact}%</span><span class="muted" style="font-size:var(--t-12)">${d.state === 'paused' ? 'Paused' : label(w.stage)}</span></div>
       <div class="bar"><i style="--p:${d.pct}%"></i></div>
-      ${w.cur ? `<ul class="stagelist">${d.stages.map((s, i) => { const v = stageVal(i); const act = i === w.cur[1] - 1 && v < 100; return `<li class="${v >= 100 ? 'done' : act ? 'active' : ''}"><span class="ic"></span><span>${label(s)}</span><span class="pc">${v >= 100 ? 'done' : act ? Math.round(v) + '%' : ''}</span></li>`; }).join('')}</ul>` : ''}
+      ${w.cur ? `<ul class="stagelist">${d.stages.map((s, i) => { const v = stageVal(i); const act = i === w.cur[1] - 1 && v < 100; return `<li class="${v >= 100 ? 'done' : act ? 'active' : ''}"><span class="ic"></span><span>${label(s)}</span><span class="pc">${v >= 100 ? 'done' : act ? Math.round(v) + '%' : ''}</span></li>`; }).join('')}</ul>`
+        : d.prep ? `<ul class="stagelist">${d.prep.map(([s, f]) => `<li class="${f >= 1 ? 'done' : d.state === 'running' ? 'active' : ''}"><span class="ic"></span><span>${label(s)}</span><span class="pc">${f >= 1 ? 'done' : Math.round(f * 100) + '%'}</span></li>`).join('')}</ul><p class="note">Getting the video and sound ready. The pieces start once this is done.</p>` : ''}
+      ${d.problem ? `<p class="note crit" role="alert">${esc(d.problem)}</p>` : ''}
       <div class="stats">
         <div class="stat"><span class="eyebrow">Pieces done</span><b>${d.done}</b></div>
         <div class="stat"><span class="eyebrow">Of</span><b>${d.total}</b></div>
         <div class="stat"><span class="eyebrow">Remaining</span><b>${w.remain}</b></div>
         <div class="stat"><span class="eyebrow">Done around</span><b style="font-size:var(--t-12)">${w.state === 'run' ? w.eta : '—'}</b></div>
       </div>
-      <div class="row">${btn}</div>
+      <div class="row" style="flex-wrap:wrap">${btn}${d.own_scripts ? '' : `<button class="btn small danger" data-action="job-delete" ${liveBusy ? 'disabled' : ''}>${icon('i-trash')}${d.state === 'running' || d.state === 'paused' ? 'Stop and delete project' : 'Delete project'}</button>`}</div>
       <p class="note">${d.state === 'paused' ? 'Paused: the graphics card is free. Resume carries on where it stopped. ' : ''}Keeps running if tapewake is closed. Finished file: ${esc(d.output.replace(/\\[^\\]*$/, ''))}.</p>`;
     $('#cmpPct').textContent = pct + '%'; $('#cmpBar').style.setProperty('--p', d.pct + '%');
     $('#cmpStage').textContent = w.stage; $('#cmpEta').textContent = w.state === 'run' ? w.remain + ' left' : '';
@@ -1872,8 +1937,10 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
     (b => { const fin = w.state === 'done'; b.dataset.action = fin ? 'job-open' : 'toggle-pause'; b.dataset.what = 'output'; b.innerHTML = fin ? icon('i-film') + 'Open finished video' : w.state === 'run' ? icon('i-pause') + 'Pause' : icon('i-play') + 'Resume'; })($('#cmpPause'));
     $('#pfPct').textContent = w.exact + '%'; $('#pfStage').textContent = (d.state === 'paused' ? 'Paused · ' : '') + w.stage;
     $('#pfFile').textContent = d.name;
-    $('#pfSeg').innerHTML = d.stages.map((s, i) => `<i style="--w:${d.shares[i] * 100};--p:${stageVal(i)}%"></i>`).join('');
-    $('#pfSegLabels').innerHTML = d.stages.map((s, i) => `<span style="--w:${d.shares[i] * 100}">${label(s)}</span>`).join('');
+    const segs = !w.cur && d.prep ? d.prep.map(([s, f]) => [s, 100 / d.prep.length, f * 100])
+      : d.stages.map((s, i) => [s, d.shares[i] * 100, stageVal(i)]);
+    $('#pfSeg').innerHTML = segs.map(([, wd, v]) => `<i style="--w:${wd};--p:${v}%"></i>`).join('');
+    $('#pfSegLabels').innerHTML = segs.map(([s, wd]) => `<span style="--w:${wd}">${label(s)}</span>`).join('');
     $('#pfStats').innerHTML = [['Pieces done', d.done], ['Of', d.total], ['Remaining', w.remain], ['Done around', w.state === 'run' ? w.eta : '—']].map(([k, v]) => `<div class="stat"><span class="eyebrow">${k}</span><b>${v}</b></div>`).join('');
     (b => { const fin = w.state === 'done'; b.dataset.action = fin ? 'job-open' : 'toggle-pause'; b.dataset.what = 'output'; b.innerHTML = fin ? icon('i-film') + 'Open finished video' : w.state === 'run' ? icon('i-pause') + 'Pause' : icon('i-play') + 'Resume'; })($('#pfPause'));
     $('#pfCancel').hidden = true;  // a job on this PC is only paused or resumed from here
@@ -2029,7 +2096,7 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
     $('[data-action="theme-cycle"]').title = 'Theme: ' + (t === 'system' ? 'follow system' : t);
   }
   function setScale(v) { S.scale = v; store.set('scale', v); root.style.setProperty('--scale', v); $$('.seg[data-group="scale"] button').forEach(b => b.setAttribute('aria-pressed', +b.dataset.v === v)); }
-  const OVERLAYS = ['lightbox', 'pfull', 'finished', 'setup', 'trouble', 'settings', 'welcome'];
+  const OVERLAYS = ['lightbox', 'pfull', 'deleteJob', 'finished', 'setup', 'trouble', 'settings', 'welcome'];
   function openO(id) { $('#' + id).hidden = false; const f = $('#' + id).querySelector('button, select, input'); f && f.focus({ preventScroll: true }); }
   function closeTop() { for (const id of OVERLAYS) { const el = $('#' + id); if (!el.hidden) { el.hidden = true; if (id === 'welcome') store.set('welcomeSeen', true); return true; } } return false; }
   function lightbox(which) {
@@ -2113,6 +2180,8 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
       'job-open': () => liveOpen(a.dataset.what),
       'job-cleanup': liveCleanup,
       'job-finish': liveFinish,
+      'job-delete': askDelete,
+      'job-delete-confirm': liveDelete,
       'queue': () => toast('Added to the batch queue. Switch to Batch to see it.'),
       'preview-frame': () => {
         if (isLive()) { liveSaveFrame(); return; }
@@ -2193,7 +2262,8 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
     const tab = curTab(), b = $('#restoreBtn');
     b.disabled = true;
     try {
-      const { id, name } = JSON.parse(await tauriInvoke('job_create', { path: tab.path }));
+      const faces = STAGES.find(s => s.id === 'faces').on;  // the one stage switch the engine follows so far
+      const { id, name } = JSON.parse(await tauriInvoke('job_create', { path: tab.path, faces }));
       Object.assign(tab, { id: 'job-' + id, kind: 'live', jobId: id, file: name, starter: false });
       S.tabId = tab.id;
       await liveFollow(id);
