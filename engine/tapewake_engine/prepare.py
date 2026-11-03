@@ -1,4 +1,6 @@
-"""CPU side of a job: cut the source into lossless pieces, then QTGMC each one.
+"""CPU side of a job: cut the source into lossless pieces, then QTGMC each one (tape mode). In progressive
+mode (the video is already progressive) each piece gets the same gentle DFTTest denoise and a resize to the
+square-pixel working size instead, at the video's own frame rate.
 
 Needs the VapourSynth Python:  python prepare.py <job.json>
 
@@ -48,9 +50,12 @@ def cut(job):
     # short video = single piece; the segment muxer wants at least one cut point so skip it
     split = ['-f', 'segment', '-segment_frames', points, '-reset_timestamps', '1',
              os.path.join(job.src, 'src_%03d.mkv')] if points else [job.src_piece(0)]
+    if job['progressive']:  # whole pictures: no field order to set
+        vf, fields = f"fps={job['source_fps']}:start_time=0", []
+    else:
+        vf, fields = f"fps={job['source_fps']}:start_time=0,setfield={order}", ['-field_order', 'tt' if order == 'tff' else 'bb']
     subprocess.run([FFMPEG, '-v', 'error', '-nostdin', '-y', '-i', job.source, '-map', '0:v:0',
-                    '-vf', f"fps={job['source_fps']}:start_time=0,setfield={order}", '-c:v', 'ffv1', '-level', '3',
-                    '-field_order', 'tt' if order == 'tff' else 'bb', *split], check=True)
+                    '-vf', vf, '-c:v', 'ffv1', '-level', '3', *fields, *split], check=True)
     made = sorted(f for f in os.listdir(job.src) if f.endswith('.mkv'))
     open(os.path.join(job.src, 'done'), 'w').write(str(len(made)))
     log(job, f'cut done: {len(made)} pieces')
@@ -64,8 +69,11 @@ def main():
     os.makedirs(job.qtgmc, exist_ok=True)
     n = cut(job)
 
+    prog = job['progressive']
+
     def piece(k):
-        return core.std.SetFieldBased(core.bs.VideoSource(source=job.src_piece(k)), 2 if tff else 1)
+        clip = core.bs.VideoSource(source=job.src_piece(k))
+        return core.std.SetFieldBased(clip, 0 if prog else 2 if tff else 1)
     def front():
         """Index of the last restored piece (-1 if none yet)."""
         return max((j for j in range(n) if os.path.exists(job.piece(j))), default=-1)
@@ -93,12 +101,18 @@ def main():
             clip = before + clip
         if after is not None:
             clip = clip + after
-        qt = q.QTempGaussMC(denoise_mode=q.QTempGaussMC.NoiseProcessMode.DENOISE, denoise_tr=2,
-                            denoise_func=q.DFTTest(sigma=job['qtgmc_sigma']),
-                            source_match_mode=q.QTempGaussMC.SourceMatchMode.BASIC).bob(clip, tff=tff)
-        lead = 2 * (margin if before is not None else 0)
-        qt = qt[lead:lead + 2 * cur.num_frames]
-        qt = core.std.SetFieldBased(core.resize.Spline36(qt, 640, 480, format=q.vs.YUV444P8), 0)
+        if prog:  # the same gentle denoise QTGMC uses (DFTTest, 2 frames each side), without deinterlacing
+            per = 1
+            qt = q.DFTTest(sigma=job['qtgmc_sigma'], tr=2).denoise(clip)
+        else:
+            per = 2  # one frame per field
+            qt = q.QTempGaussMC(denoise_mode=q.QTempGaussMC.NoiseProcessMode.DENOISE, denoise_tr=2,
+                                denoise_func=q.DFTTest(sigma=job['qtgmc_sigma']),
+                                source_match_mode=q.QTempGaussMC.SourceMatchMode.BASIC).bob(clip, tff=tff)
+        lead = per * (margin if before is not None else 0)
+        qt = qt[lead:lead + per * cur.num_frames]
+        w, h = (job['work_w'], job['work_h']) if prog else (640, 480)
+        qt = core.std.SetFieldBased(core.resize.Spline36(qt, w, h, format=q.vs.YUV444P8), 0)  # stays YUV: no matrix
         part = out.replace('.mkv', '.part.mkv')
         enc = subprocess.Popen([FFMPEG, '-v', 'error', '-nostdin', '-y', '-f', 'yuv4mpegpipe', '-i', '-',
                                 '-c:v', 'ffv1', '-level', '3', '-pix_fmt', 'yuv444p', part], stdin=subprocess.PIPE)
@@ -108,7 +122,7 @@ def main():
             os.replace(part, out)
         done_now += 1
         el = time.time() - t0
-        log(job, f'piece {k + 1}/{n} deinterlaced ({2 * cur.num_frames} frames); about '
+        log(job, f'piece {k + 1}/{n} {"prepared" if prog else "deinterlaced"} ({per * cur.num_frames} frames); about '
                  f'{el / done_now * (n - k - 1) / 3600:.1f} h left')
     log(job, '=== deinterlacing done for the whole video')
 

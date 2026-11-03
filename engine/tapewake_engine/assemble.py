@@ -18,7 +18,7 @@ import numpy as np
 import torch
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import CODEFORMER, FFMPEG, FPS, Progress, delivery_args, reader, track_detail  # noqa: E402
+from common import CODEFORMER, FFMPEG, FPS, H, W, Progress, delivery_args, reader, track_detail  # noqa: E402
 
 sys.path.insert(0, CODEFORMER)
 from basicsr.utils import img2tensor  # noqa: E402
@@ -26,7 +26,7 @@ from facelib.utils.face_restoration_helper import FaceRestoreHelper  # noqa: E40
 from torchvision.transforms.functional import normalize  # noqa: E402
 
 TEMPLATE_EYE_DIST = 125.92  # eye distance in the aligned crop
-UP = 2  # 640x480 -> 1280x960
+UP = 2  # working size (640x480 for tape) -> twice that
 FACE_PARTS = list(range(1, 14))  # same labels as faces_find
 MASK_SIGMA = 16  # mask feathering, in crop px
 MASK_BORDER = 24  # mask is 0 this close to the crop edge
@@ -132,12 +132,12 @@ def main():
         audio_args = ['-i', os.path.join(a.clip_dir, a.audio), '-map', '0:v', '-map', '1:a', '-c:a', 'aac',
                       '-b:a', '256k', '-shortest']
     enc = subprocess.Popen([FFMPEG, '-v', 'error', '-nostdin', '-y', '-f', 'rawvideo', '-pix_fmt', 'bgr24',
-                            '-s', '1280x960', '-r', FPS, '-i', '-', *audio_args, *delivery_args(), a.out],
+                            '-s', f'{UP * W}x{UP * H}', '-r', FPS, '-i', '-', *audio_args, *delivery_args(), a.out],
                            stdin=subprocess.PIPE)
     rng = np.random.default_rng(1995)
     pasted, t0 = 0, time.time()
     prog = Progress(a.clip_dir, 'assembling', last - first)
-    for f, bg in enumerate(reader(os.path.join(a.clip_dir, a.bg), 1280, 960)):
+    for f, bg in enumerate(reader(os.path.join(a.clip_dir, a.bg), UP * W, UP * H)):
         if f >= last:
             break
         if f < first:
@@ -163,7 +163,7 @@ def main():
             y = img @ np.float32([0.114, 0.587, 0.299])
             img += (a.sharpen * (y - cv2.GaussianBlur(y, (5, 5), 0)))[:, :, None]
         if a.grain > 0:
-            g = cv2.GaussianBlur(rng.standard_normal((960, 1280)).astype(np.float32), (0, 0), 0.7)
+            g = cv2.GaussianBlur(rng.standard_normal((UP * H, UP * W)).astype(np.float32), (0, 0), 0.7)
             img += (g * (a.grain / 0.4))[:, :, None]  # the blur leaves ~0.4 of the std
         enc.stdin.write(np.clip(img + 0.5, 0, 255).astype(np.uint8).tobytes())
         prog.update(f - first + 1)

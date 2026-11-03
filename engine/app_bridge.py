@@ -4,7 +4,9 @@ The app embeds this file and runs it with the engine's Python. Every command pri
 
     jobs                       list the jobs
     tools                      setup checks, missing tools
-    create <video> [--no-faces]  new job with the tested settings (optionally without face restoration)
+    probe <video>              scan type, frame rate and size, and which mode (tape or progressive) fits it
+    create <video> [--mode tape|progressive] [--no-faces] [--no-audio]
+                               new job with the tested settings; refuses a mode the video can't use
     status|pause|resume <id>   state and progress of a job
     pieces <id>                frame count of each finished piece
     frame <id> K J             frame J of piece K, restored and original, as data URLs
@@ -31,7 +33,7 @@ import time
 sys.path.insert(0, os.environ.get('TAPEWAKE_ENGINE') or os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(sys.path[0], 'tapewake_engine'))
 from settings import (APP_DATA, CODEFORMER, FFMPEG, FFPROBE, JOBS, MODELS, PYTHON, TOOLS_FILE, VS_PYTHON,  # noqa: E402
-                      Job, all_jobs, job_file, work_root)
+                      Job, all_jobs, job_file, progressive_settings, work_root)
 import space  # noqa: E402
 
 NO_WINDOW = 0x08000000
@@ -110,6 +112,8 @@ def status(job, ctl, msg=''):
         'log': [ln.split('] ', 1)[-1] for ln in ctl.last_lines(4)],
         'output': job.output, 'msg': msg, 'space': space_info(job, state),
         'own_scripts': bool(job.data.get('controller')),
+        'mode': 'progressive' if job['progressive'] else 'tape', 'fps': fps(job), 'per': 1 if job['progressive'] else 2,
+        'faces': bool(job['faces']), 'restore_audio': bool(job['restore_audio']),
         'prep': None if state == 'finished' else ctl.prep(),  # [step, fraction] until piece 1 starts
         'problem': ctl.prep_problem() if state == 'running' else '',
     }
@@ -217,7 +221,7 @@ def pieces(job):
         if known.get(str(k), [None])[0] != size:
             dur = subprocess.run([FFPROBE, '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', p],
                                  capture_output=True, text=True, creationflags=NO_WINDOW).stdout
-            known[str(k)] = [size, round(float(dur) * FPS)]
+            known[str(k)] = [size, round(float(dur) * fps(job))]
         out.append(known[str(k)][1])
     with open(cache_file + '.tmp', 'w', encoding='utf-8') as f:
         json.dump(known, f)
@@ -243,6 +247,19 @@ def parity(job):
     return 'tff' if job.settings['field_order'] == 'tff' else 'bff'
 
 
+def fps(job):
+    """Restored frames a second: 59.94 in tape mode (one per field), the video's own rate in progressive mode."""
+    num, den = (int(x) for x in job['out_fps'].split('/'))
+    return num / den
+
+
+def to_original(job):
+    """ffmpeg filters that turn the source cut into frames that line up with the restored ones."""
+    if job['progressive']:
+        return f"scale={job['work_w']}:{job['work_h']},setsar=1"
+    return f'bwdif=mode=send_field:parity={parity(job)}:deint=all,scale=640:480,setsar=1'
+
+
 def frame(job, k, j):
     """Restored frame j of piece k, plus the original at the same moment.
 
@@ -251,6 +268,11 @@ def frame(job, k, j):
     if os.path.exists(job.cleaned_flag):
         raise SystemExit(CLEANED_MSG)
     c = cache_dir(job)
+    if job['progressive']:  # one restored frame per source frame
+        t = f'{(j - 0.5) / fps(job):.6f}' if j else '0'
+        return {'rest': grab(job, ['-ss', t, '-i', job.piece(k)], os.path.join(c, f'{k:03d}_{j:05d}_rest.jpg')),
+                'orig': grab(job, ['-ss', t, '-i', job.src_piece(k), '-vf', to_original(job)],
+                             os.path.join(c, f'{k:03d}_{j:05d}_orig.jpg'))}
     s0 = max(0, j // 2 - 2)  # start a little early so bwdif has neighbours
     pick = 2 * (j // 2 - s0) + j % 2
     return {
@@ -276,14 +298,14 @@ def video(job, k):
     if not os.path.exists(job.piece(k)):
         raise SystemExit(f'Piece {k + 1} is not finished yet.')
     frames = pieces(job)[k]
-    cols = int(frames * THUMBS_PER_S / FPS) + 2
+    cols = int(frames * THUMBS_PER_S / fps(job)) + 2
     orig = os.path.join(c, f'{k:03d}_orig.mp4')
     strip = os.path.join(c, f'{k:03d}_strip.jpg')
     if not (os.path.exists(orig) and os.path.exists(strip)):
         subprocess.run([FFMPEG, '-v', 'error', '-nostdin', '-y', '-threads', '2', '-i', job.src_piece(k),
                         '-filter_complex',
-                        f'bwdif=mode=send_field:parity={parity(job)}:deint=all,scale=640:480,setsar=1,split[a][b];'
-                        f'[b]fps={THUMBS_PER_S},scale=128:96,tile={cols}x1[t]',
+                        f'{to_original(job)},split[a][b];'
+                        f'[b]fps={THUMBS_PER_S},scale=-2:96,tile={cols}x1[t]',
                         '-map', '[a]', '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '20', '-threads', '2',
                         '-movflags', '+faststart', '-an', orig + '.tmp.mp4',
                         '-map', '[t]', '-frames:v', '1', '-q:v', '4', strip + '.tmp.jpg'],
@@ -350,15 +372,80 @@ def checks():
     return out
 
 
-def create(source, faces=True):
-    """Make a job file for `source` with the tested settings (faces=False turns face restoration off).
+TAPE_FPS = '30000/1001'  # tape mode is tested on NTSC tapes only
 
-    Work files go in tools.json's work_root (or next to the video), in a folder no other job uses; the result goes
-    next to the video.
+
+def probe_video(path):
+    """What kind of video this is, and which mode can restore it.
+
+    scan is 'interlaced' (each frame is two fields: tape mode deinterlaces it), 'progressive' (whole pictures:
+    progressive mode) or 'unknown' (the file doesn't say). work_w x work_h is the square-pixel working size for
+    progressive mode, rounded to multiples of 8 for the flicker smoothing.
+    """
+    d = json.loads(subprocess.run([FFPROBE, '-v', 'error', '-show_entries',
+                                   'stream=codec_type,width,height,r_frame_rate,field_order,sample_aspect_ratio:'
+                                   'format=duration', '-of', 'json', path],
+                                  capture_output=True, text=True, creationflags=NO_WINDOW).stdout or '{}')
+    v = next((s for s in d.get('streams', []) if s.get('codec_type') == 'video'), None)
+    if not v:
+        raise SystemExit('This file has no video tapewake can read.')
+    w, h, rate = int(v['width']), int(v['height']), v.get('r_frame_rate', '0/1')
+    fo = v.get('field_order', 'unknown')
+    scan = 'interlaced' if fo in ('tt', 'bb', 'tb', 'bt') else 'progressive' if fo == 'progressive' else 'unknown'
+    try:
+        sn, sd = (int(x) for x in v.get('sample_aspect_ratio', '1:1').split(':'))
+    except ValueError:
+        sn = sd = 1
+    sar = sn / sd if sn > 0 and sd > 0 else 1.0
+    num, den = (int(x) for x in rate.split('/'))
+    per8 = lambda x: max(8, int(round(x / 8)) * 8)  # noqa: E731
+    modes = []
+    if scan != 'progressive' and rate == TAPE_FPS:
+        modes.append('tape')
+    if scan != 'interlaced':
+        modes.append('progressive')
+    mode = 'progressive' if scan == 'progressive' else 'tape' if 'tape' in modes else modes[0] if modes else None
+    return {'scan': scan, 'fps': rate, 'fps_label': f'{num / den:.3f}'.rstrip('0').rstrip('.') if den else '?',
+            'width': w, 'height': h, 'work_w': per8(w * sar), 'work_h': per8(h),
+            'audio': any(s.get('codec_type') == 'audio' for s in d.get('streams', [])),
+            'duration': float(d.get('format', {}).get('duration') or 0), 'modes': modes, 'mode': mode}
+
+
+def mode_problem(probe, mode):
+    """Why `mode` can't restore this video, or ''. The app shows the same reasons before starting."""
+    rate = f"{probe['fps_label']} fps"
+    if mode == 'tape':
+        if probe['scan'] == 'progressive':
+            return ('This video is already progressive: every frame is a whole picture, so there is nothing to '
+                    'deinterlace. Turn Deinterlace off (Progressive video preset).')
+        if probe['fps'] != TAPE_FPS:
+            return (f'Deinterlacing is only tested on NTSC tapes (29.97 fps). This video is {rate}, so tapewake '
+                    "can't restore it yet.")
+    elif mode == 'progressive':
+        if probe['scan'] == 'interlaced':
+            return ('This video is interlaced: each frame holds two half-pictures taken at different moments. '
+                    'It needs Deinterlace on (Home-video tape preset).')
+    else:
+        return f'Unknown mode {mode!r}.'
+    return ''
+
+
+def create(source, faces=True, audio=True, mode=None):
+    """Make a job file for `source` with the tested settings.
+
+    mode is 'tape' (deinterlace, the tested home-video settings) or 'progressive' (no deinterlacing, the video's own
+    frame rate); None picks the one that fits. faces=False turns face restoration off, audio=False keeps the
+    original sound as it is. Work files go in tools.json's work_root (or next to the video), in a folder no other
+    job uses; the result goes next to the video.
     """
     source = os.path.abspath(source)
     if not os.path.isfile(source):
         raise SystemExit(f'Video not found: {source}')
+    probe = probe_video(source)
+    mode = mode or probe['mode']
+    why = mode_problem(probe, mode) if mode else "tapewake can't tell how to restore this video."
+    if why:
+        raise SystemExit(why)
     base = os.path.splitext(os.path.basename(source))[0]
     slug = '-'.join(filter(None, ''.join(c if c.isascii() and c.isalnum() else '-' for c in base.lower()).split('-')))
     slug = slug[:48].strip('-') or 'video'
@@ -370,10 +457,17 @@ def create(source, faces=True):
     folder, n = os.path.join(work_root(source), f'{base} - tapewake work'), 2
     while os.path.exists(folder) or os.path.normcase(os.path.abspath(folder)) in used:
         folder, n = os.path.join(work_root(source), f'{base} - tapewake work ({n})'), n + 1
+    settings = progressive_settings(probe) if mode == 'progressive' else {}
+    if not faces:
+        settings['faces'] = False
+    if not audio:
+        settings['restore_audio'] = False
+    preset = 'Progressive video · Tested' if mode == 'progressive' else 'Home-video tape · Tested'
+    off = [n for n, on in (('face restoration', faces), ('sound restoration', audio)) if not on]
     data = {'id': job_id, 'name': os.path.basename(source), 'source': source, 'folder': folder,
             'output': os.path.join(os.path.dirname(source), f'{base} - Restored.mkv'),
-            'preset': 'Home-video tape · Tested' if faces else 'Home-video tape · Tested, no face restoration',
-            'settings': {} if faces else {'faces': False}, 'created': time.strftime('%Y-%m-%d %H:%M:%S')}
+            'preset': preset + (', no ' + ' or '.join(off) if off else ''),
+            'settings': settings, 'created': time.strftime('%Y-%m-%d %H:%M:%S')}
     with open(job_file(job_id), 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
     return data
@@ -399,11 +493,16 @@ def main():
     if cmd == 'tools':
         print(json.dumps({'missing': missing_tools(), 'tools_file': TOOLS_FILE, 'checks': checks()}))
         return
+    if cmd == 'probe':
+        print(json.dumps(probe_video(sys.argv[2])))
+        return
     if cmd == 'create':
         missing = missing_tools()
         if missing:
             raise SystemExit('tapewake needs ' + ', '.join(missing) + f' before it can restore. Their locations go in {TOOLS_FILE}.')
-        d = create(sys.argv[2], faces='--no-faces' not in sys.argv[3:])
+        rest = sys.argv[3:]
+        mode = rest[rest.index('--mode') + 1] if '--mode' in rest else None
+        d = create(sys.argv[2], faces='--no-faces' not in rest, audio='--no-audio' not in rest, mode=mode)
         print(json.dumps({'id': d['id'], 'name': d['name']}))
         return
     job = Job(job_file(sys.argv[2]))

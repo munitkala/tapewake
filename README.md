@@ -30,14 +30,23 @@ Nothing is uploaded anywhere.
 
 ## Status
 
-Version 0.1.3, Windows only, needs an NVIDIA card. There's no installer to download yet, and the app doesn't
+Version 0.1.4, Windows only, needs an NVIDIA card. There's no installer to download yet, and the app doesn't
 install its tools for you yet, so for now it's for people comfortable setting things up by hand.
 
-Every restoration uses the tested home-video tape settings. Of the settings in the app, only **Face
-restoration** (on or off) is passed on so far; the other presets, including Animation, don't change the
-restoration yet. Don't use it for animated films yet.
+tapewake has two tested modes and picks the one that fits each video:
 
-What changed in each update is in [CHANGELOG.md](CHANGELOG.md). The latest, 0.1.3, adds a red **Stop and delete
+- **Home-video tape**: interlaced NTSC tapes (29.97 fps). Deinterlaced to one frame per field (59.94 fps),
+  then restored at 1280×960.
+- **Progressive video**: videos whose frames are already whole pictures, such as DVD and Blu-ray rips and
+  digital video. No deinterlacing, the frame rate stays the same, and the picture is restored at twice its
+  size. Face and sound restoration start off.
+
+In both, you can switch **Face restoration** and **Audio** on or off. The other settings and presets
+(including Animation) don't change the restoration yet: tapewake says so and won't start until they're back
+at the tested values. Interlaced videos that aren't NTSC (for example PAL at 25 fps) can't be restored yet.
+
+What changed in each update is in [CHANGELOG.md](CHANGELOG.md). The latest, 0.1.4, adds Progressive
+video mode and checks the settings before starting. 0.1.3 adds a red **Stop and delete
 project** button, gives every project its own working folder, shows the preparation before the first piece, and shows only the steps a project really
 runs. 0.1.2 added the "Restoration finished" prompt; 0.1.1 cut the disk space a restoration needs roughly in
 half.

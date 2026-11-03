@@ -11,7 +11,14 @@ import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from settings import CODEFORMER, FFMPEG, FFPROBE, MODELS, WEIGHTS  # noqa: E402,F401 - re-exported for the steps
 
-FPS = '60000/1001'  # after deinterlacing (frame per field)
+# The working picture every step reads. Tape mode: deinterlaced to 640x480 at 59.94 (one frame per field).
+# Progressive mode keeps the video's own frame rate and its own size, which run.py passes on in these variables.
+FPS = os.environ.get('TAPEWAKE_FPS', '60000/1001')
+W, H = int(os.environ.get('TAPEWAKE_W', 640)), int(os.environ.get('TAPEWAKE_H', 480))
+MATRIX = os.environ.get('TAPEWAKE_MATRIX', 'bt601')
+PRIMARIES = os.environ.get('TAPEWAKE_PRIMARIES', 'smpte170m')
+_num, _den = (int(x) for x in FPS.split('/'))
+FPS_F = _num / _den
 
 
 def reader(path, w, h, vf=None):
@@ -33,7 +40,7 @@ def reader(path, w, h, vf=None):
 
 
 def qtgmc_reader(path):
-    return reader(path, 640, 480, 'scale=in_color_matrix=bt601:in_range=tv,format=bgr24')
+    return reader(path, W, H, f'scale=in_color_matrix={MATRIX}:in_range=tv,format=bgr24')
 
 
 def lossless_writer(path, w, h):
@@ -73,11 +80,11 @@ def track_detail(crops, ed, step=3, smooth=31):
 
 
 def frame_total(path):
-    """Approximate frame count at 59.94, from the duration. Only used for progress."""
+    """Approximate frame count at the working frame rate, from the duration. Only used for progress."""
     out = subprocess.run([FFPROBE, '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', path],
                          capture_output=True, text=True, creationflags=0x08000000).stdout
     try:
-        return round(float(out) * 60000 / 1001)
+        return round(float(out) * FPS_F)
     except ValueError:
         return 0
 
@@ -110,5 +117,5 @@ class Progress:
 def delivery_args(crf=14):
     """ffmpeg args for the final H.264 encode (converted + tagged BT.709 for HD players)."""
     return ['-vf', 'scale=out_color_matrix=bt709:out_range=tv,format=yuv420p', '-c:v', 'libx264',
-            '-crf', str(crf), '-preset', 'slow', '-colorspace', 'bt709', '-color_primaries', 'smpte170m',
+            '-crf', str(crf), '-preset', 'slow', '-colorspace', 'bt709', '-color_primaries', PRIMARIES,
             '-color_trc', 'bt709', '-color_range', 'tv']

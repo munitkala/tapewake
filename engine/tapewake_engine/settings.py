@@ -87,7 +87,24 @@ TESTED = {
     'qtgmc_ahead': 8,
     # True keeps every deinterlaced piece and the work folder after the finish (for debugging)
     'keep_work_files': False,
+    # False keeps the original sound as it is (one audio track) instead of restoring it
+    'restore_audio': True,
+    # Tape mode: QTGMC to one frame per field (59.94) at 640x480. Progressive mode (progressive: True) is for
+    # videos whose frames are already whole pictures: no deinterlacing, the video keeps its own frame rate
+    # (out_fps = source_fps) and gets a square-pixel working size of its own (work_w x work_h, even numbers).
+    # Everything after that (faces, upscale 2x, sharpen, grain) is the same in both modes.
+    'progressive': False, 'out_fps': '60000/1001', 'work_w': 640, 'work_h': 480,
+    'color_matrix': 'bt601', 'color_primaries': 'smpte170m',  # how to read the source's colours
 }
+
+
+def progressive_settings(probe):
+    """The settings that switch a job to progressive mode, from probe_video()."""
+    return {'progressive': True, 'source_fps': probe['fps'], 'out_fps': probe['fps'],
+            # about the same work per piece as tape mode (1000 tape frames become 2000 at 640x480)
+            'work_w': probe['work_w'], 'work_h': probe['work_h'], 'piece_frames': 1500,
+            'color_matrix': 'bt709' if probe['height'] >= 720 else 'bt601',
+            'color_primaries': 'bt709' if probe['height'] >= 720 else 'smpte170m'}
 
 
 class Job:

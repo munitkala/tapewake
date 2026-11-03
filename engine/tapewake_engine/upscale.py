@@ -20,7 +20,7 @@ import torch.nn.functional as F
 from torchvision.models.optical_flow import Raft_Large_Weights, Raft_Small_Weights, raft_large, raft_small
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import MODELS, Progress, frame_total, lossless_writer, qtgmc_reader  # noqa: E402
+from common import H, MODELS, W, Progress, frame_total, lossless_writer, qtgmc_reader  # noqa: E402
 
 GEN = os.path.join(MODELS, 'esrgan-weights', 'realesr-general-x4v3.pth')
 WDN = os.path.join(MODELS, 'esrgan-weights', 'realesr-general-wdn-x4v3.pth')
@@ -104,7 +104,7 @@ def main():
     if not a.no_trt:  # TensorRT is ~2x faster, practically the same output (57.7 dB PSNR vs torch)
         try:
             from trt_upscaler import TRTUpscaler
-            net = TRTUpscaler(net, a.dn)
+            net = TRTUpscaler(net, a.dn, h=H, w=W)
             print('upscaler: TensorRT', flush=True)
         except Exception as e:  # noqa: BLE001 - any TensorRT problem: carry on with PyTorch
             print(f'upscaler: PyTorch (TensorRT unavailable: {e!r})', flush=True)
@@ -112,7 +112,7 @@ def main():
         flow_net = raft_large(weights=Raft_Large_Weights.DEFAULT).eval().to(dev)
     else:
         flow_net = raft_small(weights=Raft_Small_Weights.DEFAULT).eval().to(dev)
-    enc = lossless_writer(a.out, 1280, 960)
+    enc = lossless_writer(a.out, 2 * W, 2 * H)
     prev_src = prev_detail = None
     n = cuts = 0
     t0 = time.time()
@@ -121,8 +121,8 @@ def main():
         for frame in qtgmc_reader(a.src):
             s = torch.from_numpy(frame[:, :, ::-1].copy()).to(dev).permute(2, 0, 1).unsqueeze(0).float() / 255
             up4 = net(s.half()).float().clamp(0, 1)
-            ai = F.interpolate(up4, size=(960, 1280), mode='bicubic', antialias=True, align_corners=False)
-            src2 = F.interpolate(s, size=(960, 1280), mode='bicubic', align_corners=False).clamp(0, 1)
+            ai = F.interpolate(up4, size=(2 * H, 2 * W), mode='bicubic', antialias=True, align_corners=False)
+            src2 = F.interpolate(s, size=(2 * H, 2 * W), mode='bicubic', align_corners=False).clamp(0, 1)
             if a.no_anchor:
                 base, detail = torch.zeros_like(ai), ai
             else:
@@ -137,8 +137,8 @@ def main():
                 else:
                     alpha = (a.stab_alpha + err / a.stab_k).clamp(0, 1)
                     alpha = torch.where(valid, alpha, torch.ones_like(alpha))
-                    alpha2 = F.interpolate(alpha, size=(960, 1280), mode='bilinear', align_corners=False)
-                    flow2 = F.interpolate(flow, size=(960, 1280), mode='bilinear', align_corners=False) * 2
+                    alpha2 = F.interpolate(alpha, size=(2 * H, 2 * W), mode='bilinear', align_corners=False)
+                    flow2 = F.interpolate(flow, size=(2 * H, 2 * W), mode='bilinear', align_corners=False) * 2
                     prev_detail_w, _ = warp(prev_detail, flow2)
                     detail = alpha2 * detail + (1 - alpha2) * prev_detail_w
             prev_src, prev_detail = s, detail

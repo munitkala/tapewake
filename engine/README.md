@@ -71,6 +71,15 @@ File Explorer with the restored video selected, does the same cleanup (skipped f
 own scripts), deletes the job's player cache and removes its job file. The restored video, the samples and
 the log are kept. **Later** leaves the job as it is.
 
+**Modes.** `app_bridge.py probe <video>` reads the scan type, frame rate and size. Tape mode (the default
+settings) deinterlaces NTSC tapes to 640x480 at 59.94. Progressive mode (`create <video> --mode progressive`,
+chosen automatically for progressive videos; `settings.progressive_settings`) skips QTGMC: prepare.py gives each
+piece the same DFTTest denoise and a resize to the square-pixel working size (`work_w` x `work_h`, multiples of 8
+for RAFT), at the source frame rate (`out_fps`). run.py passes the working size and rate to every step
+(`TAPEWAKE_W/H/FPS/MATRIX/PRIMARIES`, read in common.py; the defaults are the tape values). `create` refuses a
+mode the video can't use (`mode_problem`). `--no-faces` and `--no-audio` turn face and sound restoration off;
+without sound restoration the original sound is kept as the only track.
+
 **Stop and delete project** (`app_bridge.py delete <id> check|confirm`, three clicks in the app) stops a job,
 deletes its working folder's engine files (`space.project_files`: src, qtgmc, work, pieces, audio, logs) and a
 half-written restored video, its player cache and its job file. The source, a finished restored video and the

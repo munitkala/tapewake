@@ -119,9 +119,20 @@ async fn pick_video() -> Option<String> {
     .flatten()
 }
 
-/// Create a job for `path` with the tested settings. Returns {"id", "name"}.
+/// Scan type, frame rate and size of `path`, and which modes can restore it (app_bridge.probe_video).
 #[tauri::command]
-async fn job_create(app: tauri::AppHandle, path: String, faces: Option<bool>) -> Result<String, String> {
+async fn video_probe(app: tauri::AppHandle, path: String) -> Result<String, String> {
+    if !std::path::Path::new(&path).is_file() {
+        return Err("That video was not found.".into());
+    }
+    bridge(&app, vec!["probe".into(), path]).await
+}
+
+/// Create a job for `path` with the tested settings. Returns {"id", "name"}.
+/// mode: "tape" or "progressive" (None: the one that fits); faces / audio false turn those steps off.
+#[tauri::command]
+async fn job_create(app: tauri::AppHandle, path: String, faces: Option<bool>, audio: Option<bool>,
+                    mode: Option<String>) -> Result<String, String> {
     if !std::path::Path::new(&path).is_file() {
         return Err("That video was not found.".into());
     }
@@ -129,12 +140,20 @@ async fn job_create(app: tauri::AppHandle, path: String, faces: Option<bool>) ->
     if faces == Some(false) {
         args.push("--no-faces".into());
     }
+    if audio == Some(false) {
+        args.push("--no-audio".into());
+    }
+    match mode.as_deref() {
+        None => {}
+        Some(m @ ("tape" | "progressive")) => args.extend(["--mode".into(), m.to_string()]),
+        Some(m) => return Err(format!("unknown mode {m}")),
+    }
     bridge(&app, args).await
 }
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![job, pick_video, job_create])
+        .invoke_handler(tauri::generate_handler![job, pick_video, job_create, video_probe])
         .run(tauri::generate_context!())
         .expect("error while running tapewake");
 }

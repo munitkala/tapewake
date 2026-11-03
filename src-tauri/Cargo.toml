@@ -1,6 +1,6 @@
 [package]
 name = "tapewake"
-version = "0.1.3"
+version = "0.1.4"
 description = "tapewake: restore old home videos on your own computer"
 edition = "2021"
 

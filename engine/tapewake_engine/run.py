@@ -109,7 +109,7 @@ class Runner:
                                   '-c:a:0', 'flac', '-c:a:1', 'copy', '-metadata:s:a:0', 'title=Restored audio',
                                   '-metadata:s:a:1', 'title=Original audio', '-disposition:a:0', 'default',
                                   '-disposition:a:1', '0'], 2
-        elif sound == 'silent':  # nothing worth restoring, keep the original
+        elif sound in ('silent', 'keep'):  # nothing worth restoring, or restoring turned off: keep the original
             tracks, want_audio = ['-i', job.source, '-map', '0:v', '-map', '1:a:0', '-c:a', 'copy',
                                   '-metadata:s:a:0', 'title=Original audio'], 1
         else:
@@ -124,7 +124,8 @@ class Runner:
         want = sum(frames_of(job.piece(k)) for k in range(n_pieces))
         audio = sum(1 for s in info['streams'] if s['codec_type'] == 'audio')
         dur = float(info['format']['duration'])
-        if frames == want and audio == want_audio and abs(dur - frames / (60000 / 1001)) < 1.0:
+        num, den = (int(x) for x in job['out_fps'].split('/'))
+        if frames == want and audio == want_audio and abs(dur - frames * den / num) < 1.0:
             os.replace(part, job.output)
             self.log(f'=== FINISHED: {job.output} ({frames} frames, {dur / 60:.1f} min, {audio} audio tracks) - all checks OK')
             freed = space.clear_after_finish(job)
@@ -147,7 +148,12 @@ class Runner:
             self.log(f'not starting: already finished ({job.output}). Delete or move it to restore again.')
             return
         ctypes.windll.kernel32.SetThreadExecutionState(0x80000001)  # don't let Windows sleep mid-run
+        # the working picture for every step (see common.py): tape mode 640x480 59.94, progressive its own
+        os.environ.update(TAPEWAKE_W=str(job['work_w']), TAPEWAKE_H=str(job['work_h']), TAPEWAKE_FPS=job['out_fps'],
+                          TAPEWAKE_MATRIX=job['color_matrix'], TAPEWAKE_PRIMARIES=job['color_primaries'])
         self.log('=== run started (finished pieces are skipped)')
+        if job['progressive']:
+            self.log(f"progressive mode: no deinterlacing, {job['work_w']}x{job['work_h']} at {job['out_fps']} fps")
         # cutting/deinterlacing runs in the background the whole time
         if not running('prepare.py', job.path):
             subprocess.Popen([VS_PYTHON, os.path.join(HERE, 'prepare.py'), job.path], creationflags=NO_WINDOW,
@@ -155,7 +161,10 @@ class Runner:
             self.log('cutting and deinterlacing (re)started in the background')
         # audio first, while the first pieces are still being prepared
         sound = source_sound(job)
-        if sound != 'ok':
+        if sound == 'ok' and not job['restore_audio']:
+            sound = 'keep'
+            self.log('sound restoration is off: the original sound is kept as it is')
+        elif sound != 'ok':
             self.log(f"the source has {'no sound' if sound == 'none' else 'only silence or hiss'}: "
                      "its sound is kept as it is, not restored")
         elif not os.path.exists(job.audio):

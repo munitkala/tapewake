@@ -2,7 +2,7 @@
 
     python compare.py <job.json> --pieces N [--name NAME]
 
-Original on the left (bobbed and scaled up to match), restored on the right. Encoded with NVENC
+Original on the left (bobbed in tape mode, then scaled up to match), restored on the right. Encoded with NVENC
 HEVC so it's quick, saved to the samples folder as "<name> - Before and after.mp4".
 """
 import argparse
@@ -40,13 +40,16 @@ def main():
     with open(lst, 'w', encoding='utf-8') as f:
         f.writelines(f"file '{job.piece(k)}'\n" for k in range(a.pieces))
     want = sum(frames(job.piece(k)) for k in range(a.pieces))
-    dur = want * 1001 / 60000
+    num, den = (int(x) for x in job['out_fps'].split('/'))
+    dur = want * den / num
     print(f'{a.pieces} pieces, {want} frames, {dur / 60:.1f} min', flush=True)
     parity = job['field_order']
+    bob = '' if job['progressive'] else f'bwdif=mode=send_field:parity={parity}:deint=all,'  # tape: one per field
+    w, h, tb = 2 * job['work_w'], 2 * job['work_h'], f'{den}/{num}'
     # match prepare.py's timeline so the two sides stay in sync
-    fc = (f"[0:v]fps={job['source_fps']}:start_time=0,bwdif=mode=send_field:parity={parity}:deint=all,"
-          f"scale=1280:960:flags=bicubic,setsar=1,settb=1001/60000,setpts=N,{label('ORIGINAL')}[b];"
-          f"[1:v]setsar=1,settb=1001/60000,setpts=N,{label('RESTORED')}[r];"
+    fc = (f"[0:v]fps={job['source_fps']}:start_time=0,{bob}"
+          f"scale={w}:{h}:flags=bicubic,setsar=1,settb={tb},setpts=N,{label('ORIGINAL')}[b];"
+          f"[1:v]setsar=1,settb={tb},setpts=N,{label('RESTORED')}[r];"
           f"[b][r]hstack=inputs=2,format=yuv420p[v]")
     part = out.replace('.mp4', '.part.mp4')
     # restored audio if we have it, otherwise the original
@@ -55,7 +58,7 @@ def main():
                     '-i', lst, *sound, '-filter_complex', fc, '-map', '[v]', '-map', '2:a' if sound else '0:a:0?', '-frames:v',
                     str(want), '-t', f'{dur:.3f}', '-c:v', 'hevc_nvenc', '-preset', 'p7', '-tune', 'hq', '-rc', 'vbr',
                     '-cq', '18', '-b:v', '0', '-maxrate', '60M', '-bufsize', '120M', '-tag:v', 'hvc1',
-                    '-r', '60000/1001', '-c:a', 'aac', '-b:a', '256k', '-movflags', '+faststart', part], check=True)
+                    '-r', job['out_fps'], '-c:a', 'aac', '-b:a', '256k', '-movflags', '+faststart', part], check=True)
     got = frames(part)
     if abs(got - want) > 2:
         print(f'CHECK FAILED: {got} of {want} frames (kept {part})')

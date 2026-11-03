@@ -92,6 +92,10 @@ svg.i.sm{width:15px;height:15px}
 .jobtab .x:hover{background:var(--raised);color:var(--fg)}
 .jobtab.add{padding:6px 12px;gap:6px;border-style:dashed}
 .locked-note{font-size:var(--t-12);color:var(--muted);border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--raised)}
+.mode-note{font-size:var(--t-12);color:var(--fg);border:1px solid var(--accent);border-radius:8px;padding:8px 10px;background:var(--accent-soft);display:grid;gap:6px}
+.mode-note.bad{border-color:var(--crit);background:color-mix(in srgb,var(--crit) 10%,transparent)}
+.mode-note ul{margin:0;padding-left:18px;display:grid;gap:4px}
+.mode-note .bad-t{color:var(--crit);font-weight:600}
 .pipeline.locked .stages{pointer-events:none;opacity:.8}
 .modes{margin-inline:auto;display:flex;gap:2px;padding:3px;border:1px solid var(--line);border-radius:10px;background:var(--panel);overflow-x:auto;max-width:100%;scrollbar-width:none}
 .modes button{display:flex;align-items:center;gap:7px;padding:6px 13px;border:0;border-radius:7px;background:transparent;color:var(--muted);white-space:nowrap;font-weight:500}
@@ -597,6 +601,7 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
             <label class="field"><span>Preset</span>
               <select id="preset">
                 <option>Home-video tape · Tested</option>
+                <option>Progressive video · Tested</option>
                 <option>Home-video tape · Balanced</option>
                 <option>Film transfer · Balanced</option>
                 <option>Early digital · Fast</option>
@@ -605,6 +610,7 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
               </select>
             </label>
 
+            <div class="mode-note" id="modeNote" hidden role="status" aria-live="polite"></div>
             <p class="locked-note" id="lockedNote" hidden>These are the settings this restoration is using. They stay fixed while it runs, so every piece matches.</p>
             <div class="stages" id="stages"></div>
           </div>
@@ -992,12 +998,25 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
         <div class="srow"><div class="lbl"><b>Check for updates automatically</b></div><button class="switch" role="switch" aria-checked="true" aria-label="Check for updates"></button></div>
       </div>
       <div class="spane" data-sp="about" hidden>
-        <div class="row" style="gap:14px"><span class="wordmark" style="font-size:34px">tapewake</span><span class="chip">0.1.3</span></div>
+        <div class="row" style="gap:14px"><span class="wordmark" style="font-size:34px">tapewake</span><span class="chip">0.1.4</span></div>
         <p class="muted">Restores old video on your own computer. Version 0.1 restores home-video tapes with the tested settings, follows each restoration live and plays the finished parts. Editable settings, single-frame previews and preview clips come next.</p>
         <div class="row" style="flex-wrap:wrap"><button class="btn small" data-action="open-welcome">Show the launch screen</button><button class="btn small" data-action="tour">Take the tour</button><button class="btn small" data-action="open-setup">Run first-time setup again</button><button class="btn small" data-action="stub" data-msg="The third-party licence list appears here: FFmpeg, Real-ESRGAN, RIFE, GFPGAN and others.">Third-party licences</button></div>
       </div>
     </div>
     <div class="mft"><span class="note left">Appearance settings apply now. The other settings take effect in a later version.</span><button class="btn primary" data-action="close">Done</button></div>
+  </div>
+</div>
+
+<!-- Settings that can't work for this video -->
+<div class="overlay" id="optCheck" hidden>
+  <div class="modal narrow danger" role="alertdialog" aria-modal="true" aria-labelledby="ocTitle" aria-describedby="ocList">
+    <div class="mhd"><h2 id="ocTitle">These settings can't restore this video</h2><button class="iconbtn" data-action="close" aria-label="Close"><svg class="i"><use href="#i-x"/></svg></button></div>
+    <div class="mbd" style="display:grid;gap:12px">
+      <p class="muted" id="ocWhat"></p>
+      <ul id="ocList" style="margin:0;padding-left:18px;display:grid;gap:6px"></ul>
+      <p class="muted">Nothing has started. Change the settings, or use the tested settings for this video.</p>
+    </div>
+    <div class="mft"><button class="btn" data-action="close">Change them myself</button><button class="btn primary" data-action="use-tested" id="ocFix">Use the tested settings for this video</button></div>
   </div>
 </div>
 
@@ -1216,6 +1235,12 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
 
   /* ---------- Timecode (29.97 drop-frame) ---------- */
   const p2 = n => String(n).padStart(2, '0');
+  // timecode of source frame n: drop-frame for tapes, plain HH:MM:SS:FF for a progressive job
+  function srcTC(n) {
+    if (!(isLive() && J.per === 1)) return dfTC(n);
+    const fps = J.srcFps, sec = Math.floor(n / fps), ff = Math.floor(n - sec * fps + 1e-6);
+    return `${p2(Math.floor(sec / 3600))}:${p2(Math.floor(sec / 60) % 60)}:${p2(sec % 60)}:${p2(ff)}`;
+  }
   function dfTC(fn) {
     const D = Math.floor(fn / 17982), M = fn % 17982;
     fn += 18 * D + (M > 1 ? 2 * Math.floor((M - 2) / 1798) : 0);
@@ -1276,6 +1301,21 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
       faces: { on: true, sum: 'DicFace · eyes ≥12 px · tone 0.8', set: { 'st-face-m': 'DicFace · video, steadiest (tested)', 'st-fid': 80, 'st-blend': 100 } },
       interp: { on: false, sum: 'off' },
       audio: { on: true, sum: 'Demucs + AI voices · 2 tracks', set: { 'st-aud': 'Separate voices and clean them, keep the original as track 2 (tested)' } },
+      out: { on: true, sum: 'MKV · H.264 CRF 14 · sharpen 1.8 · grain 2', set: { 'st-out-f': 'MKV · H.264 CRF 14, restored + original audio (tested)', 'st-q': 90 } }
+    },
+    // for videos that are already progressive (DVD and Blu-ray rips, digital video): the same steps without
+    // deinterlacing, at the video's own frame rate; faces and sound restoration start off (switch them on if wanted)
+    'Progressive video · Tested': {
+      spec: '2× · same frame rate',
+      deint: { on: false, sum: 'off · already whole frames' },
+      denoise: { on: true, sum: 'DFTTest σ6 · gentle', set: { 'st-dn': 25 } },
+      deblock: { on: false, sum: 'off' },
+      stab: { on: false, sum: 'off (flicker smoothing in Upscale)' },
+      color: { on: true, sum: 'locked to source', set: { 'st-fade': 0 } },
+      up: { on: true, sum: 'ESRGAN x4v3 · TensorRT · 2×', set: { 'st-up-m': 'Real-ESRGAN general x4v3 · dn 0.3, colour-locked, flicker-smoothed' } },
+      faces: { on: false, sum: 'off · switch on for real people', set: { 'st-face-m': 'DicFace · video, steadiest (tested)', 'st-fid': 80, 'st-blend': 100 } },
+      interp: { on: false, sum: 'off' },
+      audio: { on: false, sum: 'off · original sound kept' },
       out: { on: true, sum: 'MKV · H.264 CRF 14 · sharpen 1.8 · grain 2', set: { 'st-out-f': 'MKV · H.264 CRF 14, restored + original audio (tested)', 'st-q': 90 } }
     }
   };
@@ -1348,9 +1388,9 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
     }
     c.insertAdjacentHTML('beforeend', '<span class="illus">Illustration · not a real restoration</span>');
     bindLoupe();
-    $('#tc').textContent = dfTC(tcOf(S.frame, S.fnOffset));
+    $('#tc').textContent = srcTC(tcOf(S.frame, S.fnOffset));
     $$('#strip button').forEach((b, i) => b.setAttribute('aria-current', i === S.frame));
-    $('#clipLabel').textContent = `Ready to render ${S.clipLen} s from ${dfTC(tcOf(S.frame, S.fnOffset))}`;
+    $('#clipLabel').textContent = `Ready to render ${S.clipLen} s from ${srcTC(tcOf(S.frame, S.fnOffset))}`;
     $('#clipOrig').src = im.orig; $('#clipRest').src = im.rest;
   }
   function bindWipe() {
@@ -1385,7 +1425,7 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
   let sid = 0;
   function addSample(kind, frameIdx, quiet, live) {
     const im = live || frameImages(frameIdx);
-    S.samples.push({ id: ++sid, kind, frame: frameIdx, wk: live ? live.k : null, wj: live ? live.j : 0, tc: live ? live.tc : dfTC(tcOf(frameIdx, frameIdx === S.frame ? S.fnOffset : 0)), off: frameIdx === S.frame ? S.fnOffset : 0, len: kind === 'clip' ? S.clipLen : 0, settings: isLive() ? 'Tested · real frame' : S.ai ? 'Balanced · Real-ESRGAN · GFPGAN' : 'Classic filters · Lanczos', orig: im.orig, rest: im.rest });
+    S.samples.push({ id: ++sid, kind, frame: frameIdx, wk: live ? live.k : null, wj: live ? live.j : 0, tc: live ? live.tc : srcTC(tcOf(frameIdx, frameIdx === S.frame ? S.fnOffset : 0)), off: frameIdx === S.frame ? S.fnOffset : 0, len: kind === 'clip' ? S.clipLen : 0, settings: isLive() ? 'Tested · real frame' : S.ai ? 'Balanced · Real-ESRGAN · GFPGAN' : 'Classic filters · Lanczos', orig: im.orig, rest: im.rest });
     const ofKind = S.samples.filter(s => s.kind === kind);
     let removed = false;
     if (ofKind.length > LIMIT[kind]) { S.samples.splice(S.samples.indexOf(ofKind[0]), 1); removed = true; }
@@ -1425,12 +1465,12 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
   function isLive() { return curTab().kind === 'live'; }
   function sizeOf(which) { return isLive() ? (which === 'rest' ? '1280×960' : `${liveSrc().picture.split(' · ')[0]} · shown 4:3`) : (which === 'rest' ? '1440×1080' : '720×480'); }
   const esc = v => String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
-  function tcOf(i, off) { return isLive() ? (P.k < 0 ? 0 : Math.floor((J.start[P.k] + curJ() + off) / 2)) : FRAMES[i].fn + off; }
+  function tcOf(i, off) { return isLive() ? (P.k < 0 ? 0 : Math.floor((J.start[P.k] + curJ() + off) / (J.per || 2))) : FRAMES[i].fn + off; }
 
   // Player for a job's finished pieces. The restored piece plays directly; the original needs a playable copy
   // which the bridge makes once per piece (see app_bridge.video). Both run at 59.94 from 0 so frames line up.
   // Decoding happens on the GPU's video decoder, so it doesn't get in the way of the restore.
-  const FT = 1001 / 60000;
+  let FT = 1001 / 60000;  // seconds per restored frame; progressive jobs use their own rate (status fps)
   const J = { id: '', name: '', pieces: [], start: [], img: {}, latest: null, latestKey: '' };
   const jobInvoke = (action, args) => tauriInvoke('job', { action, job: J.id, args });
   const liveSrc = () => (S.live && S.live.source) || { picture: '?', rate: '', frames: 0, audio: '', interlaced: '' };
@@ -1556,7 +1596,7 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
     if (!inf) { st.innerHTML = ''; return; }
     const n = Math.floor(inf.frames * FT * inf.per_s), url = window.__TAURI__.core.convertFileSrc(inf.strip);
     st.innerHTML = Array.from({ length: n }, (_, i) => {
-      const tc = dfTC(Math.floor((J.start[P.k] + i / inf.per_s / FT) / 2));
+      const tc = srcTC(Math.floor((J.start[P.k] + i / inf.per_s / FT) / (J.per || 2)));
       return `<button style="background-image:url('${url}');background-size:${inf.cols * 100}% 100%;background-position:${i / (inf.cols - 1) * 100}% 0" aria-label="Go to ${tc}" title="${tc}"></button>`;
     }).join('');
     P.idx = -1;
@@ -1566,7 +1606,7 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
     if (!isLive()) return;
     const j = curJ(), lab = $('#liveLabel');
     if (lab) lab.textContent = liveLabel();
-    if (P.k >= 0) { $('#tc').textContent = dfTC(Math.floor((J.start[P.k] + j) / 2)); if (!P.drag) $('#liveSeek').value = J.start[P.k] + j; }
+    if (P.k >= 0) { $('#tc').textContent = srcTC(Math.floor((J.start[P.k] + j) / (J.per || 2))); if (!P.drag) $('#liveSeek').value = J.start[P.k] + j; }
     const pb = $('#livePlay'), html = icon(P.playing ? 'i-pause' : 'i-play') + (P.playing ? 'Pause' : 'Play');
     if (pb.innerHTML !== html) pb.innerHTML = html;
     pb.disabled = !P.info || P.loading;
@@ -1618,7 +1658,7 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
     if (!P.info || P.loading) { toast('This piece is still loading.'); return; }
     livePause();
     const k = P.k, j = curJ();
-    try { const im = await liveFrame(k, j); addSample('frame', 0, false, { k, j, tc: dfTC(Math.floor((J.start[k] + j) / 2)), orig: im.orig, rest: im.rest }); }
+    try { const im = await liveFrame(k, j); addSample('frame', 0, false, { k, j, tc: srcTC(Math.floor((J.start[k] + j) / (J.per || 2))), orig: im.orig, rest: im.rest }); }
     catch (e) { toast(`Could not save this frame: ${e}`); }
   }
   async function liveLightbox(which) {
@@ -1738,7 +1778,7 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
     chip.className = 'chip ' + (live ? 'accent' : 'example');
     $('#srcPic').textContent = live ? src.picture : '—';
     $('#srcRate').textContent = live ? src.rate : '—';
-    $('#srcLen').textContent = live ? dfTC(src.frames) : '—';
+    $('#srcLen').textContent = live ? srcTC(src.frames) : '—';
     $('#srcAudio').textContent = live ? src.audio : '—';
     $('#qDetect').hidden = !live; $('#qDetectText').textContent = live ? `${src.picture} · ${src.rate}` : '';
     $('#qSpec').textContent = live ? `${src.picture} · ${src.rate}` : t.chosen ? 'Chosen · press Restore video to start' : 'No video chosen yet';
@@ -1746,15 +1786,19 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
     $('#srcReplace').hidden = live; $('#liveLinks').hidden = !live;
     $('#inSpec').textContent = live ? src.interlaced : '—';
     $('#pipeNote').textContent = live ? 'Runs piece by piece; finished pieces are kept if it is paused.' : 'Time estimate appears after first-time setup measures this computer.';
-    $('#preset').value = live ? ((S.live && S.live.preset) || 'Home-video tape · Tested') : (t.preset || $('#preset').value);
+    // a running job shows its preset and what it really uses (its preset name can carry ", no face restoration")
+    $('#preset').value = live ? TESTED_FOR[(S.live && S.live.mode) || 'tape'] : (t.preset || $('#preset').value);
     $('#aiSwitch').disabled = live; if (live) setAI(true);
     $('#preset').disabled = live; applyPreset($('#preset').value);
+    if (live && S.live) { stageOf('faces').on = S.live.faces !== false; stageOf('audio').on = S.live.restore_audio !== false; renderStages(); }
     $('.pipeline').classList.toggle('locked', live); $('#lockedNote').hidden = !live;
     $('#queueBtn').hidden = live;
     $('#scrub [data-action="preview-frame"]').innerHTML = icon(live ? 'i-stack' : 'i-eye') + (live ? 'Save this frame' : 'Preview this frame');
     $('#scrub .note').textContent = live ? 'Space plays · ‹ › steps 1/60 s' : 'One restored frame with the settings on the left';
     $('#livePlay').hidden = !live; $('#liveSeek').hidden = !live;
     $('#scrub .tcsub').textContent = live ? 'In the original' : 'Drop-frame · 29.97';
+    if (live && J.per === 1) $('#scrub .note').textContent = 'Space plays · ‹ › steps one frame';
+    renderModeNote();
     $('[data-action="render-clip"]').innerHTML = icon('i-film') + (live ? 'Open before and after' : 'Render preview clip');
     $('#clipView .illus').hidden = live; $('#cuts').hidden = live;
     $('.shellpill').textContent = live ? 'Live · restoring on this PC' : tauriInvoke ? 'Version 0.1' : 'Web preview';
@@ -1887,6 +1931,7 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
       const d = JSON.parse(await jobInvoke(action));
       if (id !== J.id) return;  // switched to another job meanwhile
       S.live = d;
+      if (d.fps) { FT = 1 / d.fps; J.per = d.per; J.srcFps = d.per === 1 ? d.fps : 30000 / 1001; }
       if (d.msg) toast(d.msg, action === 'pause' ? 'i-pause' : 'i-check');
       if (d.state === 'finished' && !finishAsked.has(id)) { finishAsked.add(id); askFinish(); }
       if (d.done > J.pieces.length) liveRefreshPieces();
@@ -2096,7 +2141,7 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
     $('[data-action="theme-cycle"]').title = 'Theme: ' + (t === 'system' ? 'follow system' : t);
   }
   function setScale(v) { S.scale = v; store.set('scale', v); root.style.setProperty('--scale', v); $$('.seg[data-group="scale"] button').forEach(b => b.setAttribute('aria-pressed', +b.dataset.v === v)); }
-  const OVERLAYS = ['lightbox', 'pfull', 'deleteJob', 'finished', 'setup', 'trouble', 'settings', 'welcome'];
+  const OVERLAYS = ['lightbox', 'pfull', 'optCheck', 'deleteJob', 'finished', 'setup', 'trouble', 'settings', 'welcome'];
   function openO(id) { $('#' + id).hidden = false; const f = $('#' + id).querySelector('button, select, input'); f && f.focus({ preventScroll: true }); }
   function closeTop() { for (const id of OVERLAYS) { const el = $('#' + id); if (!el.hidden) { el.hidden = true; if (id === 'welcome') store.set('welcomeSeen', true); return true; } } return false; }
   function lightbox(which) {
@@ -2144,7 +2189,11 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
     if (sw && !sw.disabled) {
       if (sw.id === 'aiSwitch') { setAI(sw.getAttribute('aria-checked') !== 'true'); return; }
       const on = sw.getAttribute('aria-checked') !== 'true'; sw.setAttribute('aria-checked', on);
-      if (sw.dataset.stageSwitch) { const row = sw.closest('.stagerow'); row.classList.toggle('off', !on); }
+      if (sw.dataset.stageSwitch) {
+        const row = sw.closest('.stagerow'); row.classList.toggle('off', !on);
+        const st = STAGES.find(x => x.id === sw.dataset.stageSwitch); if (st) st.on = on;
+        renderModeNote();
+      }
       if (sw.id === 'sHc') root.classList.toggle('hc', on);
       if (sw.id === 'sRm') root.classList.toggle('rm', on);
       return;
@@ -2181,6 +2230,7 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
       'job-cleanup': liveCleanup,
       'job-finish': liveFinish,
       'job-delete': askDelete,
+      'use-tested': useTested,
       'job-delete-confirm': liveDelete,
       'queue': () => toast('Added to the batch queue. Switch to Batch to see it.'),
       'preview-frame': () => {
@@ -2199,7 +2249,7 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
           if (v >= 100) { clearInterval(iv); a.disabled = false; $('#clipLabel').textContent = `${S.clipLen} s preview ready · plays side by side`; addSample('clip', S.frame); } }, 100);
       },
       'play-clip': () => isLive() ? liveOpen('compare') : toast('Preview clips come in a later version. Start the restoration to watch its finished parts here.'),
-      'step': () => { if (isLive()) { liveStep(+a.dataset.d); return; } S.fnOffset += +a.dataset.d; $('#tc').textContent = dfTC(Math.max(0, tcOf(S.frame, S.fnOffset))); },
+      'step': () => { if (isLive()) { liveStep(+a.dataset.d); return; } S.fnOffset += +a.dataset.d; $('#tc').textContent = srcTC(Math.max(0, tcOf(S.frame, S.fnOffset))); },
       'player-play': () => P.playing ? livePause() : livePlay(),
       'lightbox': () => lightbox(a.dataset.which || 'rest'),
       'lb-swap': () => lightbox(S.lb === 'orig' ? 'rest' : 'orig'),
@@ -2251,6 +2301,66 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
     S.file = name; ['#topFile', '#srcName', '#qName', '#cmpFile', '#pfFile'].forEach(s => $(s).textContent = name);
     renderTabs(); applyTabView(); renderViewer(); renderCmd();
     toast(`Chose ${name}. Press Restore video to start.`, 'i-film');
+    if (tauriInvoke) probeTab(t);
+  }
+  // What the engine follows so far: Deinterlace (tape or progressive mode, it has to match the video), and
+  // Face restoration and Audio on or off. Everything else has to stay at the preset's tested values.
+  const FOLLOWED = ['deint', 'faces', 'audio'];
+  const TESTED_FOR = { tape: 'Home-video tape · Tested', progressive: 'Progressive video · Tested' };
+  const stageOf = id => STAGES.find(x => x.id === id);
+  function fieldName(el) { const f = el.closest('.field'); const l = f && f.querySelector('label, span'); return l ? l.textContent.trim() : el.id; }
+  function optionProblems() {
+    const pr = curTab().probe, name = $('#preset').value, p = PRESETS[name], out = [];
+    if (!p) out.push(`The preset “${name}” isn't available yet. Only the Tested presets can restore so far.`);
+    if (!S.ai) out.push("Turning Enhance with AI off isn't available yet: there's no classic upscaler built in, so the AI one would still be used.");
+    const deint = stageOf('deint').on;
+    if (pr) {
+      if (deint && pr.scan === 'progressive') out.push(`Deinterlace is on, but this video is already progressive (every frame is a whole picture), so there's nothing to deinterlace. Turn Deinterlace off.`);
+      if (!deint && pr.scan === 'interlaced') out.push('Deinterlace is off, but this video is interlaced (each frame holds two half-pictures from different moments). Turn Deinterlace on.');
+      if (deint && pr.scan !== 'progressive' && pr.fps !== '30000/1001') out.push(`Deinterlacing is only tested on NTSC tapes (29.97 fps). This video is ${pr.fps_label} fps.`);
+    }
+    if (p) STAGES.forEach(st => {
+      const want = p[st.id]; if (!want) return;
+      if (!FOLLOWED.includes(st.id) && st.on !== want.on) { out.push(`${st.name} can't be switched ${st.on ? 'on' : 'off'} yet. It would be ignored.`); return; }
+      if (!st.on) return;  // the values of a step that is off don't matter
+      Object.entries(want.set || {}).forEach(([id, v]) => {
+        const el = document.getElementById(id);
+        if (el && String(el.value) !== String(v)) out.push(`${st.name}: “${fieldName(el)}” can't be changed yet. It would be ignored.`);
+      });
+    });
+    return out;
+  }
+  function renderModeNote() {
+    const t = curTab(), el = $('#modeNote');
+    if (!el) return;
+    if (isLive() || !t.probe) { el.hidden = true; return; }
+    const pr = t.probe, prog = !stageOf('deint').on, probs = optionProblems();
+    const kind = pr.scan === 'progressive' ? 'progressive' : pr.scan === 'interlaced' ? 'interlaced' : 'unmarked (the file doesn’t say)';
+    const out = prog ? `${2 * pr.work_w}×${2 * pr.work_h} at ${pr.fps_label} fps` : '1280×960 at 59.94 fps';
+    el.hidden = false; el.classList.toggle('bad', probs.length > 0);
+    el.innerHTML = `<b>This video: ${pr.width}×${pr.height}, ${pr.fps_label} fps, ${kind}.</b>
+      <span>${prog ? 'Progressive mode: no deinterlacing, the frame rate stays the same.' : 'Tape mode: deinterlaced to one frame per field.'} The result is ${out}.</span>
+      <span class="muted">You can switch Face restoration and Audio on or off. The other steps use the tested values for now.</span>
+      ${probs.length ? `<span class="bad-t">Can't restore with these settings:</span><ul>${probs.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}`;
+    $('#inSpec').textContent = `${pr.width}×${pr.height} ${pr.fps_label}${pr.scan === 'interlaced' ? 'i' : 'p'}`;
+    $('#outSpec').textContent = out.replace(' at ', ' ').replace(' fps', 'p');
+  }
+  function useTested() {
+    const pr = curTab().probe, name = TESTED_FOR[(pr && pr.mode) || 'tape'];
+    $('#preset').value = name; curTab().preset = name; applyPreset(name); setAI(true);
+    closeTop(); renderModeNote();
+    toast(`${name} is loaded for this video.`, 'i-check');
+  }
+  async function probeTab(t) {
+    try { t.probe = JSON.parse(await tauriInvoke('video_probe', { path: t.path })); }
+    catch (e) { t.probe = null; toast(`Could not read ${t.file}: ${e}`); return; }
+    const pr = t.probe;
+    if (!pr.mode) toast(`tapewake can't restore this video yet: it is ${pr.fps_label} fps and interlaced.`);
+    else if (curTab() === t && $('#preset').value !== TESTED_FOR[pr.mode]) {
+      $('#preset').value = t.preset = TESTED_FOR[pr.mode]; applyPreset(t.preset);
+      toast(pr.mode === 'progressive' ? 'This video is already progressive, so the Progressive video preset is loaded: no deinterlacing.' : 'This is an interlaced tape, so the Home-video tape preset is loaded.', 'i-info');
+    }
+    if (curTab() === t) renderModeNote();
   }
   async function chooseVideo() {
     if (!tauriInvoke) { $('#fileInput').click(); return; }
@@ -2260,10 +2370,19 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
   async function restoreNew() {
     if (!curTab().path) { await chooseVideo(); if (!curTab().path) return; }
     const tab = curTab(), b = $('#restoreBtn');
+    if (!tab.probe) await probeTab(tab);
+    const probs = optionProblems();
+    if (probs.length) {  // say what can't work before anything starts
+      $('#ocWhat').textContent = tab.probe ? `${tab.file}: ${tab.probe.width}×${tab.probe.height}, ${tab.probe.fps_label} fps, ${tab.probe.scan}.` : tab.file;
+      $('#ocList').innerHTML = probs.map(x => `<li>${esc(x)}</li>`).join('');
+      $('#ocFix').hidden = !(tab.probe && tab.probe.mode);
+      openO('optCheck');
+      return;
+    }
     b.disabled = true;
     try {
-      const faces = STAGES.find(s => s.id === 'faces').on;  // the one stage switch the engine follows so far
-      const { id, name } = JSON.parse(await tauriInvoke('job_create', { path: tab.path, faces }));
+      const mode = stageOf('deint').on ? 'tape' : 'progressive';
+      const { id, name } = JSON.parse(await tauriInvoke('job_create', { path: tab.path, faces: stageOf('faces').on, audio: stageOf('audio').on, mode }));
       Object.assign(tab, { id: 'job-' + id, kind: 'live', jobId: id, file: name, starter: false });
       S.tabId = tab.id;
       await liveFollow(id);
@@ -2273,7 +2392,7 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
     b.disabled = false;
   }
   const seek = $('#liveSeek');
-  seek.addEventListener('input', () => { P.drag = true; $('#tc').textContent = dfTC(Math.floor(+seek.value / 2)); });
+  seek.addEventListener('input', () => { P.drag = true; $('#tc').textContent = srcTC(Math.floor(+seek.value / (J.per || 2))); });
   seek.addEventListener('change', () => { P.drag = false; liveSeekGlobal(+seek.value); });
   document.addEventListener('visibilitychange', () => { if (document.hidden) livePause(); });  // nothing plays unseen
   // in a plain browser we only get the file name, not the path, so there's nothing to restore
@@ -2363,7 +2482,9 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
   setTheme(S.theme); setScale(S.scale);
   renderStages(); renderStrip(); renderViewer(); renderQueue(); renderNodes(); renderModels(); renderChecks();
   renderTabs(); applyTabView(); renderCmd();
-  $('#preset').addEventListener('change', e => { applyPreset(e.target.value); if (PRESETS[e.target.value]) toast('The tested settings are loaded.', 'i-check'); });
+  $('#preset').addEventListener('change', e => { applyPreset(e.target.value); if (PRESETS[e.target.value]) toast('The tested settings are loaded.', 'i-check'); renderModeNote(); });
+  $('#stages').addEventListener('change', renderModeNote);  // a menu or slider inside a step
+  $('#stages').addEventListener('input', renderModeNote);
   if (S.rail) { $('#rail').classList.add('open'); $('#railMini').hidden = true; $('#railFull').hidden = false; }
   renderJob();
   // poll every 5 s when visible, every minute when hidden (each poll is ~1 s of CPU, no GPU)

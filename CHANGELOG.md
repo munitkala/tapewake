@@ -7,6 +7,49 @@ number yet are listed under **Unreleased**.
 
 Nothing yet.
 
+## 0.1.4 (2026-11-03)
+
+### Progressive video mode
+
+**Why:** every restoration used the home-video tape settings, which deinterlace the picture. A video that
+is already progressive (each frame a whole picture, like a DVD rip of a film) has nothing to deinterlace, so
+it failed: a 720×462 rip stopped with "SeparateFields: clip height must be mod 2", and its frame rate would
+have been changed to the tape's 29.97 fps.
+
+**What changed**
+
+- New **Progressive video · Tested** preset. When you choose a video, tapewake reads its scan type, frame
+  rate and size, picks the preset that fits and says so under the preset menu.
+- Progressive mode skips deinterlacing and keeps the video's own frame rate (23.976 stays 23.976). It works
+  at a square-pixel size of its own (a widescreen 720×462 DVD frame becomes 856×464) and restores at twice
+  that. Everything after deinterlacing is the same as for tapes: the same gentle denoise (DFTTest), the
+  Real-ESRGAN upscaler with flicker smoothing, sharpening and grain.
+- Face restoration and sound restoration start off in this mode. Switching Audio off keeps the original
+  sound as it is (one track).
+- The home-video tape mode is unchanged: on a tape clip, the cut and deinterlaced pieces are identical,
+  frame for frame, to 0.1.3.
+
+### Settings that can't work are explained before anything starts
+
+**Why:** the app let you choose settings and presets that the restoration doesn't use yet, and nothing
+said so.
+
+**What changed**
+
+- Under the preset menu, a note says what the video is, which mode it gets and what the result will be,
+  and lists any setting that can't work, in red.
+- Pressing Restore with such a setting opens a window that explains each one and offers **Use the tested
+  settings for this video**. Nothing starts until the settings can work. It catches: Deinterlace on for a
+  progressive video or off for an interlaced one, interlaced videos that aren't 29.97 fps, presets that
+  aren't available yet, Enhance with AI off, and any other step switched or changed from the tested values.
+- The restoration engine refuses the same mistakes, with the same explanation.
+
+### Fixes
+
+- The step switches only changed how they looked: switching Face restoration off didn't reach the
+  restoration in 0.1.3. They now do.
+- A running restoration with face restoration off showed an empty preset menu.
+
 ## 0.1.3 (2026-11-03)
 
 ### Stop and delete a project

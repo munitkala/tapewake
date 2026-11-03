@@ -142,6 +142,8 @@ class Control:
 
     def _sound_done(self):
         job = self.job
+        if not job['restore_audio']:
+            return 1.0  # the original sound is kept as it is
         try:
             if open(os.path.join(os.path.dirname(job.audio), 'source_sound.txt')).read().strip() != 'ok':
                 return 1.0  # no sound, or only hiss: kept as it is
@@ -181,7 +183,8 @@ class Control:
         if total and (self.live() or any(os.path.exists(self.job.piece(k)) for k in range(total))):
             return None
         deint = (sum(1 for k in range(need) if os.path.exists(self.job.qt_piece(k))) / need) if need else 0.0
-        return [(PREP[0][0], self._sound_done()), (PREP[1][0], self._cut_done()), (PREP[2][0], deint)]
+        third = 'preparing the first pieces' if self.job['progressive'] else PREP[2][0]  # no deinterlacing
+        return [(PREP[0][0], self._sound_done()), (PREP[1][0], self._cut_done()), (third, deint)]
 
     def prep_problem(self):
         """Why the preparation stopped, or ''. Cutting and deinterlacing run in prepare.py beside the runner, which
@@ -196,7 +199,7 @@ class Control:
                 last = next((ln.strip() for ln in reversed(f.read().splitlines()) if ln.strip()), '')
         except OSError:
             last = ''
-        step = 'Cutting the video' if prep[1][1] < 1 else 'Deinterlacing'
+        step = 'Cutting the video' if prep[1][1] < 1 else 'Preparing the pieces' if self.job['progressive'] else 'Deinterlacing'
         return f'{step} stopped with an error, so this restoration can not continue. {last}'.strip()
 
     def percent(self):
