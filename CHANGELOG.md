@@ -7,6 +7,24 @@ number yet are listed under **Unreleased**.
 
 Nothing yet.
 
+## 0.1.5 (2026-11-03)
+
+### Clean-up after a full check of the repository and the installer
+
+**Why:** a file-by-file check of everything in the repository and the installer, its dependencies and their
+licences.
+
+**What changed**
+
+- The installer carried 24 Python cache files (`__pycache__`) left in the engine folder by test runs on the
+  build computer. Nothing needed them. Every build now deletes them first (`scripts/clean-engine.mjs`).
+- `THIRD_PARTY.md` lists the Rust crates' licences accurately (not only MIT / Apache-2.0: also Unicode-3.0,
+  MPL-2.0, Zlib and BSD-3-Clause, all permissive, none GPL) and the helper libraries the face and sound models
+  need (all permissive). Shipping the crates' licence texts with an installer is on the release checklist.
+- Two screenshots that nothing used were removed.
+
+Nothing else changed: the app and the restoration work exactly as in 0.1.4.
+
 ## 0.1.4 (2026-11-03)
 
 ### Progressive video mode

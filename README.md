@@ -36,7 +36,7 @@ anywhere.
 
 ## Status
 
-Version 0.1.4, Windows only, needs an NVIDIA card. There's no installer to download yet, and the app doesn't
+Version 0.1.5, Windows only, needs an NVIDIA card. There's no installer to download yet, and the app doesn't
 install its tools for you yet, so for now it's for people comfortable setting things up by hand.
 
 tapewake has two tested modes and picks the one that fits each video:
@@ -56,8 +56,9 @@ restoration on it hasn't been tested yet. Animated films can be restored in this
 upscaler and the light film grain meant for camera footage, which shows as a faint speckle on flat colours. A mode
 made for animation is planned.
 
-What changed in each update is in [CHANGELOG.md](CHANGELOG.md). The latest, 0.1.4, adds Progressive video mode
-and checks the settings before starting. 0.1.3 added a red **Stop and delete project** button, gave every project
+What changed in each update is in [CHANGELOG.md](CHANGELOG.md). The latest, 0.1.5, is a clean-up: the installer
+no longer carries Python cache files and the licence list is complete. 0.1.4 added Progressive video mode and the
+settings check before starting. 0.1.3 added a red **Stop and delete project** button, gave every project
 its own working folder and made the progress screen show the preparation and only the steps a project really runs.
 0.1.2 added the "Restoration finished" prompt; 0.1.1 cut the disk space a restoration needs roughly in half.
 

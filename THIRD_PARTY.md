@@ -1,7 +1,7 @@
 # Third-party components
 
 Everything tapewake uses that it didn't write itself, what it's used for, and its licence. Checked on
-2 November 2026 against the package metadata and licence files of the installed copies. Not legal advice.
+3 November 2026 against the package metadata and licence files of the installed copies. Not legal advice.
 
 None of this is in the repository. The repository only holds tapewake's own code (MIT, see `LICENSE`).
 Everything below gets installed separately, from its own official source.
@@ -10,9 +10,16 @@ Everything below gets installed separately, from its own official source.
 
 | Component | Used for | Licence |
 |---|---|---|
-| Tauri 2 + its Rust crates, serde_json, rfd | The app window, the file picker | MIT / Apache-2.0 |
+| Tauri 2 + its Rust crates, serde_json, rfd | The app window, the file picker | Mostly MIT / Apache-2.0 (see below) |
 | Microsoft Edge WebView2 | Draws the interface (already part of Windows 10/11) | Microsoft |
 | Big Shoulders Display, IBM Plex Sans, IBM Plex Mono | Interface fonts (currently loaded from Google Fonts) | SIL OFL 1.1 |
+
+The Rust crates are compiled into `tapewake.exe`: 233 of them on Windows (`cargo metadata`, 3 November 2026).
+All are permissive and none is GPL. Most are MIT and/or Apache-2.0. The others: 18 Unicode-3.0 (the `icu_*`,
+`zerovec`, `yoke`, `tinystr`, `litemap`, `writeable` and `potential_utf` text-handling crates), 5 MPL-2.0
+(`cssparser`, `cssparser-macros`, `selectors`, `dtoa-short`, `option-ext`; used unmodified), 2 Zlib (`foldhash`,
+`zlib-rs`), 2 BSD-3-Clause (`alloc-stdlib`, `alloc-no-stdlib`), plus a few that offer Unlicense, 0BSD or CC0 as
+alternatives. The npm side is only the Tauri command-line tool (MIT / Apache-2.0), used to build and not shipped.
 
 ## Installed separately (first-run setup)
 
@@ -61,6 +68,13 @@ These three are the reason tapewake has to stay free. They're only used, never c
 | NumPy, SciPy | everywhere | BSD |
 | OpenCV | face steps, assembling | Apache-2.0 |
 | psutil | `control.py`, `run.py`: finding and stopping the job's processes | BSD-3-Clause |
+| Helper libraries the face and sound models need (BUILDING.md, steps 4 and 5): addict, celluloid, einops, future, ptflops, PyYAML, rich, tabulate | imported by CodeFormer/basicsr, DicFace and Resemble Enhance | MIT |
+| … continued: lpips, omegaconf, pandas, scikit-image, soundfile | same | BSD |
+| … continued: librosa, resampy | same | ISC |
+| … continued: requests, yapf | same | Apache-2.0 |
+| … continued: matplotlib | same | PSF-based (matplotlib licence) |
+| … continued: tqdm | same | MPL-2.0 and MIT |
+| … continued: lmdb | same | OpenLDAP Public License 2.8 |
 | Poppins SemiBold | label on the before/after video (`compare.py`) | SIL OFL 1.1 |
 
 ## tapewake's own helper files
@@ -80,6 +94,8 @@ tapewake's own code (MIT).
 ## Before releasing an installer
 
 1. Bundle the interface fonts instead of loading them from Google (no request to Google at launch).
-2. Make first-run setup download everything above from the official sources and show each licence,
+2. Ship the licence texts of the Rust crates with the installer (they're compiled into `tapewake.exe`, and their
+   licences ask for the notices to come with binaries), for example generated with `cargo about`.
+3. Make first-run setup download everything above from the official sources and show each licence,
    with the face models clearly marked non-commercial.
-3. Optional: code-signing certificate so SmartScreen doesn't warn people.
+4. Optional: code-signing certificate so SmartScreen doesn't warn people.
