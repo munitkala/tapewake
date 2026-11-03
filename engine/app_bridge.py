@@ -11,14 +11,16 @@ The app embeds this file and runs it with the engine's Python. Every command pri
     video <id> K               files the player needs for piece K
     open <id> samples|output|compare|log
     cleanup <id>               finished job: delete its working files (space.py), keep the restored video
+    finish <id>                finished job: show the restored video in Explorer and take the job out of tapewake
 
-Nothing here changes a job's settings. Finished pieces are only deleted by cleanup, which refuses
-unless the restored video exists and the job isn't running. Pause/resume go through control.py.
+Nothing here changes a job's settings. Finished pieces are only deleted by cleanup and finish, which
+refuse unless the restored video exists and the job isn't running. Pause/resume go through control.py.
 """
 import base64
 import glob
 import json
 import os
+import shutil
 import subprocess
 import sys
 import time
@@ -129,6 +131,22 @@ def cleanup(job, ctl):
                 pass
     ctl.log(f'Free up space: deleted {space.gb(freed)} of working files (the restored video is kept)')
     return f'Deleted {space.gb(freed)} of working files. The restored video is kept.'
+
+
+def finish(job, ctl):
+    """Finished job: open Explorer on the restored video, delete the working files (unless the job runs from its own
+    scripts) and the player cache, then remove the job file. The restored video, the samples and the log are kept."""
+    if ctl.state() != 'finished':
+        return {'done': False, 'msg': 'It has not finished yet, so it stays in tapewake.'}
+    freed = 0
+    if not space.can_free_up(job) and not os.path.exists(job.cleaned_flag):
+        freed = space.free_up_space(job)
+        ctl.log(f'Finish: deleted {space.gb(freed)} of working files (the restored video is kept)')
+    shutil.rmtree(os.path.join(APP_DATA, 'cache', job.id), ignore_errors=True)
+    os.remove(job.path)
+    subprocess.Popen(f'explorer /select,"{job.output}"')
+    kept = f'Deleted {space.gb(freed)} of working files. ' if freed else ''
+    return {'done': True, 'msg': f'{kept}{os.path.basename(job.output)} is ready in {os.path.dirname(job.output)}.'}
 
 
 def prune(folder, pattern, keep, partner=None):
@@ -356,6 +374,9 @@ def main():
         print(json.dumps({'msg': open_item(job, args[0])}))
         return
     ctl = controller(job)
+    if cmd == 'finish':
+        print(json.dumps(finish(job, ctl)))
+        return
     msg = ''
     if cmd == 'cleanup':
         msg = cleanup(job, ctl)

@@ -37,7 +37,7 @@ fn engine_dir(app: &tauri::AppHandle) -> PathBuf {
 }
 
 /// Runs a bridge action and returns its JSON. Only the actions below are allowed, with checked arguments:
-/// jobs, tools, status/pause/resume/pieces/cleanup <job>, frame <job> <k> <j>, video <job> <k>, open <job> <what>
+/// jobs, tools, status/pause/resume/pieces/cleanup/finish <job>, frame <job> <k> <j>, video <job> <k>, open <job> <what>
 #[tauri::command]
 async fn job(app: tauri::AppHandle, action: String, job: Option<String>, args: Option<Vec<String>>) -> Result<String, String> {
     let args = args.unwrap_or_default();
@@ -45,7 +45,7 @@ async fn job(app: tauri::AppHandle, action: String, job: Option<String>, args: O
     let id_ok = job.as_deref().is_some_and(|j| !j.is_empty() && j.len() <= 64 && j.bytes().all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'-'));
     let ok = match action.as_str() {
         "jobs" | "tools" => job.is_none() && args.is_empty(),
-        "status" | "pause" | "resume" | "pieces" | "cleanup" => id_ok && args.is_empty(),
+        "status" | "pause" | "resume" | "pieces" | "cleanup" | "finish" => id_ok && args.is_empty(),
         "frame" => id_ok && numbers(2),
         "video" => id_ok && numbers(1),
         "open" => id_ok && args.len() == 1 && matches!(args[0].as_str(), "samples" | "output" | "compare" | "log"),

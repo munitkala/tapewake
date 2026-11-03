@@ -990,6 +990,19 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
   </div>
 </div>
 
+<!-- Restoration finished -->
+<div class="overlay" id="finished" hidden>
+  <div class="modal narrow" role="dialog" aria-modal="true" aria-labelledby="finTitle">
+    <div class="mhd"><h2 id="finTitle">Restoration finished</h2><button class="iconbtn" data-action="close" aria-label="Close"><svg class="i"><use href="#i-x"/></svg></button></div>
+    <div class="mbd" style="display:grid;gap:12px">
+      <p><b id="finName"></b> is restored and passed its final checks.</p>
+      <p class="muted">Finish opens the folder with the restored video and removes this restoration from tapewake. <span id="finWork"></span> The restored video, saved samples and the log are kept.</p>
+      <p class="note mono" id="finPath"></p>
+    </div>
+    <div class="mft"><button class="btn" data-action="close">Later</button><button class="btn primary" data-action="job-finish" id="finBtn"><svg class="i sm"><use href="#i-check"/></svg>Finish and show the file</button></div>
+  </div>
+</div>
+
 <!-- Troubleshoot -->
 <div class="overlay" id="trouble" hidden>
   <div class="modal narrow" role="dialog" aria-modal="true" aria-labelledby="trTitle">
@@ -1749,6 +1762,33 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
     liveBusy = true; renderJob();
     try { await liveCall('cleanup'); livePause(); await livePieces(); } finally { liveBusy = false; renderJob(); }
   }
+  // once per session for each finished job: offer to show the file and take the job out of tapewake
+  const finishAsked = new Set();
+  function askFinish() {
+    const d = S.live, sp = d.space;
+    $('#finName').textContent = d.name;
+    $('#finPath').textContent = d.output;
+    $('#finWork').textContent = sp && !sp.cleaned && !sp.refused && sp.working_gb ? `It also deletes the ${sp.working_gb} GB of working files, so the before/after player goes too.` : '';
+    openO('finished');
+  }
+  async function liveFinish() {
+    if (liveBusy || !J.id) return;
+    const id = J.id;
+    liveBusy = true; $('#finBtn').disabled = true;
+    try {
+      const r = JSON.parse(await jobInvoke('finish'));
+      toast(r.msg, r.done ? 'i-check' : 'i-info');
+      if (r.done) {
+        livePause(); S.live = null;
+        const gone = TABS.find(t => t.jobId === id);
+        const next = TABS.find(t => t.kind === 'live' && t !== gone) || TABS.find(t => t !== gone);
+        if (next) switchTab(next.id); else newTab();  // before removing it, so its state isn't saved into another tab
+        if (J.id === id) J.id = null;
+        if (gone) TABS.splice(TABS.indexOf(gone), 1);
+      }
+    } catch (e) { toast(`Could not finish ${J.name}: ${e}`); }
+    finally { liveBusy = false; $('#finBtn').disabled = false; closeTop(); renderTabs(); renderJob(); }
+  }
   $('#preset').addEventListener('change', e => { if (!isLive()) curTab().preset = e.target.value; renderCmd(); });
 
   /* ---------- Demo job (fake progress, web preview only) ---------- */
@@ -1787,6 +1827,7 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
       if (id !== J.id) return;  // switched to another job meanwhile
       S.live = d;
       if (d.msg) toast(d.msg, action === 'pause' ? 'i-pause' : 'i-check');
+      if (d.state === 'finished' && !finishAsked.has(id)) { finishAsked.add(id); askFinish(); }
       if (d.done > J.pieces.length) liveRefreshPieces();
     } catch (e) {
       if (action !== 'status') toast(`Could not ${action} ${J.name}: ${e}`);
@@ -1988,7 +2029,7 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
     $('[data-action="theme-cycle"]').title = 'Theme: ' + (t === 'system' ? 'follow system' : t);
   }
   function setScale(v) { S.scale = v; store.set('scale', v); root.style.setProperty('--scale', v); $$('.seg[data-group="scale"] button').forEach(b => b.setAttribute('aria-pressed', +b.dataset.v === v)); }
-  const OVERLAYS = ['lightbox', 'pfull', 'setup', 'trouble', 'settings', 'welcome'];
+  const OVERLAYS = ['lightbox', 'pfull', 'finished', 'setup', 'trouble', 'settings', 'welcome'];
   function openO(id) { $('#' + id).hidden = false; const f = $('#' + id).querySelector('button, select, input'); f && f.focus({ preventScroll: true }); }
   function closeTop() { for (const id of OVERLAYS) { const el = $('#' + id); if (!el.hidden) { el.hidden = true; if (id === 'welcome') store.set('welcomeSeen', true); return true; } } return false; }
   function lightbox(which) {
@@ -2071,6 +2112,7 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
       'new-tab': newTab,
       'job-open': () => liveOpen(a.dataset.what),
       'job-cleanup': liveCleanup,
+      'job-finish': liveFinish,
       'queue': () => toast('Added to the batch queue. Switch to Batch to see it.'),
       'preview-frame': () => {
         if (isLive()) { liveSaveFrame(); return; }

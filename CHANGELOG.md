@@ -5,7 +5,18 @@ number yet are listed under **Unreleased**.
 
 ## Unreleased
 
-Nothing yet.
+### A "Restoration finished" prompt
+
+**Why:** when a restoration finished, nothing told you. The job just sat in its tab, and you had to
+find the file and tidy up by hand.
+
+**What changed**
+
+- When a job finishes, tapewake asks once: **Finish and show the file** or **Later**.
+- Finish opens File Explorer with the restored video selected, deletes the working files (as Free up
+  space does) and the player cache, and removes the job from tapewake. The restored video, the saved
+  samples and the log are kept.
+- Jobs that run from their own scripts keep their working files; only the job is removed from tapewake.
 
 ## 0.1.1 (2026-11-02)
 

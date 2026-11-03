@@ -66,6 +66,11 @@ so Resemble Enhance and DicFace can be imported on Windows.
 
 **Free up space** is a button in the app for finished jobs (`app_bridge.py cleanup <id>`). It refuses
 while the job runs, before the finished video exists, and for jobs that run from their own scripts.
+When a job finishes, the app asks once: **Finish and show the file** (`app_bridge.py finish <id>`) opens
+File Explorer with the restored video selected, does the same cleanup (skipped for jobs that run from their
+own scripts), deletes the job's player cache and removes its job file. The restored video, the samples and
+the log are kept. **Later** leaves the job as it is.
+
 Set `keep_work_files` in a job's settings to keep every working file (debugging).
 
 ## Tools it needs
