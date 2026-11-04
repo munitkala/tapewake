@@ -35,6 +35,7 @@ Install [Git for Windows](https://git-scm.com/download/win) if you don't have it
 cd C:\
 git clone https://github.com/munitkala/tapewake.git
 cd tapewake
+git checkout windows-v0.1.5
 ```
 
 ## 2. Build the app

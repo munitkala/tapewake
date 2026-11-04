@@ -6,7 +6,8 @@ two-hour VHS tape (720x480, 29.97i) on an 8 GB NVIDIA card. They're saved as the
 `tapewake_engine/settings.py`.
 
 Each restoration is a job file in the app's data folder
-(`%LOCALAPPDATA%\com.tapewake.app\jobs\<id>.json`). `tools.json` in the same folder says where FFmpeg,
+(`%LOCALAPPDATA%\com.tapewake.app\jobs\<id>.json`, on a Mac
+`~/Library/Application Support/com.tapewake.app/jobs/<id>.json`). `tools.json` in the same folder says where FFmpeg,
 the models and the two Pythons are installed.
 
 ## Pipeline
@@ -27,7 +28,7 @@ the models and the two Pythons are installed.
 | App bridge | `app_bridge.py` | Embedded in the app: jobs, progress, pause/resume, frames for the player |
 
 `common.py` and `settings.py` hold the shared bits. `stubs/` has two fake modules (deepspeed, dlib)
-so Resemble Enhance and DicFace can be imported on Windows.
+so Resemble Enhance and DicFace can be imported on Windows and macOS.
 
 ## Things learned on the test tape
 
@@ -48,7 +49,8 @@ so Resemble Enhance and DicFace can be imported on Windows.
   KEEP goes black and CodeFormer lost up to 34.8 dB.
 - **8 GB of GPU memory** means DicFace batch 2, parser batches of 4, TensorRT workspace 1 GB.
 - **Long runs:** write `.part` files and only rename after a frame-count check, make pause actually
-  kill the GPU processes, and keep Windows from sleeping (`SetThreadExecutionState`).
+  kill the GPU processes, and keep the computer from sleeping (`SetThreadExecutionState` on Windows,
+  `caffeinate` on a Mac).
 - **Lossless intermediates add up fast.** On the test tape, per hour of tape: source cut 11 GB,
   deinterlaced 36 GB, restored pieces 17.5 GB (x264 CRF 14), finished video another 17.5 GB. Keeping
   everything until the end peaked near 90 GB per hour. Deinterlacing only a few pieces ahead and deleting

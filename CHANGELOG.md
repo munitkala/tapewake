@@ -3,9 +3,71 @@
 What changed in each update of tapewake, newest first. Updates that haven't been given a version
 number yet are listed under **Unreleased**.
 
+Windows and Mac are released separately, each with its own tag (`windows-v…`, `macos-v…`). Each version says which
+platforms it was released for. Versions up to 0.1.5 were Windows only.
+
 ## Unreleased
 
 Nothing yet.
+
+## 0.2.0 (2026-11-03)
+
+**Released for:** Mac (`macos-v0.2.0`). Not released for Windows yet: the changes to shared code below (the heat
+pause and the computer details in Settings) haven't been tried on a Windows PC. The latest Windows release is
+still 0.1.5 (`windows-v0.1.5`).
+
+### A Mac version
+
+**Why:** to restore tapes on a Mac with Apple Silicon, without an NVIDIA card.
+
+**What changed**
+
+- tapewake builds and runs on Macs with Apple Silicon (M1 or later), macOS 15 or later and 16 GB of memory or
+  more. The AI models run on the Mac's graphics processor (Metal). See [README-macOS.md](README-macOS.md) and
+  [BUILDING-macOS.md](BUILDING-macOS.md).
+- On a Mac, the setup check shows the chip, its graphics cores and memory, and **Restore video** refuses to
+  start on a Mac that can't run tapewake, or when the disk doesn't have room for that particular video (worked
+  out from its length, size and frame rate).
+- `scripts/setup-macos.sh` installs everything the engine needs on a Mac in one go. It installs Homebrew's
+  `ffmpeg-full`: the plain `ffmpeg` formula is built without the text filter the before/after video uses for its
+  labels.
+- On a Mac the player plays an MP4 copy of each restored piece (the same video, not re-encoded), because the Mac's
+  webview can't play MKV files. The last three copies are kept.
+- On a Mac the before/after video is encoded with Apple's own hardware encoder (VideoToolbox) instead of NVIDIA's.
+- The progress panel no longer cuts off long lines at narrow window sizes; they wrap instead.
+- The flicker smoothing in the upscaler reads the picture edge a different way on a Mac, because Metal doesn't
+  have the mode it uses on Windows. The result is the same.
+- `THIRD_PARTY.md` lists what the Mac version uses on top (the Mac denoiser build, uv), and four packages the face
+  models import that weren't listed: ffmpeg-python, PyAV, diffusers 0.11 and gmflow.
+
+
+### Pausing when the computer gets too hot
+
+**Why:** a restoration keeps the computer at full load for hours or days. If it overheats, it's better to stop and
+wait than to carry on.
+
+**What changed**
+
+- While it restores, tapewake checks how hot the computer is every 15 seconds (`thermal.py`). If it stays too hot
+  for a minute, it pauses the restoration like the Pause button does and waits. Once the computer has cooled down
+  (and at least 5 minutes have passed) it carries on by itself from the last finished part.
+- A pause from the user always wins: pressing Pause or **Keep paused** while it waits stops it from resuming by
+  itself, and a restoration the user paused never resumes by itself.
+- "Too hot" on a Mac is macOS's own thermal pressure at Trapping or worse (Heavy is normal under load). On Windows
+  it's the NVIDIA card slowing itself down because of heat, or 90 °C; it resumes at 75 °C. The Windows side hasn't
+  been tried on a Windows PC yet.
+- **Settings → Performance** shows this computer: processor, graphics, memory, operating system, what the AI models
+  run on, free space for the working files and how hot it is. The progress card shows the temperature too: on a
+  Mac the thermal pressure and the chip's temperature in °C, on Windows the graphics card's temperature.
+
+### README for each platform
+
+- The README covers what's the same everywhere; [README-windows.md](README-windows.md) and
+  [README-macOS.md](README-macOS.md) cover each platform: what it needs, how long it takes, installing, and what's
+  different.
+
+Apart from the heat pause and the computer details in Settings, nothing changed on Windows: the restoration works
+exactly as in 0.1.5.
 
 ## 0.1.5 (2026-11-03)
 

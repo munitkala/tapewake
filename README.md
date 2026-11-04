@@ -3,9 +3,9 @@
 **Local video restoration.** Free and open source (MIT licence).
 
 ![MIT licence](https://img.shields.io/badge/licence-MIT-2c7a3f)
-![Windows 10/11](https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-0f7f8c)
-![NVIDIA GPU, 8 GB](https://img.shields.io/badge/GPU-NVIDIA%208%20GB%2B-5b4b9a)
-![Version 0.1](https://img.shields.io/badge/version-0.1-c9a36b)
+![Windows 10/11 and macOS 15+](https://img.shields.io/badge/platform-Windows%2010%20%7C%2011%20%7C%20macOS%2015%2B-0f7f8c)
+![NVIDIA GPU 8 GB or Apple Silicon 16 GB](https://img.shields.io/badge/GPU-NVIDIA%208%20GB%2B%20%7C%20Apple%20Silicon-5b4b9a)
+![Version 0.2](https://img.shields.io/badge/version-0.2-c9a36b)
 
 tapewake restores old VHS and home videos on your own computer: it deinterlaces the tape, upscales it with AI,
 restores faces carefully, cleans up the sound, and gives you the restored film plus a before-and-after comparison.
@@ -27,6 +27,10 @@ anywhere.
 - When a restoration finishes, it shows you the file and tidies up its working files.
 - Shows each restoration live, with a player that plays the finished parts next to the original
   (side by side, wipe, or hold-to-compare) and a filmstrip.
+- Pauses by itself if the computer gets too hot, and carries on once it has cooled down. A restoration you pause
+  yourself stays paused.
+- Shows the computer it's running on (processor, graphics, memory, free space and how hot it is) under
+  **Settings → Performance**.
 
 | | |
 |---|---|
@@ -34,12 +38,26 @@ anywhere.
 | ![Progress window with each step's bar and the time left](screenshots/progress.png) | ![A finished restoration with all steps complete and a button to open the video](screenshots/finished.png) |
 | ![The guided tour highlighting one part of the app with a short explanation](screenshots/guided-tour.png) | ![Lab tab listing the engine commands the app runs for a job](screenshots/lab-commands.png) |
 
+## Windows or Mac
+
+tapewake runs on both. The app and the restoration engine are the same; what's needed and how it's set up differ.
+
+| | Windows | Mac |
+|---|---|---|
+| Computer | Windows 10 (2004 or later) or 11, 64-bit | Apple Silicon (M1 or later), macOS 15 or later |
+| Graphics | NVIDIA card with 8 GB or more | Built into the chip; 16 GB of memory or more |
+| Not supported | AMD and Intel graphics | Intel Macs, Macs with 8 GB |
+| Tested on | A two-hour VHS tape | Short clips |
+| Read this | [README-windows.md](README-windows.md) | [README-macOS.md](README-macOS.md) |
+| Setting it up | [BUILDING.md](BUILDING.md) | [BUILDING-macOS.md](BUILDING-macOS.md) |
+
+Both need about **50 GB of free disk space per hour of tape** while restoring, and patience: a restoration takes
+many times the length of the video. There's no installer to download yet, and the app doesn't install its tools
+for you yet, so for now it's for people comfortable setting things up by hand.
+
 ## Status
 
-Version 0.1.5, Windows only, needs an NVIDIA card. There's no installer to download yet, and the app doesn't
-install its tools for you yet, so for now it's for people comfortable setting things up by hand.
-
-tapewake has two tested modes and picks the one that fits each video:
+Version 0.2.0. tapewake has two tested modes and picks the one that fits each video:
 
 - **Home-video tape**: interlaced NTSC tapes (29.97 fps). Deinterlaced to one frame per field (59.94 fps),
   then restored at 1280×960.
@@ -56,38 +74,33 @@ restoration on it hasn't been tested yet. Animated films can be restored in this
 upscaler and the light film grain meant for camera footage, which shows as a faint speckle on flat colours. A mode
 made for animation is planned.
 
-What changed in each update is in [CHANGELOG.md](CHANGELOG.md). The latest, 0.1.5, is a clean-up: the installer
-no longer carries Python cache files and the licence list is complete. 0.1.4 added Progressive video mode and the
-settings check before starting. 0.1.3 added a red **Stop and delete project** button, gave every project
-its own working folder and made the progress screen show the preparation and only the steps a project really runs.
-0.1.2 added the "Restoration finished" prompt; 0.1.1 cut the disk space a restoration needs roughly in half.
+The Mac version is new and has only restored short clips so far; see [README-macOS.md](README-macOS.md) for what
+hasn't been tested on a Mac yet.
 
-## Requirements
+What changed in each update is in [CHANGELOG.md](CHANGELOG.md).
 
-- Windows 10 (2004 or later) or Windows 11, 64-bit
-- NVIDIA graphics card with 8 GB or more
-- Free disk space: about **50 GB per hour of tape** at the peak, so about 100 GB for a two-hour tape. The
-  working files can go on another drive. Most of them are deleted as the restoration goes; once it's
-  finished, **Free up space** (or **Finish** in the prompt that appears) deletes the rest (about 30 GB
-  per hour of tape), leaving only the restored video (about 17.5 GB per hour). See [engine/README.md](engine/README.md#disk-space)
-- Patience: the two-hour test tape took several days
-- Progressive videos need less. On a 90-second DVD clip (720×462, face and sound restoration off) it took
-  about 4 times the clip's length to restore, and the working files plus the restored video came to about
-  40 GB per hour of video before **Finish**. Measured on a short clip only, so treat it as a rough guide.
+## Releases
 
-## Building it
+Windows and Mac share one codebase on `main`: the restoration engine, the interface and the tested settings are
+the same on both, so a fix to them reaches both. What's specific to each lives in its own files (`README-windows.md`
+and `BUILDING.md`, `README-macOS.md`, `BUILDING-macOS.md` and `scripts/setup-macos.sh`).
 
-[BUILDING.md](BUILDING.md) walks through everything step by step, from cloning this repo to the first
-restoration: building the app, FFmpeg, the two Python environments, the models and `tools.json`.
+Each platform is released on its own, once it has been tested on that platform, with a tag of its own:
 
-The short version, for the app itself (needs Rust, the Visual Studio C++ build tools and Node.js):
+| Platform | Latest release | Get it |
+|---|---|---|
+| Windows | 0.1.5 | `git checkout windows-v0.1.5` |
+| Mac | 0.2.0 | `git checkout macos-v0.2.0` |
 
-```
-git clone https://github.com/munitkala/tapewake.git
-cd tapewake
-npm install
-npm run tauri build -- --bundles nsis
-```
+`main` can be ahead of a platform's latest release with changes that haven't been tested on it yet. The changelog
+says which platforms each version was released for.
+
+## Disk space
+
+About **50 GB per hour of tape** at the peak, so about 100 GB for a two-hour tape. The working files can go on
+another drive. Most of them are deleted as the restoration goes; once it's finished, **Free up space** (or
+**Finish** in the prompt that appears) deletes the rest (about 30 GB per hour of tape), leaving only the restored
+video (about 17.5 GB per hour). See [engine/README.md](engine/README.md#disk-space).
 
 ## What's where
 
@@ -95,17 +108,19 @@ npm run tauri build -- --bundles nsis
 |---|---|
 | `ui/index.html` | The whole interface, one file (HTML/CSS/JS, no framework) |
 | `src-tauri/` | The desktop app (Tauri 2, Rust): window, file picker, the bridge to the engine |
-| `engine/tapewake_engine/` | The restoration engine (Python) |
+| `engine/tapewake_engine/` | The restoration engine (Python), the same on Windows and Mac |
+| `engine/tapewake_engine/thermal.py` | Pauses a restoration when the computer gets too hot, and resumes it once it's cool |
 | `engine/app_bridge.py` | How the app talks to the engine |
 | `engine/presets/vhs-tested.json` | Every setting of the tested tape preset |
 | `engine/stubs/` | Two tiny placeholder modules some model code imports (see THIRD_PARTY.md) |
 | `scripts/clean-engine.mjs` | Run by every build: keeps Python cache files out of the installer |
+| `scripts/setup-macos.sh` | Sets up everything the engine needs on a Mac |
 | `assets/` | Logo |
-| `screenshots/` | The pictures in this README (version 0.1) |
+| `screenshots/` | The pictures in the READMEs (`macos/` for the Mac ones) |
 | `CHANGELOG.md` | What changed in each update |
 | `THIRD_PARTY.md` | Everything tapewake uses that it didn't write, and the licences |
 
-The engine also runs without the app: `python engine\tapewake_engine\run.py <job file>`.
+The engine also runs without the app: `python engine/tapewake_engine/run.py <job file>`.
 
 ## Example footage
 
@@ -131,7 +146,7 @@ is part of this repository, and their authors are not involved with tapewake.
 | [Resemble Enhance](https://github.com/resemble-ai/resemble-enhance) | Enhancing voices | MIT |
 | [PyTorch](https://pytorch.org) and torchvision (RAFT) | Running the AI models | BSD-3-Clause |
 | [OpenCV](https://opencv.org), NumPy, SciPy, psutil | Image and signal processing, process control | Apache-2.0 / BSD |
-| [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) (optional) | Faster upscaling | NVIDIA licence |
+| [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) (optional, Windows) | Faster upscaling | NVIDIA licence |
 | [Tauri](https://tauri.app) | The desktop app | MIT / Apache-2.0 |
 | IBM Plex, Big Shoulders Display, Poppins | Fonts | SIL Open Font License |
 
@@ -171,8 +186,9 @@ Please read this before restoring anything you care about.
   licence (see [THIRD_PARTY.md](THIRD_PARTY.md)). You're responsible for following them. In particular the face
   models are **non-commercial only**: you can't use tapewake's face restoration for paid work, such as a
   restoration service, without permission from their authors.
-- **It works your computer hard.** A restoration keeps the graphics card at full load for hours or days. Make sure
-  your PC is well cooled, and don't leave it running somewhere a hot computer could be a problem.
+- **It works your computer hard.** A restoration keeps the graphics processor at full load for hours or days. Make
+  sure your computer is well cooled, and don't leave it running somewhere a hot computer could be a problem.
+  tapewake pauses if it gets too hot, but that's a safety net, not a reason to run it somewhere hot.
 - **No affiliation.** Names of other projects and products belong to their owners. Their authors don't endorse
   tapewake.
 - This section isn't legal advice. If you're unsure whether your use is allowed, ask someone qualified.

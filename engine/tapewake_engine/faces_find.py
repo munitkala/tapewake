@@ -17,6 +17,7 @@ from scipy.signal import savgol_filter
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import CODEFORMER, Progress, frame_total, qtgmc_reader, track_detail  # noqa: E402
+from settings import torch_device  # noqa: E402
 
 sys.path.insert(0, CODEFORMER)
 from basicsr.utils import img2tensor  # noqa: E402
@@ -95,7 +96,7 @@ def main():
     a.min_len = max(5, a.min_len // a.detect_step)
     os.makedirs(os.path.join(a.out_dir, 'crops'), exist_ok=True)
     os.chdir(CODEFORMER)
-    dev = torch.device('cuda')
+    dev = torch_device()
     helper = FaceRestoreHelper(DET_SCALE, face_size=512, crop_ratio=(1, 1), det_model='retinaface_resnet50',
                                save_ext='png', use_parse=True, device=dev)
     # retinaface rebuilds its anchors in python on every frame (~60 s per piece!) so cache them

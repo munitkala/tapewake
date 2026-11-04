@@ -12,10 +12,14 @@ use tauri::Manager;
 
 const BRIDGE: &str = include_str!("../../engine/app_bridge.py");
 
-/// %LOCALAPPDATA%\com.tapewake.app (tools.json, jobs, cache)
+/// tools.json, jobs, cache: %LOCALAPPDATA%\com.tapewake.app on Windows,
+/// ~/Library/Application Support/com.tapewake.app on a Mac (same as settings.py APP_DATA)
 fn app_data() -> PathBuf {
-    let local = std::env::var_os("LOCALAPPDATA").unwrap_or_default();
-    PathBuf::from(local).join("com.tapewake.app")
+    #[cfg(windows)]
+    let base = PathBuf::from(std::env::var_os("LOCALAPPDATA").unwrap_or_default());
+    #[cfg(not(windows))]
+    let base = PathBuf::from(std::env::var_os("HOME").unwrap_or_default()).join("Library").join("Application Support");
+    base.join("com.tapewake.app")
 }
 
 /// Python to run the engine with: tools.json "python", or the default install location.
@@ -24,7 +28,11 @@ fn engine_python() -> PathBuf {
         .ok()
         .and_then(|s| serde_json::from_str::<serde_json::Value>(s.trim_start_matches('\u{feff}')).ok())  // strip BOM (Notepad)
         .and_then(|v| v.get("python").and_then(|p| p.as_str()).map(PathBuf::from));
-    from_tools.unwrap_or_else(|| app_data().join("python").join("python.exe"))
+    #[cfg(windows)]
+    let default = app_data().join("python").join("python.exe");
+    #[cfg(not(windows))]
+    let default = app_data().join("python").join("bin").join("python3");
+    from_tools.unwrap_or_else(|| default)
 }
 
 /// Bundled engine folder, or the one in the repo for dev builds.
@@ -37,7 +45,7 @@ fn engine_dir(app: &tauri::AppHandle) -> PathBuf {
 }
 
 /// Runs a bridge action and returns its JSON. Only the actions below are allowed, with checked arguments:
-/// jobs, tools, status/pause/resume/pieces/cleanup/finish <job>, frame <job> <k> <j>, video <job> <k>, open <job> <what>,
+/// jobs, tools, system, status/pause/resume/pieces/cleanup/finish <job>, frame <job> <k> <j>, video <job> <k>, open <job> <what>,
 /// delete <job> check|confirm
 #[tauri::command]
 async fn job(app: tauri::AppHandle, action: String, job: Option<String>, args: Option<Vec<String>>) -> Result<String, String> {
@@ -45,7 +53,7 @@ async fn job(app: tauri::AppHandle, action: String, job: Option<String>, args: O
     let numbers = |n: usize| args.len() == n && args.iter().all(|a| !a.is_empty() && a.len() <= 6 && a.bytes().all(|b| b.is_ascii_digit()));
     let id_ok = job.as_deref().is_some_and(|j| !j.is_empty() && j.len() <= 64 && j.bytes().all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'-'));
     let ok = match action.as_str() {
-        "jobs" | "tools" => job.is_none() && args.is_empty(),
+        "jobs" | "tools" | "system" => job.is_none() && args.is_empty(),
         "status" | "pause" | "resume" | "pieces" | "cleanup" | "finish" => id_ok && args.is_empty(),
         "frame" => id_ok && numbers(2),
         "video" => id_ok && numbers(1),
@@ -85,6 +93,13 @@ async fn bridge(app: &tauri::AppHandle, args: Vec<String>) -> Result<String, Str
     tauri::async_runtime::spawn_blocking(move || {
         let mut cmd = Command::new(py);
         cmd.arg("-c").arg(BRIDGE).args(&args).env("TAPEWAKE_ENGINE", engine);
+        // Opened from the Finder, the app only gets /usr/bin:/bin:/usr/sbin:/sbin, so add Homebrew's folders
+        // for ffmpeg and the rest.
+        #[cfg(target_os = "macos")]
+        {
+            let path = std::env::var("PATH").unwrap_or_default();
+            cmd.env("PATH", format!("/opt/homebrew/bin:/usr/local/bin:{path}"));
+        }
         #[cfg(windows)]
         {
             use std::os::windows::process::CommandExt;

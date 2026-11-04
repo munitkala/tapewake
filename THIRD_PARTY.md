@@ -12,6 +12,8 @@ Everything below gets installed separately, from its own official source.
 |---|---|---|
 | Tauri 2 + its Rust crates, serde_json, rfd | The app window, the file picker | Mostly MIT / Apache-2.0 (see below) |
 | Microsoft Edge WebView2 | Draws the interface (already part of Windows 10/11) | Microsoft |
+| WebKit (WKWebView) | Draws the interface on a Mac (part of macOS) | Apple / LGPL-2.1 and BSD |
+| IOKit, CoreFoundation, `notifyutil`, `caffeinate` (part of macOS) | `thermal.py`: the chip's temperature and macOS's thermal pressure; `run.py`: keeping the Mac awake. Called, nothing copied | Apple (system software) |
 | Big Shoulders Display, IBM Plex Sans, IBM Plex Mono | Interface fonts (currently loaded from Google Fonts) | SIL OFL 1.1 |
 
 The Rust crates are compiled into `tapewake.exe`: 233 of them on Windows (`cargo metadata`, 3 November 2026).
@@ -27,13 +29,13 @@ alternatives. The npm side is only the Tauri command-line tool (MIT / Apache-2.0
 
 | Component | Used in | Licence |
 |---|---|---|
-| FFmpeg (a GPL build: libx264, NVENC, FFV1, bwdif, drawtext, loudnorm, ebur128 ...) | every step: cutting, decoding, encoding, audio filters, player previews | GPL-3.0 |
+| FFmpeg (a GPL build: libx264, NVENC / VideoToolbox, FFV1, bwdif, drawtext, loudnorm, ebur128 ...; on a Mac Homebrew's `ffmpeg-full`) | every step: cutting, decoding, encoding, audio filters, player previews | GPL-3.0 |
 | VapourSynth R81 | `prepare.py`, `deinterlace.py` (runs QTGMC) | LGPL-2.1+ |
 | vsjetpack 2.2.6 (QTempGaussMC, DFTTest wrapper, NNEDI3 wrapper) | deinterlacing | MIT |
 | bestsource | reading the source pieces in VapourSynth | MIT |
 | mvutensils (mvtools) | motion search inside QTGMC | GPL-2.0 |
 | znedi3 (+ nnedi3_weights.bin) | interpolation inside QTGMC | GPL-2.0 |
-| dfttest2 / dfttest2_cpu | QTGMC's denoiser | GPL-3.0+ / GPL-2.0+ |
+| dfttest2 / dfttest2_cpu (Windows), dfttest2_gcc (Mac) | QTGMC's denoiser | GPL-3.0+ / GPL-2.0+ (the Mac wheel: GPL-2.0+) |
 | akarin, resize2 | expressions and resizing inside vsjetpack | LGPL-3.0 / LGPL-2.1 |
 | zsmooth, vszip | smoothing / helpers inside vsjetpack | MIT |
 | Real-ESRGAN weights `realesr-general-x4v3` + `-wdn-x4v3` | `upscale.py` (only the weight files; the network is loaded by tapewake's own code) | BSD-3-Clause |
@@ -51,6 +53,16 @@ alternatives. The npm side is only the Tauri command-line tool (MIT / Apache-2.0
 
 These three are the reason tapewake has to stay free. They're only used, never copied into the repo.
 
+The face model repositories import a few more packages when they load. These were found while setting up the Mac
+version (`scripts/setup-macos.sh` installs them); a Windows setup needs them too.
+
+| Component | Used in | Licence |
+|---|---|---|
+| ffmpeg-python 0.2 | imported by DicFace's data loaders | Apache-2.0 |
+| PyAV 17 (its wheel includes its own FFmpeg libraries) | imported by DicFace's data loaders | BSD-3-Clause (FFmpeg libraries: LGPL-2.1+) |
+| diffusers 0.11.0 + huggingface_hub 0.25 | KEEP's attention layers (KEEP only works with this old diffusers) | Apache-2.0 |
+| gmflow (KEEP's git submodule) | KEEP's flow model | Apache-2.0 |
+
 ### Sound
 
 | Component | Used in | Licence |
@@ -65,6 +77,7 @@ These three are the reason tapewake has to stay free. They're only used, never c
 |---|---|---|
 | Python 3.10 | engine | PSF |
 | PyTorch 2.5, torchvision, torchaudio (incl. the NVIDIA CUDA runtime in the wheels) | all GPU steps | BSD-3-Clause (CUDA: NVIDIA redistributable) |
+| uv (Mac setup only) | `scripts/setup-macos.sh`: installs the two Pythons and their packages | MIT / Apache-2.0 |
 | NumPy, SciPy | everywhere | BSD |
 | OpenCV | face steps, assembling | Apache-2.0 |
 | psutil | `control.py`, `run.py`: finding and stopping the job's processes | BSD-3-Clause |

@@ -18,10 +18,10 @@ import torch
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import CODEFORMER, MODELS, WEIGHTS, Progress  # noqa: E402
-from settings import STUBS  # noqa: E402
+from settings import STUBS, peak_gpu_gb, torch_device  # noqa: E402
 
 REPOS = {'codeformer': CODEFORMER, 'keep': os.path.join(MODELS, 'KEEP'), 'dicface': os.path.join(MODELS, 'DicFace')}
-dev = torch.device('cuda')
+dev = torch_device()
 
 
 def to_tensor(crops):
@@ -175,7 +175,7 @@ def main():
                   flush=True)
     prog.finish()
     print(f'{a.model}: {total} face-frames in {time.time() - t0:.0f}s ({total / (time.time() - t0):.2f} faces/s), '
-          f'peak GPU memory {torch.cuda.max_memory_allocated() / 1e9:.1f} GB', flush=True)
+          f'GPU memory {peak_gpu_gb(dev):.1f} GB', flush=True)
 
 
 if __name__ == '__main__':

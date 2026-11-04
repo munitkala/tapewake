@@ -19,6 +19,7 @@ import torch
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import CODEFORMER, FFMPEG, FPS, H, W, Progress, delivery_args, reader, track_detail  # noqa: E402
+from settings import torch_device  # noqa: E402
 
 sys.path.insert(0, CODEFORMER)
 from basicsr.utils import img2tensor  # noqa: E402
@@ -107,7 +108,7 @@ def main():
                     help='structure coarser than this many source pixels comes from the source face, not the model '
                          '(higher = more faithful, fewer invented details)')
     a = ap.parse_args()
-    dev = torch.device('cuda')
+    dev = torch_device()
     faces_dir = os.path.join(a.clip_dir, 'faces')
     with open(os.path.join(faces_dir, 'tracks.pkl'), 'rb') as fh:
         data = pickle.load(fh)

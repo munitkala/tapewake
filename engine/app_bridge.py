@@ -4,6 +4,7 @@ The app embeds this file and runs it with the engine's Python. Every command pri
 
     jobs                       list the jobs
     tools                      setup checks, missing tools
+    system                     this computer's processor, graphics, memory and how hot it is
     probe <video>              scan type, frame rate and size, and which mode (tape or progressive) fits it
     create <video> [--mode tape|progressive] [--no-faces] [--no-audio]
                                new job with the tested settings; refuses a mode the video can't use
@@ -13,7 +14,7 @@ The app embeds this file and runs it with the engine's Python. Every command pri
     video <id> K               files the player needs for piece K
     open <id> samples|output|compare|log
     cleanup <id>               finished job: delete its working files (space.py), keep the restored video
-    finish <id>                finished job: show the restored video in Explorer and take the job out of tapewake
+    finish <id>                finished job: show the restored video in Explorer/Finder and take the job out of tapewake
     delete <id> check|confirm  stop a job and delete its working files and its entry (check says what goes)
 
 Nothing here changes a job's settings. Finished pieces are only deleted by cleanup and finish, which
@@ -32,9 +33,10 @@ import time
 # run with python -c, so there's no __file__; the app tells us where the engine is
 sys.path.insert(0, os.environ.get('TAPEWAKE_ENGINE') or os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(sys.path[0], 'tapewake_engine'))
-from settings import (APP_DATA, CODEFORMER, FFMPEG, FFPROBE, JOBS, MODELS, PYTHON, TOOLS_FILE, VS_PYTHON,  # noqa: E402
-                      Job, all_jobs, job_file, progressive_settings, work_root)
+from settings import (APP_DATA, CODEFORMER, FFMPEG, FFPROBE, IS_MAC, JOBS, MODELS, PYTHON, TOOLS_FILE,  # noqa: E402
+                      VS_PYTHON, Job, all_jobs, job_file, progressive_settings, work_root)
 import space  # noqa: E402
+import thermal  # noqa: E402
 
 NO_WINDOW = 0x08000000
 LOW = NO_WINDOW | 0x00004000  # below normal priority, so we never slow the restore down
@@ -45,6 +47,9 @@ FPS = 60000 / 1001  # restored output is 59.94 (one frame per field)
 # so this stays around 135 MB per job at most.
 KEEP_VIDEOS = 10  # ~11 MB each, plus its filmstrip
 KEEP_JPEGS = 250  # ~0.1 MB each
+# A Mac's webview can't play Matroska, so there the player gets an MP4 copy of the restored piece (same video, no
+# re-encode). Those are full size (~150 MB per piece), so only a few are kept.
+KEEP_MP4_COPIES = 3
 
 
 def controller(job):
@@ -116,6 +121,9 @@ def status(job, ctl, msg=''):
         'faces': bool(job['faces']), 'restore_audio': bool(job['restore_audio']),
         'prep': None if state == 'finished' else ctl.prep(),  # [step, fraction] until piece 1 starts
         'problem': ctl.prep_problem() if state == 'running' else '',
+        # paused because it got too hot ({'since', 'reason'}); it resumes by itself once it's cool
+        'cooling': thermal.heat_pause(job),
+        'thermal': thermal.now() if state == 'running' or os.path.exists(job.thermal_flag) else None,
     }
 
 
@@ -143,8 +151,9 @@ def cleanup(job, ctl):
 
 
 def finish(job, ctl):
-    """Finished job: open Explorer on the restored video, delete the working files (unless the job runs from its own
-    scripts) and the player cache, then remove the job file. The restored video, the samples and the log are kept."""
+    """Finished job: show the restored video in Explorer or the Finder, delete the working files (unless the job runs
+    from its own scripts) and the player cache, then remove the job file. The restored video, the samples and the log
+    are kept."""
     if ctl.state() != 'finished':
         return {'done': False, 'msg': 'It has not finished yet, so it stays in tapewake.'}
     freed = 0
@@ -153,7 +162,7 @@ def finish(job, ctl):
         ctl.log(f'Finish: deleted {space.gb(freed)} of working files (the restored video is kept)')
     shutil.rmtree(os.path.join(APP_DATA, 'cache', job.id), ignore_errors=True)
     os.remove(job.path)
-    subprocess.Popen(f'explorer /select,"{job.output}"')
+    reveal(job.output)
     kept = f'Deleted {space.gb(freed)} of working files. ' if freed else ''
     return {'done': True, 'msg': f'{kept}{os.path.basename(job.output)} is ready in {os.path.dirname(job.output)}.'}
 
@@ -288,7 +297,7 @@ def frame(job, k, j):
 def video(job, k):
     """Files the player needs for piece k.
 
-    The restored piece plays as is. The source cut is lossless and the webview can't play that, so we make
+    The restored piece plays as is (on a Mac from an MP4 copy, see KEEP_MP4_COPIES). The source cut is lossless and the webview can't play that, so we make
     a small 640x480 H.264 copy once (bobbed like frame(), so the timelines match). The filmstrip comes out
     of the same ffmpeg pass. Takes ~4 s on two CPU threads, no GPU.
     """
@@ -315,7 +324,17 @@ def video(job, k):
         prune(c, '*_orig.mp4', KEEP_VIDEOS, ('_orig.mp4', '_strip.jpg'))
     else:
         os.utime(orig)  # bump it so prune() keeps it
-    return {'k': k, 'frames': frames, 'rest': job.piece(k), 'orig': orig, 'strip': strip, 'cols': cols,
+    rest = job.piece(k)
+    if IS_MAC:
+        rest = os.path.join(c, f'{k:03d}_rest.mp4')
+        if not os.path.exists(rest):
+            subprocess.run([FFMPEG, '-v', 'error', '-nostdin', '-y', '-i', job.piece(k), '-map', '0:v', '-c', 'copy',
+                            '-movflags', '+faststart', rest + '.tmp.mp4'], check=True, creationflags=LOW)
+            os.replace(rest + '.tmp.mp4', rest)
+            prune(c, '*_rest.mp4', KEEP_MP4_COPIES)
+        else:
+            os.utime(rest)
+    return {'k': k, 'frames': frames, 'rest': rest, 'orig': orig, 'strip': strip, 'cols': cols,
             'per_s': THUMBS_PER_S}
 
 
@@ -335,8 +354,19 @@ def open_item(job, which):
         if not found:
             return 'No before/after video has been made yet.'
         target = found[-1]
-    os.startfile(target)
+    if IS_MAC:
+        subprocess.Popen(['open', target])
+    else:
+        os.startfile(target)
     return f'Opened {os.path.basename(target) or target}.'
+
+
+def reveal(path):
+    """Open the folder with `path` selected."""
+    if IS_MAC:
+        subprocess.Popen(['open', '-R', path])
+    else:
+        subprocess.Popen(f'explorer /select,"{path}"')
 
 
 def missing_tools():
@@ -346,10 +376,188 @@ def missing_tools():
     return [name for name, path in need.items() if not (os.path.isabs(path) and os.path.exists(path))]
 
 
-def checks():
-    """Setup checks for this PC, as [name, ok, detail] rows."""
+# What a Mac needs. The VapourSynth plugins are only built for macOS 15 and later. The models share the Mac's
+# memory with everything else, and 16 GB leaves them about what the 8 GB graphics card had on the test PC.
+MAC_MIN_OS = (15, 0)
+MAC_MIN_MEMORY_GB = 16
+# Working files at the peak, per hour of video, as measured (see engine/README.md): tape mode 50 GB at
+# 640x480 59.94, progressive mode about 40 GB for a 720x464 29.97 DVD clip. Other sizes and rates scale with
+# the number of pixels a second. 10% on top, so a run doesn't stop near the end because the disk is full.
+GB_PER_HOUR = {'tape': (50, 640 * 480 * 60000 / 1001), 'progressive': (40, 720 * 464 * 30000 / 1001)}
+DISK_MARGIN = 1.1
+
+
+def sysctl(name):
+    try:
+        out = subprocess.run(['/usr/sbin/sysctl', '-n', name], capture_output=True, text=True, timeout=10)
+        return out.stdout.strip()
+    except (OSError, subprocess.TimeoutExpired):
+        return ''
+
+
+def system_info():
+    """This computer for the app: [label, value] rows that don't change (cached), plus free space and heat now."""
+    path = os.path.join(APP_DATA, 'cache', 'system.json')
+    try:
+        with open(path, encoding='utf-8') as f:
+            rows = json.load(f)
+    except (OSError, ValueError):
+        rows = mac_specs() if IS_MAC else windows_specs()
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, 'w', encoding='utf-8') as f:
+            json.dump(rows, f)
+    root = work_root(os.path.join(os.path.expanduser('~'), 'x'))
+    try:
+        rows = rows + [['Free space for working files', f'{free_gb(root):.0f} GB in {shown(root)}']]
+    except OSError:
+        pass
+    return {'specs': rows, 'thermal': thermal.now()}
+
+
+def models_run_on():
+    try:
+        import torch
+    except ImportError:
+        return 'PyTorch is not installed yet'
+    if torch.cuda.is_available():
+        return f'{torch.cuda.get_device_name(0)} (CUDA)'
+    if torch.backends.mps.is_available():
+        return 'Apple GPU (Metal)'
+    return 'Processor only (no supported graphics processor found)'
+
+
+def mac_specs():
+    hw = mac_hardware()
+    perf, eff = sysctl('hw.perflevel0.physicalcpu'), sysctl('hw.perflevel1.physicalcpu')
+    cores = f'{perf} performance + {eff} efficiency' if perf and eff else sysctl('hw.physicalcpu')
+    model = sysctl('hw.model')
+    return [['Mac', model or 'Unknown'],
+            ['Chip', hw['chip']],
+            ['Processor cores', cores],
+            ['Graphics', f"{hw['gpu_cores']}-core GPU, built into the chip" if hw['gpu_cores'] else 'Built into the chip'],
+            ['Memory', f"{hw['memory_gb']:.0f} GB, shared by the processor and graphics"],
+            ['macOS', hw['version']],
+            ['AI models run on', models_run_on()]]
+
+
+def windows_specs():
     import platform
-    import shutil
+    import psutil
+    rows = [['Processor', platform.processor() or 'Unknown'],
+            ['Processor cores', f'{psutil.cpu_count(logical=False)} ({psutil.cpu_count()} threads)'],
+            ['Memory', f'{psutil.virtual_memory().total / 2 ** 30:.0f} GB'],
+            ['Windows', platform.version()]]
+    try:
+        out = subprocess.run(['nvidia-smi', '--query-gpu=name,memory.total,driver_version', '--format=csv,noheader'],
+                             capture_output=True, text=True, creationflags=NO_WINDOW, timeout=10).stdout.strip()
+        name, mem, driver = (x.strip() for x in out.splitlines()[0].split(','))
+        rows.insert(2, ['Graphics', f'{name}, {mem}, driver {driver}'])
+    except (OSError, subprocess.TimeoutExpired, ValueError, IndexError):
+        rows.insert(2, ['Graphics', 'No NVIDIA graphics card found'])
+    return rows + [['AI models run on', models_run_on()]]
+
+
+def mac_hardware():
+    """macOS version, chip, memory and GPU cores of this Mac."""
+    import platform
+    ver = platform.mac_ver()[0] or '0'
+    gpu_cores = ''
+    try:
+        out = subprocess.run(['/usr/sbin/system_profiler', 'SPDisplaysDataType'], capture_output=True, text=True,
+                             timeout=20).stdout
+        gpu_cores = next((ln.split(':')[1].strip() for ln in out.splitlines() if 'Total Number of Cores' in ln), '')
+    except (OSError, subprocess.TimeoutExpired):
+        pass
+    return {'version': ver, 'os': tuple(int(x) for x in (ver.split('.') + ['0'])[:2]),
+            # hw.optional.arm64 is 1 on Apple Silicon even when this Python runs under Rosetta
+            'apple_silicon': sysctl('hw.optional.arm64') == '1',
+            'chip': sysctl('machdep.cpu.brand_string') or 'Unknown chip',
+            'memory_gb': int(sysctl('hw.memsize') or 0) / 2 ** 30, 'gpu_cores': gpu_cores}
+
+
+def mac_problem(hw=None):
+    """Why this Mac can't run tapewake, or ''."""
+    hw = hw or mac_hardware()
+    if not hw['apple_silicon']:
+        return ('tapewake needs a Mac with Apple Silicon (M1 or later): the AI models run on its graphics '
+                'processor. Intel Macs are not supported.')
+    if hw['os'] < MAC_MIN_OS:
+        return f"tapewake needs macOS 15 or later. This Mac has macOS {hw['version']}."
+    if hw['memory_gb'] < MAC_MIN_MEMORY_GB - 0.5:
+        return (f"tapewake needs at least {MAC_MIN_MEMORY_GB} GB of memory for its AI models. This Mac has "
+                f"{hw['memory_gb']:.0f} GB.")
+    return ''
+
+
+def disk_needed_gb(probe, mode):
+    """Rough peak disk space for restoring this video, in GB."""
+    per_hour, ref = GB_PER_HOUR[mode]
+    if mode == 'tape':
+        rate = ref
+    else:
+        num, den = (int(x) for x in probe['fps'].split('/'))
+        rate = probe['work_w'] * probe['work_h'] * num / den
+    return DISK_MARGIN * per_hour * probe['duration'] / 3600 * rate / ref
+
+
+def shown(path):
+    """A path for the app to show, with the home folder as ~ (so screenshots don't carry the user's name)."""
+    home = os.path.expanduser('~')
+    return '~' + path[len(home):] if path == home or path.startswith(home + os.sep) else path
+
+
+def existing_parent(path):
+    """`path`, or the nearest folder above it that exists (the work folder isn't made until the run starts)."""
+    while path and not os.path.exists(path) and os.path.dirname(path) != path:
+        path = os.path.dirname(path)
+    return path or os.sep
+
+
+def free_gb(path):
+    """Free space on the drive that holds `path`, in GB."""
+    return shutil.disk_usage(existing_parent(path)).free / 1e9
+
+
+def disk_problem(source, probe, mode):
+    """Why there isn't enough disk space to restore this video, or ''. The working files go in work_root,
+    the restored video (about a third of the peak) next to the source."""
+    need = disk_needed_gb(probe, mode)
+    work, out = work_root(source), os.path.dirname(os.path.abspath(source))
+    try:
+        same = os.stat(existing_parent(work)).st_dev == os.stat(out).st_dev
+        free_work, free_out = free_gb(work), free_gb(out)
+    except OSError:
+        return ''  # can't tell; the run itself stops cleanly if the disk fills up
+    if same:
+        short = [(need, free_work, work)] if free_work < need else []
+    else:
+        short = [(n, f, p) for n, f, p in ((need * 0.65, free_work, work), (need * 0.35, free_out, out)) if f < n]
+    if not short:
+        return ''
+    n, f, p = short[0]
+    hours = probe['duration'] / 3600
+    return (f'Restoring this video ({hours:.1f} h) needs about {n:.0f} GB free in {p}, but there is only {f:.0f} GB. '
+            f'Free up some space, or point "work_root" in {TOOLS_FILE} at a bigger drive.')
+
+
+def checks():
+    """Setup checks for this computer, as [name, ok, detail] rows."""
+    out = mac_rows() if IS_MAC else windows_rows()
+    root = work_root(os.path.join(os.path.expanduser('~'), 'x'))
+    try:
+        free = free_gb(root)
+        out.append(['Free disk space', free > 110, f'{free:.0f} GB free in {shown(root)} (a two-hour tape needs about '
+                    '100 GB at the peak: about 50 GB per hour of tape)'])
+    except OSError:
+        out.append(['Free disk space', False, f'Could not read {shown(root)}'])
+    missing = missing_tools()
+    out.append(['FFmpeg, Python, VapourSynth and models', not missing,
+                'All found' if not missing else 'Missing: ' + ', '.join(missing) + f' (set in {TOOLS_FILE})'])
+    return out
+
+
+def windows_rows():
+    import platform
     build = int((platform.version().split('.') + ['0', '0', '0'])[2] or 0)
     out = [['Windows version', platform.system() == 'Windows' and build >= 19041,
             f"Windows {'11' if build >= 22000 else '10'} (build {build})"]]
@@ -359,16 +567,24 @@ def checks():
         out.append(['Graphics processor and memory', bool(gpu), gpu.splitlines()[0] if gpu else 'No NVIDIA graphics card found'])
     except (OSError, subprocess.TimeoutExpired):
         out.append(['Graphics processor and memory', False, 'No NVIDIA graphics card found (the engine needs one for now)'])
-    root = work_root(os.path.expanduser('~\\x'))
-    try:
-        free = shutil.disk_usage(root if os.path.exists(root) else os.path.splitdrive(root)[0] + os.sep).free / 1e9
-        out.append(['Free disk space', free > 110, f'{free:.0f} GB free in {root} (a two-hour tape needs about '
-                    '100 GB at the peak: about 50 GB per hour of tape)'])
-    except OSError:
-        out.append(['Free disk space', False, f'Could not read {root}'])
-    missing = missing_tools()
-    out.append(['FFmpeg, Python, VapourSynth and models', not missing,
-                'All found' if not missing else 'Missing: ' + ', '.join(missing) + f' (set in {TOOLS_FILE})'])
+    return out
+
+
+def mac_rows():
+    hw = mac_hardware()
+    out = [['macOS version', hw['os'] >= MAC_MIN_OS,
+            f"macOS {hw['version']}" + ('' if hw['os'] >= MAC_MIN_OS else ' (tapewake needs macOS 15 or later)')]]
+    cores = f", {hw['gpu_cores']}-core GPU" if hw['gpu_cores'] else ''
+    chip = f"{hw['chip']}{cores}, {hw['memory_gb']:.0f} GB memory"
+    problem = mac_problem(hw) if hw['os'] >= MAC_MIN_OS else ''  # the macOS row already says that one
+    if not problem:
+        try:
+            import torch
+            if not torch.backends.mps.is_available():
+                problem = 'PyTorch can not use the Apple GPU (Metal). Reinstall the engine Python (BUILDING-macOS.md).'
+        except ImportError:
+            problem = 'PyTorch is not installed in the engine Python yet.'
+    out.append(['Graphics processor and memory', not problem, chip + (f'. {problem}' if problem else '')])
     return out
 
 
@@ -444,6 +660,8 @@ def create(source, faces=True, audio=True, mode=None):
     probe = probe_video(source)
     mode = mode or probe['mode']
     why = mode_problem(probe, mode) if mode else "tapewake can't tell how to restore this video."
+    if not why and IS_MAC:  # check the Mac and the disk up front instead of failing hours in
+        why = mac_problem() or disk_problem(source, probe, mode)
     if why:
         raise SystemExit(why)
     base = os.path.splitext(os.path.basename(source))[0]
@@ -490,6 +708,9 @@ def main():
     if cmd == 'jobs':
         print(json.dumps({'jobs': [{'id': j.id, 'name': j.name} for j in all_jobs()]}))
         return
+    if cmd == 'system':
+        print(json.dumps(system_info()))
+        return
     if cmd == 'tools':
         print(json.dumps({'missing': missing_tools(), 'tools_file': TOOLS_FILE, 'checks': checks()}))
         return
@@ -531,7 +752,10 @@ def main():
     if cmd == 'cleanup':
         msg = cleanup(job, ctl)
     elif cmd == 'pause':
-        if ctl.state() != 'running':
+        if os.path.exists(job.thermal_flag):  # cooling down: pausing now means it stays paused
+            ctl.pause()
+            msg = 'Kept paused. It will not resume by itself; press Resume when you want it to carry on.'
+        elif ctl.state() != 'running':
             msg = 'It is not running.'
         else:
             ctl.pause()

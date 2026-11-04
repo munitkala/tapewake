@@ -4,6 +4,10 @@
 
 pause kills the runner and its children (frees the GPU) and leaves a PAUSED file. resume deletes
 PAUSED and starts run.py again, detached. Finished pieces are never redone.
+
+heat_pause does the same when the computer gets too hot (thermal.py), but leaves THERMAL_PAUSE instead of
+PAUSED and starts `thermal.py wait`, which resumes the job once it has cooled down. A pause from the user
+cancels that: it deletes THERMAL_PAUSE and stops the waiting process with the rest.
 """
 import json
 import os
@@ -12,7 +16,7 @@ import sys
 import time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from settings import PYTHON, Job  # noqa: E402
+from settings import PYTHON, Job, all_jobs  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 STAGES = ('finding faces', 'restoring faces', 'upscaling', 'assembling')
@@ -25,6 +29,43 @@ STAGES_NO_FACES, STEP_SHARE_NO_FACES = STAGES[2:], (0.75, 0.25)
 # with its weight inside the preparation, and the preparation's share of the whole bar in percent
 PREP = (('preparing the sound', 0.5), ('cutting the video', 0.2), ('deinterlacing the first pieces', 0.3))
 PREP_PCT = 2.0
+
+
+def engine_process(name):
+    """python or ffmpeg, as Windows (python.exe, pythonw.exe, ffmpeg.exe) or macOS (python3.10, Python) names them."""
+    n = (name or '').lower()
+    n = n[:-4] if n.endswith('.exe') else n
+    if n in ('ffmpeg', 'python', 'pythonw', 'python3'):
+        return True
+    return n.startswith('python3.') and n[8:].isdigit()
+
+
+def launch(script, job):
+    """Start an engine script for this job in the background, so it keeps going when the app quits."""
+    pythonw = os.path.join(os.path.dirname(PYTHON), 'pythonw.exe')
+    cmd = [pythonw if os.path.exists(pythonw) else PYTHON, os.path.join(HERE, script)]
+    cmd += ['wait', job.path] if script == 'thermal.py' else [job.path]
+    if os.name != 'nt':
+        subprocess.Popen(cmd, start_new_session=True, close_fds=True, stdin=subprocess.DEVNULL,
+                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        return
+    flags = 0x00000008 | 0x00000200 | 0x01000000  # DETACHED_PROCESS | NEW_PROCESS_GROUP | BREAKAWAY_FROM_JOB
+    try:
+        subprocess.Popen(cmd, creationflags=flags, close_fds=True)
+    except OSError:
+        subprocess.Popen(cmd, creationflags=flags & ~0x01000000, close_fds=True)
+
+
+def other_job_running(job):
+    """True if a different job is restoring right now (one at a time gets the graphics processor)."""
+    for other in all_jobs():
+        if other.id != job.id:
+            try:
+                if Control(other).runner_running():
+                    return True
+            except Exception:  # noqa: BLE001 - a broken job file shouldn't block this one
+                pass
+    return False
 
 
 class Control:
@@ -41,7 +82,7 @@ class Control:
             cmd = ' '.join(p.info['cmdline'] or [])
             if p.info['pid'] != me and (self.job.path in cmd or self.job.folder in cmd) and 'app_bridge' not in cmd \
                     and 'control.py' not in cmd and \
-                    (p.info['name'] or '').lower() in ('python.exe', 'pythonw.exe', 'ffmpeg.exe'):
+                    engine_process(p.info['name']):
                 out.append(p)
         return out
 
@@ -60,10 +101,9 @@ class Control:
         with open(self.job.log, 'a', encoding='utf-8') as f:
             f.write(f'[{time.strftime("%Y-%m-%d %H:%M:%S")}] {msg}\n')
 
-    def pause(self):
+    def _stop(self):
+        """Kill run.py and everything it started for this job (frees the graphics processor)."""
         import psutil
-        os.makedirs(self.job.folder, exist_ok=True)
-        open(self.job.pause_flag, 'w').close()
         procs = self.processes()
         for p in procs:
             try:
@@ -71,23 +111,40 @@ class Control:
             except psutil.Error:
                 pass
         psutil.wait_procs(procs, timeout=10)
-        self.log(f'PAUSED by user ({len(procs)} processes stopped)')
+        return len(procs)
+
+    def pause(self):
+        os.makedirs(self.job.folder, exist_ok=True)
+        open(self.job.pause_flag, 'w').close()
+        cooling = os.path.exists(self.job.thermal_flag)
+        if cooling:  # the user's pause wins: it won't resume by itself any more
+            os.remove(self.job.thermal_flag)
+        n = self._stop()
+        note = ', so it will not resume after cooling down' if cooling else ''
+        self.log(f'PAUSED by user ({n} processes stopped){note}')
+
+    def heat_pause(self, reason):
+        """Pause because the computer is too hot, and leave thermal.py waiting to resume once it has cooled down.
+        Called from run.py, which this stops too."""
+        os.makedirs(self.job.folder, exist_ok=True)
+        with open(self.job.thermal_flag, 'w', encoding='utf-8') as f:
+            json.dump({'since': time.time(), 'reason': reason}, f)
+        self.log(f'TOO HOT, pausing: {reason}. It resumes by itself once the computer has cooled down.')
+        self._stop()
+        time.sleep(1)
+        self._stop()  # anything run.py started in the meantime
+        launch('thermal.py', self.job)
 
     def resume(self):
-        if os.path.exists(self.job.pause_flag):
-            os.remove(self.job.pause_flag)
+        for flag in (self.job.pause_flag, self.job.thermal_flag):
+            if os.path.exists(flag):
+                os.remove(flag)
         if self.runner_running():
             return
-        pythonw = os.path.join(os.path.dirname(PYTHON), 'pythonw.exe')
-        cmd = [pythonw if os.path.exists(pythonw) else PYTHON, os.path.join(HERE, 'run.py'), self.job.path]
-        flags = 0x00000008 | 0x00000200 | 0x01000000  # DETACHED_PROCESS | NEW_PROCESS_GROUP | BREAKAWAY_FROM_JOB
-        try:
-            subprocess.Popen(cmd, creationflags=flags, close_fds=True)
-        except OSError:
-            subprocess.Popen(cmd, creationflags=flags & ~0x01000000, close_fds=True)
+        launch('run.py', self.job)
 
     def state(self):
-        if os.path.exists(self.job.pause_flag):
+        if os.path.exists(self.job.pause_flag) or os.path.exists(self.job.thermal_flag):
             return 'paused'
         if self.runner_running():
             return 'running'

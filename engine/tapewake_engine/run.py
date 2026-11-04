@@ -12,7 +12,6 @@ the audio tracks muxed in. Safe to stop at any point - finished pieces are skipp
 Each deinterlaced piece is deleted once it and its neighbours are restored, and what's left of the
 deinterlaced and work folders goes once the finished video passes its checks (space.py).
 """
-import ctypes
 import json
 import os
 import pickle
@@ -24,10 +23,13 @@ import time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import space  # noqa: E402
+import thermal  # noqa: E402
+from control import Control  # noqa: E402
 from settings import FFMPEG, FFPROBE, PYTHON, VS_PYTHON, Job  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 NO_WINDOW = 0x08000000
+STOPPING = threading.Event()  # set when the computer got too hot: start no more steps
 
 
 class Runner:
@@ -53,6 +55,12 @@ class Runner:
 
     def pieces_total(self):
         return self.job.pieces_total()
+
+    def too_hot(self, reason):
+        """From thermal.Guard: pause like the Pause button, then let thermal.py resume once it's cool."""
+        STOPPING.set()
+        Control(self.job).heat_pause(reason)
+        os._exit(0)
 
     def build_work(self, k, n_pieces, wd):
         """Piece k with some frames of its neighbours on each side. Returns (lead-in frames, total frames)."""
@@ -147,7 +155,8 @@ class Runner:
         if os.path.exists(job.output):  # only there once every check passed; its pieces may be deleted
             self.log(f'not starting: already finished ({job.output}). Delete or move it to restore again.')
             return
-        ctypes.windll.kernel32.SetThreadExecutionState(0x80000001)  # don't let Windows sleep mid-run
+        keep_awake()
+        thermal.Guard(self.too_hot).start()
         # the working picture for every step (see common.py): tape mode 640x480 59.94, progressive its own
         os.environ.update(TAPEWAKE_W=str(job['work_w']), TAPEWAKE_H=str(job['work_h']), TAPEWAKE_FPS=job['out_fps'],
                           TAPEWAKE_MATRIX=job['color_matrix'], TAPEWAKE_PRIMARIES=job['color_primaries'])
@@ -226,7 +235,23 @@ class Runner:
         self.finalize(n_pieces, sound)
 
 
+def keep_awake():
+    """Don't let the computer sleep mid-run (the screen may still turn off). Lasts as long as this process."""
+    if os.name == 'nt':
+        import ctypes
+        ctypes.windll.kernel32.SetThreadExecutionState(0x80000001)  # ES_CONTINUOUS | ES_SYSTEM_REQUIRED
+    elif sys.platform == 'darwin':
+        # caffeinate -i: no idle sleep (on battery too, -s only works on power); -w: until this run ends
+        try:
+            subprocess.Popen(['/usr/bin/caffeinate', '-i', '-w', str(os.getpid())],
+                             stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        except OSError:
+            pass
+
+
 def run_step(name, cmd, logdir):
+    if STOPPING.is_set():
+        raise SystemExit(0)
     with open(os.path.join(logdir, f'{name}.log'), 'w', encoding='utf-8') as fh:
         return subprocess.call(cmd, stdout=fh, stderr=subprocess.STDOUT, creationflags=NO_WINDOW)
 

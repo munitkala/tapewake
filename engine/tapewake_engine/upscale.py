@@ -21,10 +21,11 @@ from torchvision.models.optical_flow import Raft_Large_Weights, Raft_Small_Weigh
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import H, MODELS, W, Progress, frame_total, lossless_writer, qtgmc_reader  # noqa: E402
+from settings import torch_device  # noqa: E402
 
 GEN = os.path.join(MODELS, 'esrgan-weights', 'realesr-general-x4v3.pth')
 WDN = os.path.join(MODELS, 'esrgan-weights', 'realesr-general-wdn-x4v3.pth')
-dev = torch.device('cuda')
+dev = torch_device()
 
 
 class WeightsNet(nn.Module):
@@ -56,7 +57,12 @@ def load_upscaler(dn):
     """Mix the normal and the weak-denoise weights. dn=1 is the normal model, dn=0 the wdn one."""
     a = torch.load(GEN, map_location='cpu', weights_only=True)['params']
     b = torch.load(WDN, map_location='cpu', weights_only=True)['params']
-    return WeightsNet({k: dn * a[k] + (1 - dn) * b[k] for k in a}).eval().to(dev).half()
+    net = WeightsNet({k: dn * a[k] + (1 - dn) * b[k] for k in a}).eval().to(dev)
+    return net.half() if HALF else net  # FP16 is fine for this model (57.7 dB vs FP32), see the README
+
+
+# FP16 on the NVIDIA card and the Apple GPU; the CPU fallback stays at full precision (FP16 there is slow)
+HALF = dev.type in ('cuda', 'mps')
 
 
 def gauss(x, sigma):
@@ -78,6 +84,10 @@ def warp(x, flow):
     px, py = gx + flow[:, 0], gy + flow[:, 1]
     grid = torch.stack([2 * px / (w - 1) - 1, 2 * py / (h - 1) - 1], dim=-1)
     valid = ((px >= 0) & (px <= w - 1) & (py >= 0) & (py <= h - 1)).unsqueeze(1)
+    if x.device.type == 'mps':
+        # Metal has no 'border' padding. With align_corners=True, clamping the grid to the image edge gives the
+        # same result (anything outside reads the nearest edge pixel).
+        return F.grid_sample(x, grid.clamp(-1, 1), mode='bilinear', padding_mode='zeros', align_corners=True), valid
     return F.grid_sample(x, grid, mode='bilinear', padding_mode='border', align_corners=True), valid
 
 
@@ -101,7 +111,8 @@ def main():
 
     torch.backends.cudnn.benchmark = True
     net = load_upscaler(a.dn)
-    if not a.no_trt:  # TensorRT is ~2x faster, practically the same output (57.7 dB PSNR vs torch)
+    # TensorRT (NVIDIA only) is ~2x faster, practically the same output (57.7 dB PSNR vs torch)
+    if not a.no_trt and dev.type == 'cuda':
         try:
             from trt_upscaler import TRTUpscaler
             net = TRTUpscaler(net, a.dn, h=H, w=W)
@@ -120,7 +131,7 @@ def main():
     with torch.no_grad():
         for frame in qtgmc_reader(a.src):
             s = torch.from_numpy(frame[:, :, ::-1].copy()).to(dev).permute(2, 0, 1).unsqueeze(0).float() / 255
-            up4 = net(s.half()).float().clamp(0, 1)
+            up4 = net(s.half() if HALF else s).float().clamp(0, 1)
             ai = F.interpolate(up4, size=(2 * H, 2 * W), mode='bicubic', antialias=True, align_corners=False)
             src2 = F.interpolate(s, size=(2 * H, 2 * W), mode='bicubic', align_corners=False).clamp(0, 1)
             if a.no_anchor:

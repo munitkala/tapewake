@@ -21,10 +21,10 @@ from scipy.ndimage import uniform_filter
 from scipy.signal import istft, stft
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from settings import FFMPEG, STUBS, WEIGHTS  # noqa: E402
+from settings import FFMPEG, STUBS, WEIGHTS, torch_device  # noqa: E402
 
 RATE = 48000
-dev = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+dev = torch_device()
 EQ = ('equalizer=f=250:t=q:w=1.0:g=-2,equalizer=f=2800:t=q:w=1.0:g=2.5,highshelf=f=6000:g=1.5,'
       'acompressor=threshold=-24dB:ratio=2:attack=20:release=250:makeup=1.5')
 RE_DIR = pathlib.Path(WEIGHTS) / 'resemble-enhance' / 'enhancer_stage2'

@@ -277,7 +277,7 @@ input[type="checkbox"]{accent-color:var(--accent);width:16px;height:16px}
 .statusdot.done{background:var(--good)}
 .rail.open{width:340px;align-items:stretch;padding:14px}
 .rail .full{display:grid;gap:14px;align-content:start;overflow:auto;min-height:0}
-#railBody{display:grid;gap:14px}
+#railBody{display:grid;gap:14px;grid-template-columns:minmax(0,1fr)}  /* never wider than the panel: long lines wrap */
 .railhead{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .railhead h2{font-size:var(--t-15)}
 .jobfile{font-family:var(--f-mono);font-size:var(--t-12);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -552,7 +552,7 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
       <button data-mode="compact" aria-pressed="false"><svg class="i sm"><use href="#i-pip"/></svg>Compact</button>
     </nav>
     <div class="tools">
-      <button class="shellpill" data-action="about-shell" title="What this version does">Version 0.1</button>
+      <button class="shellpill" data-action="about-shell" title="What this version does">Version 0.2</button>
       <button class="iconbtn" data-action="tour" aria-label="Take the tour" title="Take the tour"><svg class="i"><use href="#i-info"/></svg></button>
       <button class="iconbtn" data-action="open-trouble" aria-label="Troubleshoot" title="Troubleshoot"><svg class="i"><use href="#i-wrench"/></svg></button>
       <button class="iconbtn" data-action="open-settings" aria-label="Settings" title="Settings (⌘,)"><svg class="i"><use href="#i-gear"/></svg></button>
@@ -725,7 +725,7 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
           <div class="stepnum">2</div>
           <div>
             <h2>What kind of footage is it?</h2>
-            <p class="lead">Version 0.1 restores home-video tapes; the other kinds come later.</p>
+            <p class="lead">Version 0.2 restores home-video tapes; the other kinds come later.</p>
             <div class="cards" role="radiogroup" aria-label="Footage type" data-radio="kind">
               <button class="choice" role="radio" aria-checked="true"><span class="ct"><svg class="i"><use href="#i-tape"/></svg>Home-video tape</span><small>VHS, VHS-C, Hi8, Video8, MiniDV</small></button>
               <button class="choice" role="radio" aria-checked="false" disabled><span class="ct"><svg class="i"><use href="#i-film"/></svg>Film transfer</span><small>8 mm, Super 8, 16 mm scans</small><span class="meta">Later version</span></button>
@@ -739,7 +739,7 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
           <div class="stepnum">3</div>
           <div>
             <h2>How much time should it spend?</h2>
-            <p class="lead">Version 0.1 uses the tested settings, proven on a full two-hour tape.</p>
+            <p class="lead">Version 0.2 uses the tested settings, proven on a full two-hour tape.</p>
             <div class="cards" role="radiogroup" aria-label="Quality" data-radio="quality">
               <button class="choice" role="radio" aria-checked="false" disabled><span class="ct">Fast</span><small>Classic cleanup and a light AI upscale. Good for a first look.</small><span class="meta">Later version</span></button>
               <button class="choice" role="radio" aria-checked="true"><span class="ct">Tested</span><small>QTGMC deinterlacing, AI upscale to 1280×960, careful face restoration, restored sound. Thorough, so it takes days for a long tape.</small><span class="meta">QTGMC · Real-ESRGAN · DicFace</span></button>
@@ -766,7 +766,7 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
                 <div class="summary">
                   <div><span>Output</span><b>1280×960 · MKV (H.264), restored + original sound</b></div>
                   <div><span>Save to</span><b>Next to the original video</b></div>
-                  <div><span>Time</span><b>About 2–3 days per hour of tape (8 GB graphics card)</b></div>
+                  <div><span>Time</span><b data-win="About 2–3 days per hour of tape (8 GB graphics card)">Not measured on a Mac yet (2–3 days per hour of tape on an 8 GB NVIDIA card)</b></div>
                 </div>
                                 <button class="btn primary" data-action="restore"><svg class="i sm"><use href="#i-play"/></svg>Restore video</button>
               </div>
@@ -808,7 +808,7 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
           <div class="labhead">
             <div><h2 style="font-size:var(--t-15)">Pipeline</h2><span class="note">The tested pipeline, in the order the engine runs it. Changing stages comes in a later version.</span></div>
             <label class="row"><span class="muted" style="white-space:nowrap">Compute</span>
-              <select id="backend" style="width:auto" disabled><option>NVIDIA CUDA (tested)</option></select>
+              <select id="backend" style="width:auto" disabled><option data-win="NVIDIA CUDA (tested)">Apple GPU (Metal)</option></select>
             </label>
           </div>
           <ol class="nodes" id="nodes"></ol>
@@ -970,6 +970,8 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
         <div class="srow"><div class="lbl"><b>Save restored videos to</b><small>New files never overwrite the original</small></div><div class="row"><span class="mono muted" data-win="Videos\tapewake">~/Movies/tapewake</span><button class="btn small" data-action="stub" data-msg="Choosing a folder here comes in a later version.">Change…</button></div></div>
       </div>
       <div class="spane" data-sp="performance" hidden>
+        <div class="srow stack"><div class="row between"><b>This computer</b><span class="chip" id="sysHeat">Temperature: …</span></div><dl class="specs" id="sysSpecs"><dt>Checking</dt><dd>…</dd></dl><small class="muted" id="sysHeatNote"></small></div>
+        <div class="srow"><div class="lbl"><b>Pause when it gets too hot</b><small>Resumes by itself once the computer has cooled down. A restoration you pause yourself never resumes by itself.</small></div><span class="chip good">Always on</span></div>
         <div class="srow"><div class="lbl"><b>Performance profile</b><small>Quiet keeps fans down; Maximum uses the whole GPU</small></div><div class="seg" data-group="perf"><button aria-pressed="false" data-v="quiet">Quiet</button><button aria-pressed="true" data-v="balanced">Balanced</button><button aria-pressed="false" data-v="max">Maximum</button></div></div>
         <div class="srow"><div class="lbl"><b>Graphics processor</b><small>Found during first-time setup</small></div><select id="sGpu" style="width:auto"><option>Auto</option><option>CPU only</option></select></div>
         <div class="srow"><div class="lbl"><b>Keep the computer awake while restoring</b><small>Lets the display sleep, not the machine</small></div><button class="switch" role="switch" aria-checked="true" aria-label="Keep awake"></button></div>
@@ -998,8 +1000,8 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
         <div class="srow"><div class="lbl"><b>Check for updates automatically</b></div><button class="switch" role="switch" aria-checked="true" aria-label="Check for updates"></button></div>
       </div>
       <div class="spane" data-sp="about" hidden>
-        <div class="row" style="gap:14px"><span class="wordmark" style="font-size:34px">tapewake</span><span class="chip">0.1.5</span></div>
-        <p class="muted">Restores old video on your own computer. Version 0.1 restores home-video tapes with the tested settings, follows each restoration live and plays the finished parts. Editable settings, single-frame previews and preview clips come next.</p>
+        <div class="row" style="gap:14px"><span class="wordmark" style="font-size:34px">tapewake</span><span class="chip">0.2.0</span></div>
+        <p class="muted">Restores old video on your own computer. Version 0.2 restores home-video tapes with the tested settings, follows each restoration live and plays the finished parts. Editable settings, single-frame previews and preview clips come next.</p>
         <div class="row" style="flex-wrap:wrap"><button class="btn small" data-action="open-welcome">Show the launch screen</button><button class="btn small" data-action="tour">Take the tour</button><button class="btn small" data-action="open-setup">Run first-time setup again</button><button class="btn small" data-action="stub" data-msg="The third-party licence list appears here: FFmpeg, Real-ESRGAN, RIFE, GFPGAN and others.">Third-party licences</button></div>
       </div>
     </div>
@@ -1114,6 +1116,7 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
   const icon = (id, cls = 'i sm') => `<svg class="${cls}"><use href="#${id}"/></svg>`;
   const isWin = /Windows/i.test(navigator.userAgent);
   const TRAY = isWin ? 'system tray' : 'menu bar';
+  const THIS_PC = isWin ? 'this PC' : 'this Mac';
   const GPU = isWin ? 'GPU (DirectML)' : 'Apple GPU';
   if (isWin) $$('[data-win]').forEach(el => { el.textContent = el.dataset.win; });
 
@@ -1676,7 +1679,7 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
 
   function renderTabs() {
     $('#jobTabs').innerHTML = TABS.map(t => {
-      const st = t.kind === 'live' ? (S.live && t.jobId === J.id ? `${S.live.pct.toFixed(1)}% · ${S.live.state}` : 'on this PC') : 'not started';
+      const st = t.kind === 'live' ? (S.live && t.jobId === J.id ? `${S.live.pct.toFixed(1)}% · ${S.live.state}` : `on ${THIS_PC}`) : 'not started';
       const f = esc(t.file);
       return `<button class="jobtab" role="tab" aria-selected="${t.id === S.tabId}" data-tabid="${t.id}" title="${f}">${icon('i-film')}<span class="nm">${f}</span><span class="st">${st}</span>${t.kind === 'live' ? '' : `<span class="x" data-close="${t.id}" role="button" aria-label="Close ${f}" title="Close tab">×</span>`}</button>`;
     }).join('') + `<button class="jobtab add" data-action="new-tab" title="Open another restoration">${icon('i-plus')}New restoration</button>`;
@@ -1733,8 +1736,10 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
     const t = curTab(), live = t.kind === 'live';
     const c = x => `<span class="c"># ${esc(x)}</span>`, k = x => `<span class="k">${x}</span>`;
     const slug = String(t.file).toLowerCase().replace(/\.[^.]*$/, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'new-restoration';
-    const job = `%LOCALAPPDATA%\\com.tapewake.app\\jobs\\${live ? t.jobId : slug}.json`;
-    const E = 'engine\\tapewake_engine';
+    const S = isWin ? '\\' : '/';
+    const job = isWin ? `%LOCALAPPDATA%\\com.tapewake.app\\jobs\\${live ? t.jobId : slug}.json`
+      : `~/Library/Application Support/com.tapewake.app/jobs/${live ? t.jobId : slug}.json`;
+    const E = `engine${S}tapewake_engine`;
     const tested = $('#preset').value === 'Home-video tape · Tested';
     const lines = [
       c(`${t.file}: tapewake engine, tested settings, run piece by piece (${E}).`),
@@ -1742,26 +1747,26 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
       ...(!tested ? [c(`The preset "${$('#preset').value}" is not in the engine yet; these are the tested settings.`)] : []),
       '',
       c('Whole job: cut, deinterlace, audio, then every piece; resumable'),
-      `${k('python')} ${E}\\run.py "${job}"`,
-      `${k('python')} ${E}\\control.py pause|resume|status "${job}"`,
+      `${k('python')} ${E}${S}run.py "${job}"`,
+      `${k('python')} ${E}${S}control.py pause|resume|status "${job}"`,
       '',
       c('What run.py does for each piece:'),
       c('1. Lossless constant-rate cut of the source, then QTGMC double rate, DFTTest sigma 6, 640x480'),
-      `${k('vs-python')} ${E}\\prepare.py "${job}"`,
+      `${k('vs-python')} ${E}${S}prepare.py "${job}"`,
       c('2. Faces: RetinaFace on 2x frames, every 2nd frame, close faces only; DicFace'),
-      `${k('python')} ${E}\\faces_find.py work\\02_qtgmc.mkv work\\faces --detect-step 2 --min-ed 12 --min-vis 0.5 --clear-ed 20`,
-      `${k('python')} ${E}\\faces_restore.py work\\faces dicface --half-rate --batch 2`,
-      c('3. Real-ESRGAN general x4v3 (dn 0.3) on TensorRT -> 1280x960, colour locked, flicker smoothed'),
-      `${k('python')} ${E}\\upscale.py work\\02_qtgmc.mkv work\\03_bg.mkv --dn 0.3`,
+      `${k('python')} ${E}${S}faces_find.py work${S}02_qtgmc.mkv work${S}faces --detect-step 2 --min-ed 12 --min-vis 0.5 --clear-ed 20`,
+      `${k('python')} ${E}${S}faces_restore.py work${S}faces dicface --half-rate --batch 2`,
+      c(`3. Real-ESRGAN general x4v3 (dn 0.3) ${isWin ? 'on TensorRT' : 'on the Apple GPU'} -> 1280x960, colour locked, flicker smoothed`),
+      `${k('python')} ${E}${S}upscale.py work${S}02_qtgmc.mkv work${S}03_bg.mkv --dn 0.3`,
       c('4. Faces pasted, sharpen 1.8, grain 2, x264 CRF 14, BT.709'),
-      `${k('python')} ${E}\\assemble.py work dicface pieces\\piece_NNN.mkv --audio none --first LEAD --last LEAD+N \\`,
+      `${k('python')} ${E}${S}assemble.py work dicface pieces${S}piece_NNN.mkv --audio none --first LEAD --last LEAD+N \\`,
       `  --sharpen 1.8 --grain 2 --min-ed 12 --full-ed 22 --tone 0.8`,
       c('5. Audio (once): de-hum, Demucs, AI voices for talking, gentle cleanup for songs, -16 LUFS'),
-      `${k('python')} ${E}\\audio.py "${job}"`,
+      `${k('python')} ${E}${S}audio.py "${job}"`,
       c('6. Join + restored audio (track 1) + original audio (track 2), verify, publish'),
       '',
       c('Before/after video of the first N finished pieces'),
-      `${k('python')} ${E}\\compare.py "${job}" --pieces N`,
+      `${k('python')} ${E}${S}compare.py "${job}" --pieces N`,
     ];
     $('#cmd').innerHTML = lines.map(l => l.startsWith('<') || !l ? l : esc(l).replace(/^(python|vs-python)/, m => k(m))).join('\n');
   }
@@ -1774,7 +1779,7 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
     const t = curTab(), live = t.kind === 'live', src = liveSrc();
     ['#topFile', '#srcName', '#qName'].forEach(s => $(s).textContent = t.file);
     const chip = $('#srcChip');
-    chip.textContent = live ? (S.live && S.live.state === 'finished' ? 'Restored' : 'Restoring on this PC') : 'Not started';
+    chip.textContent = live ? (S.live && S.live.state === 'finished' ? 'Restored' : `Restoring on ${THIS_PC}`) : 'Not started';
     chip.className = 'chip ' + (live ? 'accent' : 'example');
     $('#srcPic').textContent = live ? src.picture : '—';
     $('#srcRate').textContent = live ? src.rate : '—';
@@ -1801,7 +1806,7 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
     renderModeNote();
     $('[data-action="render-clip"]').innerHTML = icon('i-film') + (live ? 'Open before and after' : 'Render preview clip');
     $('#clipView .illus').hidden = live; $('#cuts').hidden = live;
-    $('.shellpill').textContent = live ? 'Live · restoring on this PC' : tauriInvoke ? 'Version 0.1' : 'Web preview';
+    $('.shellpill').textContent = live ? `Live · restoring on ${THIS_PC}` : tauriInvoke ? 'Version 0.2' : 'Web preview';
     syncRestoreBtn(); applyTabImages();
   }
   function syncRestoreBtn() {
@@ -1974,8 +1979,10 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
         <div class="stat"><span class="eyebrow">Remaining</span><b>${w.remain}</b></div>
         <div class="stat"><span class="eyebrow">Done around</span><b style="font-size:var(--t-12)">${w.state === 'run' ? w.eta : '—'}</b></div>
       </div>
-      <div class="row" style="flex-wrap:wrap">${btn}${d.own_scripts ? '' : `<button class="btn small danger" data-action="job-delete" ${liveBusy ? 'disabled' : ''}>${icon('i-trash')}${d.state === 'running' || d.state === 'paused' ? 'Stop and delete project' : 'Delete project'}</button>`}</div>
-      <p class="note">${d.state === 'paused' ? 'Paused: the graphics card is free. Resume carries on where it stopped. ' : ''}Keeps running if tapewake is closed. Finished file: ${esc(d.output.replace(/\\[^\\]*$/, ''))}.</p>`;
+      ${d.cooling ? `<p class="note warn" role="status">Paused because the computer got too hot (${esc(d.cooling.reason)}). It resumes by itself once it has cooled down. Resume starts it now; Keep paused stops it from resuming by itself.</p>` : ''}
+      ${d.thermal && !d.cooling ? `<p class="note">Temperature: <span class="chip ${heatClass(d.thermal)}">${esc(d.thermal.label)}</span> ${d.thermal.hot ? 'Too hot: it pauses if this lasts a minute.' : ''}</p>` : ''}
+      <div class="row" style="flex-wrap:wrap">${btn}${d.cooling ? `<button class="btn small" data-action="job-keep-paused" ${liveBusy ? 'disabled' : ''}>${icon('i-pause')}Keep paused</button>` : ''}${d.own_scripts ? '' : `<button class="btn small danger" data-action="job-delete" ${liveBusy ? 'disabled' : ''}>${icon('i-trash')}${d.state === 'running' || d.state === 'paused' ? 'Stop and delete project' : 'Delete project'}</button>`}</div>
+      <p class="note">${d.state === 'paused' && !d.cooling ? 'Paused: the graphics card is free. Resume carries on where it stopped. ' : ''}Keeps running if tapewake is closed. Finished file: ${esc(d.output.replace(/[\\/][^\\/]*$/, ''))}.</p>`;
     $('#cmpPct').textContent = pct + '%'; $('#cmpBar').style.setProperty('--p', d.pct + '%');
     $('#cmpStage').textContent = w.stage; $('#cmpEta').textContent = w.state === 'run' ? w.remain + ' left' : '';
     $('#cmpFile').textContent = d.name;
@@ -2070,7 +2077,7 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
       <td><button class="iconbtn" data-action="stub" data-msg="Removes this video from the queue." aria-label="Remove ${q[0]}"><svg class="i sm"><use href="#i-x"/></svg></button></td></tr>`).join('');
   }
   // same order as run.py
-  const NODES = [['Prepare', 'lossless cut on a constant timeline', 'CPU'], ['Deinterlace', 'QTGMC, DFTTest σ6, 59.94p', 'CPU (VapourSynth)'], ['Audio', 'hum removal, Demucs, AI voices, −16 LUFS', 'GPU (CUDA)'], ['Find faces', 'RetinaFace, tracking, close faces only', 'GPU (CUDA)'], ['Restore faces', 'DicFace, 5-frame window', 'GPU (CUDA)'], ['Upscale', 'Real-ESRGAN x4v3, colour lock, flicker smoothing', 'GPU (TensorRT)'], ['Assemble', 'faces, sharpen 1.8, grain 2, x264 CRF 14', 'CPU']];
+  const NODES = [['Prepare', 'lossless cut on a constant timeline', 'CPU'], ['Deinterlace', 'QTGMC, DFTTest σ6, 59.94p', 'CPU (VapourSynth)'], ['Audio', 'hum removal, Demucs, AI voices, −16 LUFS', isWin ? 'GPU (CUDA)' : GPU], ['Find faces', 'RetinaFace, tracking, close faces only', isWin ? 'GPU (CUDA)' : GPU], ['Restore faces', 'DicFace, 5-frame window', isWin ? 'GPU (CUDA)' : GPU], ['Upscale', 'Real-ESRGAN x4v3, colour lock, flicker smoothing', isWin ? 'GPU (TensorRT)' : GPU], ['Assemble', 'faces, sharpen 1.8, grain 2, x264 CRF 14', 'CPU']];
   function renderNodes() {
     $('#nodes').innerHTML = NODES.map((n, i) => `<li class="node" data-i="${i}">
       <span class="grip">${icon('i-grip')}</span><span class="idx">${String(i + 1).padStart(2, '0')}</span>
@@ -2105,6 +2112,19 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
     $('#checks').innerHTML = (results || CHECKS.map(c => [c, null, 'Waiting'])).map(([name, ok, detail]) =>
       `<li class="${ok === true ? 'ok' : ok === false ? 'warn' : ''}"><span class="ci">${ok ? icon('i-check') : ok === false ? '!' : ''}</span><span>${esc(name)}<small style="display:block;color:var(--muted)">${esc(detail)}</small></span><span class="st">${ok === true ? 'OK' : ok === false ? 'Needs attention' : ''}</span></li>`).join('');
   }
+  // this computer's specs and how hot it is (app_bridge.py system), refreshed while the Performance tab is open
+  const heatClass = t => !t.known ? '' : t.hot ? 'crit' : t.cool ? 'good' : '';
+  async function loadSystem() {
+    if (!tauriInvoke) { $('#sysSpecs').innerHTML = '<dt>Needs</dt><dd>the desktop app</dd>'; return; }
+    try {
+      const d = JSON.parse(await tauriInvoke('job', { action: 'system' }));
+      $('#sysSpecs').innerHTML = d.specs.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('');
+      $('#sysHeat').className = 'chip ' + heatClass(d.thermal);
+      $('#sysHeat').textContent = 'Temperature: ' + d.thermal.label;
+      $('#sysHeatNote').textContent = d.thermal.detail;
+    } catch (e) { $('#sysSpecs').innerHTML = `<dt>Could not read</dt><dd>${esc(String(e))}</dd>`; }
+  }
+  setInterval(() => { const p = $('[data-sp="performance"]'); if (p && !p.hidden && !document.hidden && !$('#settings').hidden) loadSystem(); }, 10000);
   async function runSetup() {
     if (!tauriInvoke) { toast('The checks need the desktop app.'); return; }
     $('#runSetup').disabled = true;
@@ -2211,7 +2231,7 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
     const lt = e.target.closest('[data-labtab]');
     if (lt) { $$('[data-labtab]').forEach(t => t.setAttribute('aria-selected', t === lt)); $('#lab-cmd').hidden = lt.dataset.labtab !== 'cmd'; $('#lab-scenes').hidden = lt.dataset.labtab !== 'scenes'; return; }
     const sn = e.target.closest('.snav button');
-    if (sn) { $$('.snav button').forEach(b => b.setAttribute('aria-selected', b === sn)); $$('.spane').forEach(p => p.hidden = p.dataset.sp !== sn.dataset.s); return; }
+    if (sn) { $$('.snav button').forEach(b => b.setAttribute('aria-selected', b === sn)); $$('.spane').forEach(p => p.hidden = p.dataset.sp !== sn.dataset.s); if (sn.dataset.s === 'performance') loadSystem(); return; }
     const xt = e.target.closest('[data-close]');
     if (xt) { closeTab(xt.dataset.close); return; }
     const jt = e.target.closest('.jobtab[data-tabid]');
@@ -2230,6 +2250,7 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
       'job-cleanup': liveCleanup,
       'job-finish': liveFinish,
       'job-delete': askDelete,
+      'job-keep-paused': () => liveCall('pause'),
       'use-tested': useTested,
       'job-delete-confirm': liveDelete,
       'queue': () => toast('Added to the batch queue. Switch to Batch to see it.'),
@@ -2257,7 +2278,7 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
       'rail-toggle': () => { S.rail = !S.rail; store.set('rail', S.rail); $('#rail').classList.toggle('open', S.rail); $('#railMini').hidden = S.rail; $('#railFull').hidden = !S.rail; },
       'progress-full': () => openO('pfull'),
       'toggle-pause': togglePause,
-      'cancel-job': () => { if (S.live && !S.job) { toast('A job on this PC is only paused or resumed from here, so no finished work can be lost.'); return; } clearInterval(timer); S.job = null; renderJob(); toast('Cancelled. Finished parts would be kept so you can resume later.'); },
+      'cancel-job': () => { if (S.live && !S.job) { toast(`A job on ${THIS_PC} is only paused or resumed from here, so no finished work can be lost.`); return; } clearInterval(timer); S.job = null; renderJob(); toast('Cancelled. Finished parts would be kept so you can resume later.'); },
       'dismiss-job': () => { S.job = null; renderJob(); },
       'open-settings': () => openO('settings'),
       'tour': tourStart,
@@ -2276,7 +2297,7 @@ pre.code .c{color:var(--faint)} pre.code .k{color:var(--accent)}
       'export-all': () => isLive() ? liveOpen('samples') : toast('Exporting samples comes in a later version.'),
       'delete-sample': () => { S.samples = S.samples.filter(x => x.id !== +a.dataset.id); renderSamples(); toast('Sample deleted.'); },
       'clear-samples': () => { S.samples = []; renderSamples(); toast('All samples cleared.'); },
-      'about-shell': () => toast(tauriInvoke ? 'Version 0.1: restores home-video tapes with the tested settings, one at a time. Settings, single-frame previews and clips are next.' : 'Web preview of the interface. Restoring needs the desktop app.', 'i-info'),
+      'about-shell': () => toast(tauriInvoke ? 'Version 0.2: restores home-video tapes with the tested settings, one at a time. Settings, single-frame previews and clips are next.' : 'Web preview of the interface. Restoring needs the desktop app.', 'i-info'),
       'stub': () => toast(a.dataset.msg || 'This comes in a later version.')
     };
     if (actions[act]) actions[act]();

@@ -13,7 +13,8 @@ settings (overrides for TESTED). Inside the work folder:
     qtgmc/qt_NNN.mkv     deinterlaced; each is deleted once it and its neighbours are restored
     work/pNNN/           piece in progress
     pieces/piece_NNN.mkv finished
-    audio/, run.log, PAUSED, CLEANED (working files deleted after the finish, see space.py)
+    audio/, run.log, PAUSED, THERMAL_PAUSE (too hot, see thermal.py), CLEANED (working files deleted after the
+    finish, see space.py)
 
 src/ and qtgmc/ are lossless, so they're big: see space.py and the README for how much.
 
@@ -24,6 +25,7 @@ import json
 import os
 import shutil
 import subprocess
+import sys
 
 if os.name == 'nt':
     # ffmpeg, ffprobe and python are all console programs. A run started from the app has no console,
@@ -36,8 +38,31 @@ if os.name == 'nt':
             super().__init__(*args, creationflags=creationflags, **kwargs)
 
     subprocess.Popen = _NoWindowPopen
+else:
+    # On a Mac Popen refuses creationflags (it's Windows only), so drop it here and every call above can stay as it
+    # is. The two flags that matter are carried over: DETACHED_PROCESS becomes a new session (the run keeps going
+    # when the app quits), and the below-normal / idle priority classes become nice 10, so the player's ffmpeg
+    # calls never slow the restoration down.
+    class _PosixPopen(subprocess.Popen):
+        def __init__(self, *args, creationflags=0, **kwargs):
+            if creationflags & 0x00000008:  # DETACHED_PROCESS
+                kwargs.setdefault('start_new_session', True)
+            if creationflags & (0x00004000 | 0x00000040) and 'preexec_fn' not in kwargs:  # below normal | idle
+                kwargs['preexec_fn'] = lambda: os.nice(10)
+            super().__init__(*args, **kwargs)
 
-APP_DATA = os.path.join(os.environ.get('LOCALAPPDATA', os.path.expanduser('~')), 'com.tapewake.app')
+    subprocess.Popen = _PosixPopen
+
+IS_MAC = sys.platform == 'darwin'
+# PyTorch on Apple GPUs (MPS): ops it hasn't got for Metal yet run on the CPU instead of stopping the step.
+# Set here, before any step imports torch, and inherited by every process the run starts.
+if IS_MAC:
+    os.environ.setdefault('PYTORCH_ENABLE_MPS_FALLBACK', '1')
+
+if os.name == 'nt':
+    APP_DATA = os.path.join(os.environ.get('LOCALAPPDATA', os.path.expanduser('~')), 'com.tapewake.app')
+else:  # where Tauri keeps app data on a Mac
+    APP_DATA = os.path.join(os.path.expanduser('~'), 'Library', 'Application Support', 'com.tapewake.app')
 JOBS = os.path.join(APP_DATA, 'jobs')
 STUBS = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'stubs')  # engine/stubs
 
@@ -51,22 +76,65 @@ def _load(path):
 
 
 def _find_ffmpeg():
+    # on a Mac, Homebrew's ffmpeg-full first: the plain ffmpeg formula has no drawtext, which the before/after video
+    # needs, and it would usually be first on the PATH
+    if os.name != 'nt' and os.path.exists('/opt/homebrew/opt/ffmpeg-full/bin/ffmpeg'):
+        return '/opt/homebrew/opt/ffmpeg-full/bin/ffmpeg'
     found = shutil.which('ffmpeg')
     if found:
         return found
-    winget = glob.glob(os.path.join(os.environ.get('LOCALAPPDATA', ''), r'Microsoft\WinGet\Packages\*FFmpeg*\*\bin\ffmpeg.exe'))
-    return sorted(winget)[-1] if winget else 'ffmpeg'
+    if os.name == 'nt':
+        winget = glob.glob(os.path.join(os.environ.get('LOCALAPPDATA', ''), r'Microsoft\WinGet\Packages\*FFmpeg*\*\bin\ffmpeg.exe'))
+        return sorted(winget)[-1] if winget else 'ffmpeg'
+    # an app opened from the Finder doesn't get the shell's PATH, so look where Homebrew puts it
+    for p in ('/opt/homebrew/bin/ffmpeg', '/usr/local/bin/ffmpeg'):
+        if os.path.exists(p):
+            return p
+    return 'ffmpeg'
+
+
+def _venv_python(folder):
+    """The python inside a venv or portable install: python.exe on Windows, bin/python3 on a Mac."""
+    return os.path.join(folder, 'python.exe') if os.name == 'nt' else os.path.join(folder, 'bin', 'python3')
 
 
 TOOLS_FILE = os.path.join(APP_DATA, 'tools.json')
 _T = _load(TOOLS_FILE)
 FFMPEG = _T.get('ffmpeg') or _find_ffmpeg()
-FFPROBE = os.path.join(os.path.dirname(FFMPEG), 'ffprobe.exe') if os.path.dirname(FFMPEG) else 'ffprobe'
+_EXE = '.exe' if os.name == 'nt' else ''
+FFPROBE = os.path.join(os.path.dirname(FFMPEG), 'ffprobe' + _EXE) if os.path.dirname(FFMPEG) else 'ffprobe'
 MODELS = _T.get('models') or os.path.join(APP_DATA, 'models')
 WEIGHTS = os.path.join(MODELS, 'weights')
 CODEFORMER = _T.get('codeformer') or os.path.join(MODELS, 'CodeFormer')
-PYTHON = _T.get('python') or os.path.join(APP_DATA, 'python', 'python.exe')
-VS_PYTHON = _T.get('vs_python') or os.path.join(MODELS, 'vs-python', 'python.exe')
+PYTHON = _T.get('python') or _venv_python(os.path.join(APP_DATA, 'python'))
+VS_PYTHON = _T.get('vs_python') or _venv_python(os.path.join(MODELS, 'vs-python'))
+
+
+def torch_device():
+    """Where the AI models run: the NVIDIA card (cuda), the Apple GPU (mps), or the CPU as a last resort.
+
+    TAPEWAKE_DEVICE (or "device" in tools.json) forces one, for testing. Imports torch, so only the engine
+    Python calls this.
+    """
+    import torch
+    want = os.environ.get('TAPEWAKE_DEVICE') or _T.get('device')
+    if want:
+        return torch.device(want)
+    if torch.cuda.is_available():
+        return torch.device('cuda')
+    if getattr(torch.backends, 'mps', None) and torch.backends.mps.is_available():
+        return torch.device('mps')
+    return torch.device('cpu')
+
+
+def peak_gpu_gb(dev):
+    """GPU memory for the step logs: the peak on an NVIDIA card, what's allocated now on a Mac (Metal keeps no peak)."""
+    import torch
+    if dev.type == 'cuda':
+        return torch.cuda.max_memory_allocated() / 1e9
+    if dev.type == 'mps' and hasattr(torch, 'mps') and hasattr(torch.mps, 'driver_allocated_memory'):
+        return torch.mps.driver_allocated_memory() / 1e9
+    return 0.0
 
 def work_root(source):
     # working files need about 50 GB per hour of tape at the peak, so people may want this on a big drive
@@ -123,6 +191,7 @@ class Job:
         self.src, self.qtgmc, self.work, self.pieces = (os.path.join(f, n) for n in ('src', 'qtgmc', 'work', 'pieces'))
         self.audio = os.path.join(f, 'audio', 'audio_restored.flac')
         self.log, self.pause_flag = os.path.join(f, 'run.log'), os.path.join(f, 'PAUSED')
+        self.thermal_flag = os.path.join(f, 'THERMAL_PAUSE')  # paused because it got too hot, see thermal.py
         self.cleaned_flag = os.path.join(f, 'CLEANED')
 
     def __getitem__(self, key):

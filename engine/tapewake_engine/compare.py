@@ -13,6 +13,10 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from settings import FFMPEG, FFPROBE, MODELS, Job  # noqa: E402
 
+# HEVC on the graphics hardware: NVENC on the NVIDIA card, VideoToolbox on a Mac (-q:v 70 of 100: high quality)
+ENCODER = (['-c:v', 'hevc_videotoolbox', '-q:v', '70'] if sys.platform == 'darwin' else
+           ['-c:v', 'hevc_nvenc', '-preset', 'p7', '-tune', 'hq', '-rc', 'vbr', '-cq', '18', '-b:v', '0',
+            '-maxrate', '60M', '-bufsize', '120M'])
 FONT = os.path.join(MODELS, 'fonts', 'Poppins-SemiBold.ttf').replace('\\', '/').replace(':', '\\:')
 
 
@@ -56,9 +60,7 @@ def main():
     sound = ['-i', job.audio] if os.path.exists(job.audio) else []
     subprocess.run([FFMPEG, '-v', 'error', '-stats', '-nostdin', '-y', '-i', job.source, '-f', 'concat', '-safe', '0',
                     '-i', lst, *sound, '-filter_complex', fc, '-map', '[v]', '-map', '2:a' if sound else '0:a:0?', '-frames:v',
-                    str(want), '-t', f'{dur:.3f}', '-c:v', 'hevc_nvenc', '-preset', 'p7', '-tune', 'hq', '-rc', 'vbr',
-                    '-cq', '18', '-b:v', '0', '-maxrate', '60M', '-bufsize', '120M', '-tag:v', 'hvc1',
-                    '-r', job['out_fps'], '-c:a', 'aac', '-b:a', '256k', '-movflags', '+faststart', part], check=True)
+                    str(want), '-t', f'{dur:.3f}', *ENCODER, '-tag:v', 'hvc1', '-r', job['out_fps'], '-c:a', 'aac', '-b:a', '256k', '-movflags', '+faststart', part], check=True)
     got = frames(part)
     if abs(got - want) > 2:
         print(f'CHECK FAILED: {got} of {want} frames (kept {part})')
