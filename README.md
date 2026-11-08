@@ -57,7 +57,7 @@ for you yet, so for now it's for people comfortable setting things up by hand.
 
 ## Status
 
-Version 0.2.0. tapewake has two tested modes and picks the one that fits each video:
+Version 0.2.1. tapewake has two tested modes and picks the one that fits each video:
 
 - **Home-video tape**: interlaced NTSC tapes (29.97 fps). Deinterlaced to one frame per field (59.94 fps),
   then restored at 1280×960.
@@ -89,7 +89,7 @@ Each platform is released on its own, once it has been tested on that platform, 
 
 | Platform | Latest release | Get it |
 |---|---|---|
-| Windows | 0.1.5 | `git checkout windows-v0.1.5` |
+| Windows | 0.2.1 | `git checkout windows-v0.2.1` |
 | Mac | 0.2.0 | `git checkout macos-v0.2.0` |
 
 `main` can be ahead of a platform's latest release with changes that haven't been tested on it yet. The changelog

@@ -7,9 +7,7 @@ upscaling if it's installed.
 For what tapewake does and the things to know before using it, see the main [README](README.md). This page is
 what's specific to Windows.
 
-**The latest Windows release is 0.1.5** (`git checkout windows-v0.1.5`). The heat pause and the computer details
-in Settings described below are on `main` but not in a Windows release yet: they haven't been tried on a Windows
-PC. See [Releases](README.md#releases).
+**The latest Windows release is 0.2.1** (`git checkout windows-v0.2.1`). See [Releases](README.md#releases).
 
 ![The app's player showing the original and the restored video side by side](screenshots/before-after-side-by-side.png)
 
@@ -49,7 +47,7 @@ The short version, for the app itself (needs Rust, the Visual Studio C++ build t
 ```
 git clone https://github.com/munitkala/tapewake.git
 cd tapewake
-git checkout windows-v0.1.5
+git checkout windows-v0.2.1
 npm install
 npm run tauri build -- --bundles nsis
 ```
@@ -72,8 +70,9 @@ The installer ends up in `src-tauri\target\release\bundle\nsis\`.
 - **If the graphics card gets too hot** (it starts slowing itself down because of heat, or reaches 90 °C) for a
   minute, tapewake pauses the restoration and waits. Once the card is back at 75 °C or less it carries on by itself.
   Pressing **Pause** or **Keep paused** while it waits stops that: a restoration you pause yourself never resumes by
-  itself. This is new and so far has only been tried on a Mac; on Windows it reads the card through `nvidia-smi`,
-  which comes with the NVIDIA driver.
+  itself. On Windows it reads the card through `nvidia-smi`, which comes with the NVIDIA driver; reading the
+  temperature has been checked on a Windows PC, but the card has never actually got hot enough to trigger a pause in
+  testing.
 - Close games and other programs that use the graphics card. They compete for its memory and can make a step stop
   with an out-of-memory error (pause and resume to carry on).
 

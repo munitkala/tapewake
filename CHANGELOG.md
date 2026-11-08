@@ -10,6 +10,42 @@ platforms it was released for. Versions up to 0.1.5 were Windows only.
 
 Nothing yet.
 
+## 0.2.1 (2026-11-08)
+
+**Released for:** Windows (`windows-v0.2.1`). This is the first Windows release since 0.1.5, so it also brings
+everything in 0.2.0 to Windows. Mac: not released, the latest Mac release is still 0.2.0. Nothing in this version
+changes what happens on a Mac.
+
+### Upscaling on AMD and Intel graphics
+
+**Why:** until now the Windows version needed an NVIDIA card. Many PCs have an AMD or Intel card instead.
+
+**What changed**
+
+- On a PC without an NVIDIA card, the upscaler and the flicker smoothing (RAFT) run on any DirectX 12 graphics card
+  through ONNX Runtime with DirectML (`ort_models.py`). The first upscale exports both models to ONNX once
+  (saved in `models\onnx`). The rest of the upscale step stays on the processor: it's light next to the models.
+- torch-directml was tried first and isn't used: it crashes on the upscaler's PReLU layers and inside RAFT.
+- Measured on a 180-frame tape clip, running through DirectML on the test PC's card: 4.0 frames a second, against
+  6.7 with PyTorch on CUDA and 0.4 on the processor alone. The picture matches the CUDA one (66.8 dB PSNR).
+- Without `onnxruntime-directml` installed, or if it fails to load, the upscale step falls back to PyTorch on the
+  processor exactly as before (slow, but it works).
+- The setup checks and **Settings → Performance** list the graphics card whatever its make. An AMD or Intel card
+  passes the check when DirectML is ready, and the check says what to install when it isn't.
+- [BUILDING.md](BUILDING.md#amd-and-intel-graphics) has the setup for AMD and Intel cards: the processor build of
+  PyTorch, `onnxruntime-directml` and `onnx`. `THIRD_PARTY.md` lists both.
+
+**Not changed yet:** on AMD and Intel cards the face models still run on the processor, which is very slow (turn
+**Face restoration** off for long videos), and the heat pause only reads NVIDIA cards.
+
+### 0.2.0 on Windows
+
+The heat pause and the computer details in Settings (both from 0.2.0) were checked on a Windows PC for this release:
+Settings shows the processor, graphics card, memory, what the AI models run on, free space and the card's
+temperature read through `nvidia-smi`. A full tape-mode restoration of a short clip with faces and sound on finished
+with every check passing. The card never got hot enough to trigger a heat pause during testing; that part was
+tested on a Mac in 0.2.0.
+
 ## 0.2.0 (2026-11-03)
 
 **Released for:** Mac (`macos-v0.2.0`). Not released for Windows yet: the changes to shared code below (the heat
