@@ -14,6 +14,17 @@ anywhere.
 
 ![Before and after: a 1938 street scene, soft and interlaced on the left, sharper on the right](screenshots/before-after.gif)
 
+## Latest update (November 2026)
+
+Version 0.2.1 is out for Windows. What's new:
+
+- **AMD and Intel graphics cards work now**, not just NVIDIA. Upscaling runs on the card through DirectML. Face
+  restoration still runs on the processor on those cards, so I'd turn it off for long videos for now.
+- **First Windows release since 0.1.5**, so the heat pause and the computer info in Settings from 0.2.0 are on
+  Windows too.
+
+The full list is in the [changelog](CHANGELOG.md).
+
 ## What it does
 
 - Restores home-video tapes (interlaced NTSC, 4:3) with settings proven on a full two-hour VHS tape: QTGMC
