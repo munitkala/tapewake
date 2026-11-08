@@ -96,7 +96,8 @@ Set `keep_work_files` in a job's settings to keep every working file (debugging)
 
 ## Tools it needs
 
-FFmpeg; a Python with PyTorch (CUDA), torchvision, Demucs, DeepFilterNet3, Resemble Enhance, OpenCV,
+FFmpeg; a Python with PyTorch (CUDA on NVIDIA cards; on AMD and Intel cards the processor build plus
+onnxruntime-directml and onnx), torchvision, Demucs, DeepFilterNet3, Resemble Enhance, OpenCV,
 SciPy and psutil; a portable VapourSynth Python with vsjetpack 2.2.6 and its plugins; the CodeFormer,
 DicFace and KEEP repos with their weights; the Real-ESRGAN weights; optionally TensorRT. See
 `../THIRD_PARTY.md` for licences.

@@ -8,7 +8,8 @@ platforms it was released for. Versions up to 0.1.5 were Windows only.
 
 ## Unreleased
 
-Nothing yet.
+- The bug report form and CONTRIBUTING.md ask for the graphics card and tapewake version, and mention AMD and Intel
+  cards; `engine/README.md` lists what those cards need. Documentation only, the app is unchanged.
 
 ## 0.2.1 (2026-11-08)
 

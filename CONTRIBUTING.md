@@ -1,12 +1,14 @@
 # Contributing
 
 Thanks for wanting to help! Bug reports, test results on other tapes and cards, and pull requests are all welcome.
+Results from AMD and Intel graphics cards are especially useful: that support is new in 0.2.1 and has had little
+testing.
 
 ## Reporting a problem
 
 Open an issue with the bug report form. The most useful things to include:
 
-- Windows version and graphics card
+- your computer (Windows or Mac version), graphics card and tapewake version
 - which step it stopped at (the progress window shows it)
 - the last lines of `run.log` from the job's work folder
 

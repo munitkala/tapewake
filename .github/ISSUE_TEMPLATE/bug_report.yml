@@ -21,8 +21,9 @@ body:
   - type: input
     id: system
     attributes:
-      label: Windows version and graphics card
-      placeholder: Windows 11 24H2, RTX 3060 Ti 8 GB
+      label: Computer, graphics card and tapewake version
+      description: On an AMD or Intel card, say so (it runs through DirectML).
+      placeholder: Windows 11 24H2, RTX 3060 Ti 8 GB, tapewake 0.2.1
     validations:
       required: true
   - type: input
