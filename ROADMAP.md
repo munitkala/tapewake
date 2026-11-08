@@ -1,6 +1,6 @@
 ## Roadmap
 
-- [ ] **Mid-November 2026**: GPU accessibility improvements (DirectML / ONNX fallback for non-NVIDIA cards, expanded GPU compatibility)
+- [x] **Mid-November 2026**: GPU accessibility improvements (DirectML / ONNX fallback for non-NVIDIA cards, expanded GPU compatibility)
 - [ ] **Late November 2026**: Port missing updates from current macOS version back to Windows (thermal throttling check via `nvidia-smi`, performance display sync)
 - [ ] **December 2026**: Automated Windows installer (one-click binary setup script for FFmpeg, PyTorch, models, and tools)
 - [ ] **Late December 2026**: Automated macOS installer (`.dmg` installer package and auto-config script)
