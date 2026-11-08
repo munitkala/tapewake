@@ -18,7 +18,8 @@ PC. See [Releases](README.md#releases).
 | | Needed | Why |
 |---|---|---|
 | Windows | **Windows 10 (2004 or later) or Windows 11**, 64-bit | |
-| Graphics | **NVIDIA card with 8 GB or more**, recent driver (530 or newer) | The AI models run on it (CUDA). **AMD and Intel graphics aren't supported yet.** |
+| Graphics | **NVIDIA card with 8 GB or more**, recent driver (530 or newer) | The AI models run on it (CUDA). |
+| Or | **AMD or Intel card with DirectX 12** (new, less tested) | Upscaling runs on the card through DirectML. Face restoration runs on the processor and is very slow, so turn it off for long videos. See [BUILDING.md](BUILDING.md#amd-and-intel-graphics). |
 | Free space for the tools | about 20 GB | FFmpeg, two Pythons and the AI models. |
 | Free space per restoration | about **50 GB per hour of tape** at the peak | See [Disk space](README.md#disk-space). The working files can go on another drive. |
 
@@ -80,6 +81,10 @@ The installer ends up in `src-tauri\target\release\bundle\nsis\`.
 
 - **Graphics:** CUDA on the NVIDIA card. **TensorRT** (optional) makes upscaling about twice as fast; the first
   upscale builds an engine for your card, which takes a few minutes.
+- **AMD and Intel graphics:** the upscaler and the flicker smoothing (RAFT) run on the card through ONNX Runtime
+  with DirectML. The first upscale exports both models to ONNX (saved in `models\onnx`). On the test card this ran
+  at about 60% of the CUDA speed, with the same picture (66.8 dB PSNR against CUDA). The face models still run on
+  the processor, and the heat check only reads NVIDIA cards.
 - **FFmpeg:** tapewake finds a copy installed with `winget install Gyan.FFmpeg` by itself.
 - **The denoiser:** dfttest2's x86 build (`dfttest2_cpu`).
 - **The interface** is drawn by Microsoft Edge WebView2, which is part of Windows 10 and 11.

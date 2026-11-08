@@ -107,6 +107,8 @@ def main():
     ap.add_argument('--no-anchor', action='store_true')
     ap.add_argument('--raft', choices=['small', 'large'], default='large')
     ap.add_argument('--no-trt', action='store_true', help='plain PyTorch upscaler instead of the TensorRT engine')
+    ap.add_argument('--no-ort', action='store_true', help='plain PyTorch on the processor instead of ONNX Runtime '
+                    '(the graphics card on computers without NVIDIA or Apple graphics)')
     a = ap.parse_args()
 
     torch.backends.cudnn.benchmark = True
@@ -123,6 +125,15 @@ def main():
         flow_net = raft_large(weights=Raft_Large_Weights.DEFAULT).eval().to(dev)
     else:
         flow_net = raft_small(weights=Raft_Small_Weights.DEFAULT).eval().to(dev)
+    # No NVIDIA or Apple graphics: run both models on whatever card there is (AMD, Intel) through ONNX Runtime with
+    # DirectML. Only the light maths around them stays on the processor.
+    if dev.type == 'cpu' and not a.no_ort:
+        try:
+            from ort_models import OrtFlow, OrtUpscaler
+            net, flow_net = OrtUpscaler(net, a.dn, h=H, w=W), OrtFlow(flow_net, a.raft, h=H, w=W)
+            print(f'upscaler and flow: ONNX Runtime on the graphics card ({net.provider})', flush=True)
+        except Exception as e:  # noqa: BLE001 - PyTorch on the processor still works, just much slower
+            print(f'upscaler and flow: PyTorch on the processor (ONNX Runtime unavailable: {e!r})', flush=True)
     enc = lossless_writer(a.out, 2 * W, 2 * H)
     prev_src = prev_detail = None
     n = cuts = 0

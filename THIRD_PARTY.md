@@ -41,6 +41,7 @@ alternatives. The npm side is only the Tauri command-line tool (MIT / Apache-2.0
 | Real-ESRGAN weights `realesr-general-x4v3` + `-wdn-x4v3` | `upscale.py` (only the weight files; the network is loaded by tapewake's own code) | BSD-3-Clause |
 | RAFT optical flow (torchvision weights) | `upscale.py` flicker smoothing | BSD-3-Clause |
 | NVIDIA TensorRT 10.9 + ONNX (optional) | `trt_upscaler.py`, faster upscaling; falls back to PyTorch without it | NVIDIA proprietary / Apache-2.0 |
+| onnxruntime-directml 1.23.0 + onnx 1.17.0 (optional, Windows) | `ort_models.py`: the upscaler and RAFT on AMD and Intel cards; falls back to PyTorch on the processor without it | MIT (the wheel's licence file); the wheel also carries Microsoft's `DirectML.dll` (DirectML redistributable, Microsoft's licence terms). tapewake doesn't ship either: it's installed from PyPI |
 
 ### Faces (non-commercial)
 

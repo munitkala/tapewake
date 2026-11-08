@@ -18,7 +18,7 @@ the models and the two Pythons are installed.
 | Deinterlace | `deinterlace.py` | QTGMC double rate (59.94p), DFTTest sigma 6, no sharpening, Spline36 to 640x480 |
 | Find faces | `faces_find.py` | RetinaFace on 2x frames every 2nd frame, tracking, visibility check with the face parser |
 | Restore faces | `faces_restore.py` | DicFace (5-frame window) by default, full precision, batch 2 |
-| Upscale | `upscale.py`, `trt_upscaler.py` | Real-ESRGAN general x4v3 (dn 0.3), TensorRT if available, down to 1280x960, colour locked to the source, RAFT flicker smoothing |
+| Upscale | `upscale.py`, `trt_upscaler.py`, `ort_models.py` | Real-ESRGAN general x4v3 (dn 0.3), TensorRT if available, down to 1280x960, colour locked to the source, RAFT flicker smoothing. Without an NVIDIA or Apple GPU both models run through ONNX Runtime with DirectML (AMD, Intel) |
 | Assemble | `assemble.py` | Pastes the faces back with the source's tones, fades by size/angle/visibility/focus, sharpen 1.8, grain 2, x264 CRF 14 BT.709 |
 | Audio | `audio.py`, `audio_tools.py` | Hum removal, Demucs voice split, Resemble Enhance (speech) / DeepFilterNet3 (songs), EQ, -16 LUFS, sync check |
 | Run | `run.py` | Goes piece by piece, checks each one, joins them and adds both audio tracks |
@@ -48,6 +48,10 @@ so Resemble Enhance and DicFace can be imported on Windows and macOS.
 - **Precision:** FP16 is fine for the upscaler (57.7 dB vs PyTorch) but not for the face models -
   KEEP goes black and CodeFormer lost up to 34.8 dB.
 - **8 GB of GPU memory** means DicFace batch 2, parser batches of 4, TensorRT workspace 1 GB.
+- **AMD and Intel cards:** torch-directml aborts on the upscaler's PReLU and inside RAFT, so it isn't used. Both
+  models export cleanly to ONNX (opset 17) and run on ONNX Runtime's DirectML provider; the maths around them stays
+  in PyTorch on the processor. On an RTX 3060 Ti through DirectML: 4.0 fps against 6.7 fps for PyTorch CUDA, and
+  66.8 dB PSNR against the CUDA output on a 180-frame tape clip.
 - **Long runs:** write `.part` files and only rename after a frame-count check, make pause actually
   kill the GPU processes, and keep the computer from sleeping (`SetThreadExecutionState` on Windows,
   `caffeinate` on a Mac).

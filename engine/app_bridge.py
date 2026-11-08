@@ -423,7 +423,31 @@ def models_run_on():
         return f'{torch.cuda.get_device_name(0)} (CUDA)'
     if torch.backends.mps.is_available():
         return 'Apple GPU (Metal)'
+    if not IS_MAC and directml_ready():
+        cards = windows_gpus()
+        card = cards[0] if cards else 'the graphics card'
+        return f'{card} (DirectML) for upscaling; face restoration on the processor'
     return 'Processor only (no supported graphics processor found)'
+
+
+def windows_gpus():
+    """Names of the graphics cards Windows knows about, any make. Leaves out the stand-in display drivers."""
+    try:
+        out = subprocess.run(['powershell', '-NoProfile', '-Command', '(Get-CimInstance Win32_VideoController).Name'],
+                             capture_output=True, text=True, creationflags=NO_WINDOW, timeout=20).stdout
+    except (OSError, subprocess.TimeoutExpired):
+        return []
+    skip = ('basic display', 'basic render', 'remote display', 'virtual display')
+    return [n.strip() for n in out.splitlines() if n.strip() and not any(k in n.lower() for k in skip)]
+
+
+def directml_ready():
+    """Can the upscale step run on a non-NVIDIA card here (onnxruntime-directml in the engine Python)?"""
+    try:
+        from ort_models import gpu_provider
+        return gpu_provider() is not None
+    except ImportError:
+        return False
 
 
 def mac_specs():
@@ -453,7 +477,8 @@ def windows_specs():
         name, mem, driver = (x.strip() for x in out.splitlines()[0].split(','))
         rows.insert(2, ['Graphics', f'{name}, {mem}, driver {driver}'])
     except (OSError, subprocess.TimeoutExpired, ValueError, IndexError):
-        rows.insert(2, ['Graphics', 'No NVIDIA graphics card found'])
+        cards = windows_gpus()
+        rows.insert(2, ['Graphics', ', '.join(cards) if cards else 'No graphics card found'])
     return rows + [['AI models run on', models_run_on()]]
 
 
@@ -564,10 +589,26 @@ def windows_rows():
     try:
         gpu = subprocess.run(['nvidia-smi', '--query-gpu=name,memory.total', '--format=csv,noheader'],
                              capture_output=True, text=True, creationflags=NO_WINDOW, timeout=10).stdout.strip()
-        out.append(['Graphics processor and memory', bool(gpu), gpu.splitlines()[0] if gpu else 'No NVIDIA graphics card found'])
     except (OSError, subprocess.TimeoutExpired):
-        out.append(['Graphics processor and memory', False, 'No NVIDIA graphics card found (the engine needs one for now)'])
+        gpu = ''
+    if gpu:
+        out.append(['Graphics processor and memory', True, gpu.splitlines()[0]])
+    else:
+        out.append(['Graphics processor and memory', *other_gpu_row()])
     return out
+
+
+def other_gpu_row():
+    """[ok, detail] for a PC without an NVIDIA card: AMD and Intel cards work through DirectML."""
+    cards = windows_gpus()
+    if not cards:
+        return [False, 'No graphics card found. tapewake needs an NVIDIA card, or an AMD or Intel card with DirectX 12.']
+    names = ', '.join(cards)
+    if directml_ready():
+        return [True, f'{names} (DirectML). Upscaling runs on the card. Face restoration runs on the processor and is '
+                      'very slow, so turn it off for long videos.']
+    return [False, f"{names}: tapewake can't use this card yet. NVIDIA cards need the NVIDIA driver; AMD and Intel "
+                   'cards need onnxruntime-directml in the engine Python (see BUILDING.md, "AMD and Intel graphics").']
 
 
 def mac_rows():

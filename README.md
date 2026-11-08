@@ -45,8 +45,8 @@ tapewake runs on both. The app and the restoration engine are the same; what's n
 | | Windows | Mac |
 |---|---|---|
 | Computer | Windows 10 (2004 or later) or 11, 64-bit | Apple Silicon (M1 or later), macOS 15 or later |
-| Graphics | NVIDIA card with 8 GB or more | Built into the chip; 16 GB of memory or more |
-| Not supported | AMD and Intel graphics | Intel Macs, Macs with 8 GB |
+| Graphics | NVIDIA card with 8 GB or more; AMD and Intel cards with DirectX 12 work too (upscaling only, see [README-windows.md](README-windows.md)) | Built into the chip; 16 GB of memory or more |
+| Not supported | Graphics without DirectX 12 | Intel Macs, Macs with 8 GB |
 | Tested on | A two-hour VHS tape | Short clips |
 | Read this | [README-windows.md](README-windows.md) | [README-macOS.md](README-macOS.md) |
 | Setting it up | [BUILDING.md](BUILDING.md) | [BUILDING-macOS.md](BUILDING-macOS.md) |
@@ -147,6 +147,7 @@ is part of this repository, and their authors are not involved with tapewake.
 | [PyTorch](https://pytorch.org) and torchvision (RAFT) | Running the AI models | BSD-3-Clause |
 | [OpenCV](https://opencv.org), NumPy, SciPy, psutil | Image and signal processing, process control | Apache-2.0 / BSD |
 | [NVIDIA TensorRT](https://developer.nvidia.com/tensorrt) (optional, Windows) | Faster upscaling | NVIDIA licence |
+| [ONNX Runtime](https://onnxruntime.ai) with [DirectML](https://github.com/microsoft/DirectML) (optional, Windows) | Upscaling on AMD and Intel cards | MIT / Microsoft DirectML licence |
 | [Tauri](https://tauri.app) | The desktop app | MIT / Apache-2.0 |
 | IBM Plex, Big Shoulders Display, Poppins | Fonts | SIL Open Font License |
 

@@ -14,7 +14,8 @@ of the parts you'll download have their own licences. The face models in particu
 
 - Windows 10 (2004 or later) or Windows 11, 64-bit
 - An NVIDIA graphics card with at least 8 GB, and a recent driver (the CUDA 12.1 builds of PyTorch need driver
-  530 or newer)
+  530 or newer). An AMD or Intel card with DirectX 12 also works for upscaling, see
+  [AMD and Intel graphics](#amd-and-intel-graphics)
 - About 20 GB free for the tools, plus about 50 GB per hour of tape while it's being restored (about 100 GB
   for a two-hour tape; see [engine/README.md](engine/README.md#disk-space))
 - An internet connection the first time you restore something (a few models download themselves then)
@@ -181,6 +182,26 @@ cd C:\tapewake-tools
 ```
 
 The first upscale then spends a few minutes building an engine for your card (saved in `models\trt-engines`).
+
+### AMD and Intel graphics
+
+New and less tested than the NVIDIA setup. In step 4, install the processor build of PyTorch instead of the CUDA
+one, and add ONNX Runtime with DirectML:
+
+```powershell
+.\engine-venv\Scripts\python -m pip install torch==2.5.1 torchvision==0.20.1 torchaudio==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+.\engine-venv\Scripts\python -m pip install onnxruntime-directml==1.23.0 onnx==1.17.0
+```
+
+Skip TensorRT (it's NVIDIA only). Check that ONNX Runtime sees the card:
+
+```powershell
+.\engine-venv\Scripts\python -c "import onnxruntime as o; print(o.get_available_providers())"
+```
+
+It should list `DmlExecutionProvider`. The upscaler and the flicker smoothing then run on the card; the first upscale
+spends a minute exporting them (saved in `models\onnx`). Face restoration still runs on the processor, which is very
+slow: turn **Face restoration** off for anything longer than a short clip. A recent graphics driver helps.
 
 ## 11. Tell tapewake where everything is
 
